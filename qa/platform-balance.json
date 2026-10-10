@@ -1,0 +1,42 @@
+{
+  "games": 90,
+  "draws": 14,
+  "averageTurns": 33.5,
+  "operators": [
+    {
+      "name": "STRIDER",
+      "entries": 144,
+      "wins": 12,
+      "falls": 9,
+      "winRate": 8.3
+    },
+    {
+      "name": "WRAITH",
+      "entries": 144,
+      "wins": 17,
+      "falls": 9,
+      "winRate": 11.8
+    },
+    {
+      "name": "ORACLE",
+      "entries": 144,
+      "wins": 9,
+      "falls": 8,
+      "winRate": 6.3
+    },
+    {
+      "name": "CINDER",
+      "entries": 144,
+      "wins": 15,
+      "falls": 7,
+      "winRate": 10.4
+    },
+    {
+      "name": "AEGIS",
+      "entries": 144,
+      "wins": 23,
+      "falls": 15,
+      "winRate": 16
+    }
+  ]
+}

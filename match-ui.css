@@ -1,0 +1,80 @@
+/* A single loadout stack keeps stats, weapons, supplies and cards together. */
+#loadout-dock{position:fixed;left:16px;bottom:14px;width:286px;display:flex;flex-direction:column;gap:8px;z-index:10;max-height:calc(100dvh - 125px);overflow:auto;scrollbar-width:thin;scrollbar-color:#6c879866 transparent}
+body:has(#intro:not(.hidden)) #loadout-dock,body:has(#lobby:not(.hidden)) #loadout-dock{visibility:hidden;pointer-events:none}
+#loadout-dock .operator-card,#loadout-dock .loot-panel,#loadout-dock #fate-hud.fate-hud{position:relative;top:auto;bottom:auto;left:auto;right:auto;width:100%;margin:0;flex-shrink:0;transform:none}
+#loadout-dock .operator-card{padding:15px;border-radius:14px;background:linear-gradient(145deg,#1c2a3aef,#0b1827f5);border-color:#7698b44d}
+#loadout-dock .operator-title{display:flex;align-items:center;gap:10px;margin:0 0 15px}
+#loadout-dock .operator-avatar{display:block;width:43px;height:49px;border:1px solid #7f9cb542;border-radius:7px;overflow:hidden;background:radial-gradient(ellipse at bottom,#41596c55,transparent);flex-shrink:0}
+#loadout-dock .operator-avatar canvas{width:100%;height:100%;display:block;object-fit:cover}
+#loadout-dock .operator-title h2{font:750 18px/1.1 var(--interface);letter-spacing:.8px;margin:0;color:#f0f6fc}
+#loadout-dock .operator-title #operator-role{display:none}
+#loadout-dock .operator-title .move-stat{margin-left:auto;padding:6px 8px;border:1px solid #8bb1cc33;border-radius:5px;background:#85d4ed0b;font:600 11px var(--interface);color:#b5dbe7;white-space:nowrap}
+#loadout-dock .health-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 14px}
+#loadout-dock .health-row,#loadout-dock .shield-row{display:flex;align-items:baseline;gap:4px;margin:0 0 7px;white-space:nowrap}
+#loadout-dock .health-row span,#loadout-dock .shield-row span{font:600 10px var(--interface);color:#bfd1db;letter-spacing:0}
+#loadout-dock .health-row b,#loadout-dock .shield-row b{margin-left:auto;font:700 19px var(--interface);font-variant-numeric:tabular-nums}
+#loadout-dock .health-row small,#loadout-dock .shield-row small{font:10px var(--interface);color:#869eaf}
+#loadout-dock .bar-track{height:5px;border-radius:3px;overflow:hidden;background:#8cabb324}
+#loadout-dock .hp-bar,#loadout-dock .shield-bar{border-radius:3px;height:100%}
+#loadout-dock .weapon-line{display:block;margin:0;padding:11px 12px 10px;border:1px solid #98c8e64f;border-radius:9px;background:linear-gradient(120deg,#26445678,#152d4270);box-shadow:inset 3px 0 #8ed8ed}
+#loadout-dock .weapon-heading{display:flex;align-items:center;gap:9px}
+#loadout-dock #weapon-type{font:700 10px var(--interface);border-radius:3px;padding:3px 5px;background:#98d5e420;color:#a9e5f2}
+#loadout-dock #weapon-name{font:750 14px var(--interface);color:#edf7ff;letter-spacing:.7px;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#loadout-dock .equipped-badge{margin-left:auto;color:#abe7d2;font:700 13px var(--interface)}
+#loadout-dock .weapon-main{display:flex;align-items:center;gap:12px;margin:7px 0 3px}
+#loadout-dock .weapon-glyph{width:84px;flex:none;color:#b6d8e7;line-height:0}
+#loadout-dock .weapon-glyph svg{display:block;width:100%;height:42px}
+#loadout-dock #ammo-value{font:750 32px/1 var(--interface);color:#f4fbff;margin-left:auto;display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+#loadout-dock #ammo-value small{font:600 15px var(--interface);color:#b4c8d7;text-align:right;display:block}
+#loadout-dock #ammo-value small span{display:block;font:9px/1.5 var(--interface);color:#91adbf}
+#loadout-dock #weapon-description{font:10px var(--interface);display:block;color:#c3d8e1;letter-spacing:0;white-space:nowrap}
+#loadout-dock .empty-mag #ammo-value{color:#ffa99b}
+#loadout-dock .weapon-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:136px;margin:10px 0 0;overflow:auto;scrollbar-width:thin}
+#loadout-dock .weapon-tabs button{position:relative;display:grid;grid-template-columns:34px 1fr;grid-template-rows:1fr 1fr;column-gap:6px;row-gap:2px;min-height:61px;padding:9px;border:1px solid #718ea34d;border-radius:8px;background:#0c1a29;color:#a6bdcc;transition:background .18s,border-color .18s,box-shadow .18s;text-align:left}
+#loadout-dock .weapon-tabs .gun-icon{grid-column:1;grid-row:1/3;align-self:center;display:block;width:34px;line-height:0}
+#loadout-dock .gun-icon svg{display:block;width:100%;height:29px}
+#loadout-dock .weapon-tabs b{font:700 12px var(--interface);grid-column:2;grid-row:1;align-self:end}
+#loadout-dock .weapon-tabs .gun-ammo{grid-column:2;grid-row:2;align-self:start;margin:0;font:650 12px var(--interface);font-variant-numeric:tabular-nums}
+#loadout-dock .gun-ammo small{font:10px var(--interface);color:#8ca3b3;margin-left:2px}
+#loadout-dock .gun-selected{display:none;position:absolute;right:7px;top:5px;font:700 10px var(--interface);color:#d0fff4}
+#loadout-dock .weapon-tabs button.selected{background:linear-gradient(135deg,#325c638f,#214052db);border-color:#9cdedb;box-shadow:inset 0 0 0 1px #9cdedb24,0 0 13px #9bdeda0a;color:#efffff}
+#loadout-dock .weapon-tabs button.selected .gun-selected{display:block}
+#loadout-dock .weapon-tabs button:hover:not(:disabled){background:#254457;border-color:#b5dfed}
+#loadout-dock .weapon-tabs button:disabled{opacity:.64}
+#loadout-dock .weapon-tabs button.selected:disabled{opacity:1}
+#loadout-dock .loot-panel{padding:9px 10px;display:block!important;background:#102033ef;border-color:#7191ac45;border-radius:10px}
+#loadout-dock #inventory-counts{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.supply-chip{display:grid;grid-template-columns:17px 1fr auto;align-items:center;gap:4px;min-width:0;color:#bed0dc}
+.supply-chip i,.supply-chip svg{width:16px;height:16px;display:block;color:#8bbbc7}
+.supply-chip>span{font:10px var(--interface);letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.supply-chip b{font:700 15px var(--interface);color:#e6eff5}
+#loadout-dock .nearby-loot{font:10px/1.5 var(--interface);margin:0;color:#c8d4e1}
+#loadout-dock .nearby-loot:empty{display:none}
+#loadout-dock .nearby-loot:not(:empty){margin-top:7px;border-top:1px solid #708ba335;padding-top:7px}
+#loadout-dock #fate-hud.fate-hud{padding:10px 12px;min-height:40px;border-radius:10px;font:600 12px var(--interface);background:#211f35eb;border-color:#ab92d358}
+#loadout-dock #fate-hud small{font:10px var(--interface);color:#b1a6c7}
+.status-row{width:460px;height:66px;top:14px;border:1px solid #7895ad4d;border-radius:10px;background:linear-gradient(120deg,#162a3aec,#0c1b2af7);padding-bottom:6px;box-shadow:0 6px 24px #0003}
+.status-row .turn-box{width:66px!important;padding:9px 14px;border-right:1px solid #7c9caf26;gap:1px;text-align:left}
+.status-row .turn-box .eyebrow,.status-row .alive-box .eyebrow{font:600 9px var(--interface);letter-spacing:.5px;color:#a4bdce}
+.status-row .turn-box b{font:700 25px var(--interface);font-variant-numeric:tabular-nums}
+.status-row .phase-box{padding:10px 14px;gap:8px;min-width:0}
+.status-row .phase-box b{font:650 14px var(--interface);letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:190px}
+.status-row .phase-detail{display:none}
+.status-row .clock{display:flex;flex-direction:row;align-items:baseline;justify-content:center;gap:4px;min-width:69px!important;padding:10px 8px}
+.status-row .clock>span{font:700 29px var(--interface);font-variant-numeric:tabular-nums;color:#f2f8fb}
+.status-row .clock small{font:10px var(--interface);color:#a4bdce}
+.status-row .alive-box{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;width:70px!important;padding:9px 10px;border-left:1px solid #7c9caf26;gap:2px}
+.status-row .alive-box b{font:700 23px var(--interface);font-variant-numeric:tabular-nums}
+.status-row .alive-box b span{font:11px var(--interface);color:#a4bdce}
+.status-row .countdown-bar{height:5px;overflow:hidden;border-radius:0 0 9px 9px}
+@media(max-width:1000px) and (min-width:791px){#loadout-dock{width:260px}}
+@media(max-width:790px){#loadout-dock{left:10px;bottom:113px;width:228px;gap:6px;max-height:calc(100dvh - 230px)}#loadout-dock .operator-card{padding:11px}#loadout-dock .operator-title{gap:8px;margin-bottom:10px}#loadout-dock .operator-avatar{width:34px;height:40px}#loadout-dock .operator-title h2{font-size:15px}#loadout-dock .operator-title .move-stat{font-size:10px;padding:5px}#loadout-dock .health-stats{gap:10px;margin-bottom:10px}#loadout-dock .health-row b,#loadout-dock .shield-row b{font-size:17px}#loadout-dock .health-row span,#loadout-dock .shield-row span{font-size:9px}#loadout-dock .health-row small,#loadout-dock .shield-row small{font-size:9px}#loadout-dock .weapon-line{padding:9px 10px}#loadout-dock #weapon-name{font-size:12px}#loadout-dock .weapon-glyph{width:62px}#loadout-dock #ammo-value{font-size:27px;gap:8px}#loadout-dock #weapon-description{font-size:9px}#loadout-dock .weapon-tabs{max-height:108px;gap:5px;margin-top:8px}#loadout-dock .weapon-tabs button{min-height:51px;grid-template-columns:27px 1fr;padding:6px;column-gap:5px}#loadout-dock .gun-icon svg{height:25px}#loadout-dock .weapon-tabs b{font-size:10px}#loadout-dock .weapon-tabs .gun-ammo{font-size:11px}#loadout-dock .loot-panel{padding:8px}#loadout-dock #inventory-counts{gap:5px}.supply-chip{grid-template-columns:14px 1fr auto;gap:3px}.supply-chip i,.supply-chip svg{width:14px;height:14px}.supply-chip>span{font-size:9px}.supply-chip b{font-size:13px}#loadout-dock #fate-hud.fate-hud{font-size:11px;min-height:36px;padding:8px 10px}.status-row{top:60px;left:10px;right:10px;transform:none;width:auto;height:59px}.status-row .turn-box{width:51px!important;padding:8px 9px}.status-row .turn-box b{font-size:22px}.status-row .phase-box{padding:8px 10px;gap:6px}.status-row .phase-box b{font-size:12px;max-width:145px}.status-row .clock{min-width:55px!important;padding:8px 6px}.status-row .clock>span{font-size:24px}.status-row .alive-box{width:62px!important;padding:8px}.status-row .alive-box b{font-size:20px}.status-row .turn-box .eyebrow,.status-row .alive-box .eyebrow{font-size:8px}}
+@media(max-height:620px) and (max-width:950px) and (orientation:landscape){#loadout-dock{width:218px;bottom:14px;max-height:calc(100dvh - 78px);gap:5px}#loadout-dock .operator-card{padding:9px}#loadout-dock .operator-title{margin-bottom:7px}#loadout-dock .operator-avatar{display:none}#loadout-dock .operator-title h2{font-size:12px}#loadout-dock .health-stats{margin-bottom:7px}#loadout-dock .health-row b,#loadout-dock .shield-row b{font-size:16px}#loadout-dock .weapon-line{padding:7px 9px}#loadout-dock .weapon-glyph{width:52px}#loadout-dock .weapon-glyph svg{height:27px}#loadout-dock #ammo-value{font-size:24px}#loadout-dock .weapon-main{margin:5px 0 1px}#loadout-dock .weapon-tabs{max-height:57px;margin-top:7px}#loadout-dock .weapon-tabs button{min-height:47px;padding:5px}#loadout-dock .loot-panel{padding:6px 8px}#loadout-dock #fate-hud.fate-hud{min-height:30px;padding:6px 9px}.status-row{top:55px;left:240px;right:auto;transform:none;width:min(460px,calc(100vw - 386px));height:51px}.status-row .clock>span{font-size:23px}.status-row .phase-box b{font-size:12px}.status-row .alive-box b{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#loadout-dock button{transition:none}}
+
+#loadout-dock .supply-chip b{display:block}
+#loadout-dock .weapon-glyph{display:block}
+#loadout-dock .health-row small,#loadout-dock .shield-row small{display:block}
+
+#drop-countdown{left:16px;right:auto;top:62px}
+@media(max-height:620px) and (max-width:950px) and (orientation:landscape){#loadout-dock{max-height:calc(100dvh - 64px)}#loadout-dock .operator-title{margin-bottom:5px}#loadout-dock .operator-title .move-stat{font-size:9px;padding:4px 6px}#loadout-dock .health-stats{margin-bottom:5px}#loadout-dock .health-row,#loadout-dock .shield-row{margin-bottom:4px}#loadout-dock .operator-card{padding:7px 9px}#loadout-dock .weapon-glyph svg{height:24px}#loadout-dock .supply-chip>span{display:none}#loadout-dock .supply-chip{grid-template-columns:16px auto;justify-content:center;gap:7px}#drop-countdown{display:none}}

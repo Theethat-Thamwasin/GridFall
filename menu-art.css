@@ -1,0 +1,93 @@
+/* The supplied frontline illustration sits behind live, accessible menu controls. */
+#intro{--accent:#d2b0ff;--line:#8b91c438;--line-bright:#aca2d96b;--text-main:#edf4ff;--text-dim:#b7c5df;background:#050d16;isolation:isolate}
+#menu-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;pointer-events:none;z-index:-3}
+#intro::before{content:'';position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(90deg,#030b16cb 0%,#030b165c 28%,transparent 57%),linear-gradient(0deg,#02091580,transparent 38%);transition:background .3s}
+body:not([data-menu-pane="home"]) #intro::before{background:linear-gradient(90deg,#030b16f0,#081324ce 45%,#091221b8)}
+#intro .menu-header{border-bottom-color:#b1beec30}
+#intro .menu-brand{color:#eef5ff;text-shadow:0 0 28px #85c8ff28;letter-spacing:-1.8px}
+#intro .menu-brand>span{color:#ddc2ff}
+#intro .menu-header .menu-utility{border-radius:3px;border-color:#a3b8df55;color:#cad9f4;background:#0b172bd9;transition:background .18s,border-color .18s,box-shadow .18s}
+#intro .menu-header .menu-utility:hover{color:#f0deff;border-color:#d5b4ff;background:#342246e6;box-shadow:0 0 18px #bd8aff20}
+#intro .menu-nav button{border:1px solid #97a9d64d;border-left:3px solid #83c9e3;border-radius:2px;background:linear-gradient(100deg,#0d1b2dee,#102339aa);color:#c1d6ef;box-shadow:0 8px 28px #0003;transition:background .2s,border-color .2s,color .2s,box-shadow .2s}
+#intro .menu-nav .menu-mode-icon,#intro .menu-nav button>i{color:#89d8f4}
+#intro .menu-nav button:hover,#intro .menu-nav button.active{background:linear-gradient(100deg,#322549ee,#152943ce);border-color:#caadff;color:#f1e3ff;box-shadow:0 0 28px #bd8aff16}
+#intro button:focus-visible,#intro input:focus-visible,#intro select:focus-visible{outline:2px solid #dbbaff;outline-offset:4px}
+body[data-menu-pane="home"] #intro .menu-shell{max-width:none;grid-template-columns:minmax(300px,34%) 1fr;grid-template-rows:66px 1fr 12px;padding:0 2vw}
+body[data-menu-pane="home"] #intro .menu-header{border:0}
+body[data-menu-pane="home"] #intro .menu-brand{position:absolute;top:8vh;left:0;font-size:clamp(70px,8.2vw,140px);line-height:1;font-weight:900;letter-spacing:-.055em;filter:drop-shadow(0 3px 8px #0008)}
+body[data-menu-pane="home"] #intro .menu-brand::after{content:'';display:block;margin-top:22px;height:1px;width:100%;background:linear-gradient(90deg,#82dcff,#d8b3ff 70%,transparent);box-shadow:0 0 10px #97d7fb60}
+body[data-menu-pane="home"] #intro .menu-sidebar{padding:0 0 9vh;justify-content:center;max-width:420px;width:100%}
+body[data-menu-pane="home"] #intro .operator-stage{display:none}
+body[data-menu-pane="home"] #intro .menu-nav{gap:16px;width:100%}
+body[data-menu-pane="home"] #intro .menu-nav button{min-height:76px;padding:20px 23px;border-radius:2px;position:relative}
+body[data-menu-pane="home"] #intro .menu-nav button:first-child{border:1px solid #d0b5f9;border-left:3px solid #e0c2ff;background:linear-gradient(100deg,#2a203cde,#19213acc);color:#e8caff;box-shadow:inset 0 0 28px #bd8aff0b,0 0 24px #bd8aff12}
+body[data-menu-pane="home"] #intro .menu-nav button:first-child .menu-mode-icon,body[data-menu-pane="home"] #intro .menu-nav button:first-child i{color:#e2c4ff}
+body[data-menu-pane="home"] #intro .menu-nav button:first-child:hover{background:linear-gradient(100deg,#48315cec,#263455de);color:#fff0ff;border-color:#ead6ff;box-shadow:0 0 32px #c19eff28}
+body[data-menu-pane="home"] #intro .menu-nav button::after{content:'';position:absolute;right:50px;width:38px;height:22px;opacity:.25;background:repeating-linear-gradient(130deg,transparent 0 3px,#b8d4f0 3px 4px);pointer-events:none}
+body[data-menu-pane="home"] #intro .menu-nav b{font-size:clamp(17px,1.55vw,24px);letter-spacing:2px}
+#intro .menu-content{border-radius:5px}
+#intro .setup-header{background:#111b30ed;border-radius:3px;border-color:#b6a8dd35}
+#intro .settings-pane{border-radius:5px;border-color:#b5a1e04f;background:linear-gradient(145deg,#1d243be8,#0d1a2ceb);box-shadow:0 20px 60px #0005}
+#intro .settings-options .setting-row{border-bottom-color:#a7a7d531}
+#intro .audio-level output{color:#dcc2ff}
+#intro .audio-level input[type="range"]{accent-color:#c8a4f1}
+#intro .back-button,#intro #menu-back{background:#272742ed!important;border-color:#bea7e9aa!important;color:#eddcff!important;border-radius:4px!important}
+#intro .back-button:hover,#intro #menu-back:hover{background:#47365bed!important;border-color:#e4caff!important;box-shadow:0 0 22px #ca9bff20}
+#intro .start-button{background:linear-gradient(110deg,#d6b5f4,#a9cff7);border-color:#ecd6ff;color:#151b30;border-radius:4px;box-shadow:0 4px 18px #c8a4ff15}
+#intro .start-button:hover{background:linear-gradient(110deg,#e7ceff,#c8e3ff);border-color:#f2e7ff}
+#intro #class-picker button,#intro .map-preview,#intro .network-identity{border-radius:4px;background:#111d32a8;border-color:#9aafd34d}
+#intro #class-picker button.selected{background:color-mix(in srgb,var(--operator-accent) 15%,#101b2ddd);border-color:var(--operator-accent)}
+#intro #room-create{border-color:#9bc6e977;background:#172b43;color:#c3eaff;border-radius:4px;min-height:48px}
+#intro .network-options input,#intro .match-options select{background:#0a1529;border-color:#a0b4dd55;color:#e6edff;border-radius:4px}
+#intro .operator-stage{background:radial-gradient(ellipse at center,#58608820,transparent 65%);border-radius:4px}
+#intro .menu-footer{border-color:#96b6e030}
+@media(max-width:790px){
+#menu-art{object-position:55% 50%}
+#intro::before{background:linear-gradient(0deg,#040c18f2,transparent 48%),linear-gradient(180deg,#040c18a0,transparent 24%)}
+body[data-menu-pane="home"] #intro .menu-shell{grid-template-columns:1fr;grid-template-rows:66px 1fr 160px 8px;padding:0;gap:10px}
+body[data-menu-pane="home"] #intro .menu-brand{position:static;font-size:clamp(32px,8vw,55px);letter-spacing:-2px}
+body[data-menu-pane="home"] #intro .menu-brand::after{margin-top:10px}
+body[data-menu-pane="home"] #intro .menu-sidebar{grid-column:1;grid-row:3;max-width:none;justify-content:center;padding:0}
+body[data-menu-pane="home"] #intro .menu-nav{gap:12px}
+body[data-menu-pane="home"] #intro .menu-nav button{min-height:65px;padding:17px 22px}
+body[data-menu-pane="home"] #intro .menu-nav b{font-size:18px;letter-spacing:1.6px}
+#intro .menu-header .menu-utility{width:36px;height:40px;min-height:40px}
+#intro .menu-header .menu-utilities{gap:5px}
+}
+@media(max-height:500px) and (max-width:950px){
+#menu-art{object-position:50% 50%}
+body[data-menu-pane="home"] #intro .menu-shell{grid-template-columns:minmax(240px,40%) 1fr;grid-template-rows:46px 1fr 6px}
+body[data-menu-pane="home"] #intro .menu-brand{position:absolute;top:10vh;font-size:clamp(48px,8vw,72px)}
+body[data-menu-pane="home"] #intro .menu-sidebar{grid-column:1;grid-row:2;justify-content:flex-end;padding:0 0 6vh}
+body[data-menu-pane="home"] #intro .menu-nav{gap:12px}
+body[data-menu-pane="home"] #intro .menu-nav button{min-height:55px;padding:14px 20px}
+body[data-menu-pane="home"] #intro .menu-nav b{font-size:16px}
+}
+@media(prefers-reduced-motion:reduce){#intro::before,#intro button{transition:none}}
+
+#intro .menu-header .menu-utilities{margin-left:auto}
+#intro .menu-footer{border-color:#96b6e030;background:none}
+#intro .menu-footer>span{background:none;border-color:#96b6e030}
+
+/* Slow airborne fragments sit behind controls and respect system motion preferences. */
+#intro::before{background:linear-gradient(#0008,#0008),linear-gradient(90deg,#030b16cb 0%,#030b165c 28%,transparent 57%),linear-gradient(0deg,#02091580,transparent 38%)}
+body:not([data-menu-pane="home"]) #intro::before{background:linear-gradient(#0006,#0006),linear-gradient(90deg,#030b16f0,#081324ce 45%,#091221cf)}
+#menu-debris{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1;contain:strict}
+#menu-debris i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size)*1.6);background:var(--glow);box-shadow:0 0 9px var(--glow);opacity:.24;clip-path:polygon(25% 0,100% 18%,75% 100%,0 66%);animation:menu-shard-drift var(--duration) ease-in-out var(--delay) infinite alternate;will-change:transform}
+@keyframes menu-shard-drift{from{transform:translate3d(0,10px,0) rotate(var(--tilt));opacity:.12}to{transform:translate3d(12px,-22px,0) rotate(calc(var(--tilt) + 28deg));opacity:.36}}
+#intro.hidden #menu-debris i{animation-play-state:paused}
+body.reduced-motion #menu-debris i{animation:none;opacity:.15;will-change:auto}
+#intro #class-picker button{display:grid;grid-template-columns:40px minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;row-gap:3px;min-height:76px;padding:8px;overflow:hidden}
+#intro #class-picker .operator-thumb-slot{grid-column:1;grid-row:1/3;width:40px;height:56px;align-self:center;overflow:hidden;border-radius:4px;background:radial-gradient(ellipse at 50% 70%,#98b8d920,transparent)}
+.operator-thumb{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+#intro #class-picker button b{grid-column:2;grid-row:1;font-size:11px;align-self:end;letter-spacing:.6px}
+#intro #class-picker button small{grid-column:2;grid-row:2;margin:0;width:auto;font-size:8px;align-self:start;line-height:1.5}
+#lobby .lobby-operator-icon.operator-thumb-slot{width:38px;height:52px;border:0;border-radius:4px;background:radial-gradient(ellipse at 50% 70%,#98b8d920,transparent);overflow:hidden}
+#lobby #lobby-operator-picker button{min-height:74px}
+@media(max-width:790px){#intro::before{background:linear-gradient(#0008,#0008),linear-gradient(0deg,#040c18f2,transparent 48%),linear-gradient(180deg,#040c18a0,transparent 24%)}#intro #class-picker button{grid-template-columns:36px minmax(0,1fr);padding:7px;column-gap:7px}#intro #class-picker .operator-thumb-slot{width:36px;height:52px}#intro #class-picker button b{font-size:10px}#intro #class-picker button small{font-size:7px}}
+@media(prefers-reduced-motion:reduce){#menu-debris i{animation:none;opacity:.15;will-change:auto}}
+
+#menu-debris i{clip-path:none;border-radius:1px;box-shadow:0 0 8px 1px var(--glow)}
+@media(max-width:790px){#intro #class-picker{grid-template-columns:repeat(2,minmax(0,1fr))}#intro #class-picker button{min-height:74px}}
+
+#intro #class-picker button{grid-column:auto}

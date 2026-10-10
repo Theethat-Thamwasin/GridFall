@@ -1,0 +1,5 @@
+Asset: assets/menu-neon-frontline.png
+Tool: built-in image_gen.imagegen (edit).
+Input: Void Grid_ Neon Tactical Frontline.png supplied by the user.
+Prompt:
+Use case: precise-object-edit. Image 1 is the edit target: a production tactical game main-menu background. Remove all baked-in text, logos, Japanese subtitle, menu labels and buttons, Press Enter, corner slogans, OP / 03 counter, and graphic UI borders/crosshair overlays. Seamlessly inpaint those areas as dark ruined architecture or sky consistent with the existing scene. Preserve all four armored soldiers, their colors, identities, poses and weapons, the helicopter, orange throwing fire trail, floating platforms, ruins, composition, lighting and neon purple/cyan/orange/red palette. Keep the left approximately 30 percent dark and visually quiet for actual live HTML menu controls. Preserve the wide 16:9 framing. No added letters, logos, interface panels or new objects. This is cleanup of the existing artwork, not a redesign.

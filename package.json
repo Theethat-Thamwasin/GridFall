@@ -1,0 +1,18 @@
+{
+  "name": "gridfall",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simultaneous-turn tactical battle royale with procedural audio",
+  "scripts": {
+    "start": "node server.js",
+    "online": "node tools/online.js",
+    "online:ngrok": "node tools/online.js --ngrok",
+    "test": "node --test tests/*.test.js",
+    "online:new": "node tools/online.js --new-link",
+    "online:fresh": "node tools/online.js --fresh",
+    "package:windows": "node tools/package-windows.js"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}

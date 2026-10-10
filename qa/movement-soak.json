@@ -1,0 +1,85 @@
+{
+  "games": 12,
+  "duels": 73,
+  "plannedCardinalSteps": 5660,
+  "checks": [
+    "No overlapping actors",
+    "No invalid bot routes",
+    "Every match completed",
+    "No bot duel stalls"
+  ],
+  "records": [
+    {
+      "map": "small",
+      "seed": 1,
+      "turns": 24,
+      "winner": 5
+    },
+    {
+      "map": "small",
+      "seed": 2,
+      "turns": 29,
+      "winner": 6
+    },
+    {
+      "map": "small",
+      "seed": 3,
+      "turns": 31,
+      "winner": -1
+    },
+    {
+      "map": "small",
+      "seed": 4,
+      "turns": 25,
+      "winner": 6
+    },
+    {
+      "map": "medium",
+      "seed": 1,
+      "turns": 43,
+      "winner": 6
+    },
+    {
+      "map": "medium",
+      "seed": 2,
+      "turns": 30,
+      "winner": 5
+    },
+    {
+      "map": "medium",
+      "seed": 3,
+      "turns": 39,
+      "winner": 7
+    },
+    {
+      "map": "medium",
+      "seed": 4,
+      "turns": 28,
+      "winner": 6
+    },
+    {
+      "map": "large",
+      "seed": 1,
+      "turns": 34,
+      "winner": 5
+    },
+    {
+      "map": "large",
+      "seed": 2,
+      "turns": 44,
+      "winner": 3
+    },
+    {
+      "map": "large",
+      "seed": 3,
+      "turns": 47,
+      "winner": 7
+    },
+    {
+      "map": "large",
+      "seed": 4,
+      "turns": 46,
+      "winner": 7
+    }
+  ]
+}
