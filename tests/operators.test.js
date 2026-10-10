@@ -47,10 +47,10 @@ test('new skill previews and LAN validation agree on class, range, reservation a
   const move={type:'move',target:{x:6,y:5}};s.units[0].class='pyro';assert.equal(U.target(U.context(s,0,'firebomb',[move]),{x:11,y:5}).ok,true);
 });
 
-test('Reflect Shield restores capped armor and returns two bullets at 80 percent along their original rays',()=>{
+test('Reflect Shield restores capped armor and returns bullets at full damage while absorbing 80 percent along their original rays',()=>{
   const s=arena('rook'),u=s.units[0],v=s.units[1];
   const events=resolve(s,{0:[{type:'reflect'}],1:[{type:'shoot',angle:Math.PI},{type:'shoot',angle:Math.PI}]});
-  assert.equal(events.filter(e=>e.type==='reflected').length,2);assert.equal(v.hp,56);assert.equal(u.hp,100);assert.equal(u.shield,12);
+  assert.equal(events.filter(e=>e.type==='reflected').length,2);assert.equal(v.hp,44);assert.equal(u.hp,100);assert.equal(u.shield,0);
   assert.equal(u.ammo,8,'countershot does not consume defender ammunition');assert.equal(u.skillCooldown,4);assert.equal(u.reflectCharges,0);
   const capped=arena('rook');capped.units[0].shield=35;resolve(capped,{0:[{type:'reflect'}]});assert.equal(capped.units[0].shield,40);
 });
@@ -110,7 +110,7 @@ test('WRAITH phase shift crosses a four-tile Void gap with a circular five-tile 
  assert.equal(U.target(U.context(s,0,'blink'),a.target).ok,true);assert.equal(U.target(U.context(s,0,'blink'),{x:10,y:6}).code,'range');assert.throws(()=>validatePlan(s,0,[{type:'blink',target:{x:10,y:6}}]));
  resolve(s,{0:validatePlan(s,0,[a])});assert.equal(u.x,10);assert.equal(u.skillCooldown,2);
 });
-test('AEGIS reflects two burst bullets and the third uses ordinary damage rules',()=>{
+test('AEGIS reflects all three burst bullets and takes only 20 percent damage',()=>{
  const s=arena('rook');Object.assign(s.units[1],{weapon:'rifle',ammo:15});const events=resolve(s,{0:[{type:'reflect'}],1:[{type:'shoot',angle:Math.PI}]});
- assert.equal(events.filter(e=>e.type==='reflected').length,2);assert.ok(events.some(e=>e.type==='damage'&&e.unitId===0));assert.equal(s.units[0].reflectCharges,0);
+ assert.equal(events.filter(e=>e.type==='reflected').length,3);assert.ok(events.some(e=>e.type==='damage'&&e.unitId===0));assert.equal(s.units[0].reflectCharges,0);
 });

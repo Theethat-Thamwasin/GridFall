@@ -2,6 +2,12 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 test('Tutorial media is shipped, served with the correct types and supports video seeking',async t=>{
   const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
   const url='http://127.0.0.1:'+server.address().port,root=path.resolve(__dirname,'..'),pack=fs.readFileSync(path.join(root,'tools/package-windows.js'),'utf8');
+  for(const [name,type] of [['walkthrough.js',/javascript/],['training-team.css',/text\/css/]]){
+    const response=await fetch(url+'/'+name);
+    assert.equal(response.status,200);assert.match(response.headers.get('content-type'),type);
+    assert.equal(await response.text(),fs.readFileSync(path.join(root,name),'utf8'));
+    assert.ok(pack.includes("'"+name+"'"));
+  }
   for(const kind of ['zoom','pan','route'])for(const ext of ['mp4','png','vtt']){
     const name='assets/tutorial-'+kind+'.'+ext,response=await fetch(url+'/'+name),bytes=Buffer.from(await response.arrayBuffer());
     assert.equal(response.status,200);assert.ok(bytes.equals(fs.readFileSync(path.join(root,name))));assert.ok(pack.includes("'"+name+"'"));

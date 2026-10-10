@@ -14,7 +14,9 @@ function sameSmoke(s,from,to){
  for(let at=0;at<queue.length;at++){const sm=smokes[queue[at]];if(inSmoke(sm,b))return true;for(let i=0;i<smokes.length;i++)if(!connected.has(i)&&Math.abs(sm.x-smokes[i].x)<=3+EPS&&Math.abs(sm.y-smokes[i].y)<=3+EPS){connected.add(i);queue.push(i);}}
  return false;
 }
+const scanned=(from,to,range=14)=>from.scan>0&&Math.hypot(to.x-from.x,to.y-from.y)<=range+EPS;
 function concealed(s,from,to,smoke=true){
+ if(scanned(from,to))return false;
  if(roofConceals(s,from,to))return true;
  if(!smoke||!(s.smokes||[]).length)return false;
  const a=world(from),b=world(to);
@@ -64,7 +66,7 @@ function field(s,from,range=9,smoke=true){
  return{origin,range,points};
 }
 function bodyExposure(s,from,to,range=9,smoke=true){
- const hidden={visible:false,centerVisible:false,point:null};if((from.x!==to.x||from.y!==to.y)&&concealed(s,from,to,smoke))return hidden;if(Math.hypot(to.x-from.x,to.y-from.y)>range+BODY_RADIUS)return hidden;
+ const hidden={visible:false,centerVisible:false,point:null};if(scanned(from,to,range))return{visible:true,centerVisible:true,point:{x:to.x,y:to.y}};if((from.x!==to.x||from.y!==to.y)&&concealed(s,from,to,smoke))return hidden;if(Math.hypot(to.x-from.x,to.y-from.y)>range+BODY_RADIUS)return hidden;
  if(pointVisible(s,from,to,range,smoke,false))return{visible:true,centerVisible:true,point:{x:to.x,y:to.y}};
  const a=world(from),b=world(to),rx=b.x-a.x,ry=b.y-a.y,d=Math.hypot(rx,ry);if(d<EPS)return hidden;
  const center=Math.atan2(ry,rx),spread=Math.asin(Math.min(1,BODY_RADIUS/d)),angles=[center-spread*.5,center+spread*.5,center-spread+1e-6,center+spread-1e-6];
@@ -83,5 +85,5 @@ function litCells(s,from,f,centers){
  if(!centers)for(let y=Math.max(0,Math.floor(from.y-r));y<Math.min(s.height||s.size,Math.ceil(from.y+r));y++)for(let x=Math.max(0,Math.floor(from.x-r));x<Math.min(s.width||s.size,Math.ceil(from.x+r));x++)if(pointVisible(s,from,{x,y},f.range))cells.add(x+','+y);
  return cells;
 }
-return{sheltered,sameRoof,sameSmoke,concealed,BODY_RADIUS,world,ray,field,pointVisible,bodyExposure,contains,bodyInField,litCells};
+return{scanned,sheltered,sameRoof,sameSmoke,concealed,BODY_RADIUS,world,ray,field,pointVisible,bodyExposure,contains,bodyInField,litCells};
 });

@@ -1,10 +1,10 @@
 // Runs the real game controller against a small in-memory DOM. It checks
 // event/state integration; canvas methods are inert and do not assess layout.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
-function harness(width=1280){
+function harness(width=1280,options={}){
   let clock=0,nextFrame=null,document;
   function events(target){const listeners={};target.addEventListener=(type,fn)=>(listeners[type]??=[]).push(fn);target.dispatchEvent=e=>{e.target??=target.body||target;e.preventDefault??=()=>{};for(const fn of listeners[e.type]||[])fn(e);return true;};return target;}
-  const paint=new Proxy({measureText:s=>({width:String(s).length*7}),getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}})}, {get:(o,k)=>k in o?o[k]:()=>{}});
+  const paint=new Proxy({measureText:s=>({width:String(s).length*7}),getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),...options.paint}, {get:(o,k)=>k in o?o[k]:()=>{}});
   class Element{
     constructor(tag='div'){this.tagName=tag.toUpperCase();this.nodeType=1;this.children=[];this.dataset={};this.attributes={};this.listeners={};this.style={setProperty(){}};this.disabled=false;this.width=1280;this.height=720;this._text='';this._class='';this.value='';this.scrollTop=0;}
     get className(){return this._class;}set className(v){this._class=v;}
@@ -33,8 +33,9 @@ function harness(width=1280){
   class Network{constructor(){this.active=false;this.connected=false;this.busy=false;this.locked=false;}leave(){this.active=false;return Promise.resolve();}}
   const storage={getItem:()=>null,setItem(){},removeItem(){}},sandbox={document,console,Node:Element,Element,SoundEngine:Sound,performance:{now:()=>clock},innerWidth:width,innerHeight:720,location:{href:'http://localhost:3000/',search:''},history:{replaceState(){}},navigator:{},URL,URLSearchParams,structuredClone,localStorage:storage,sessionStorage:storage,ResizeObserver:class{constructor(fn){this.fn=fn;}observe(){this.fn();}},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},requestAnimationFrame:fn=>{nextFrame=fn;},setTimeout:()=>1,clearTimeout(){},addEventListener(){},dispatchEvent(){}};
   events(document);events(sandbox);sandbox.window=sandbox;sandbox.globalThis=sandbox;vm.createContext(sandbox);
-  for(const f of ['fate.js','vision.js','engine.js','tactics.js','practice.js','movement.js','replay.js','motion.js','effects.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),sandbox,{filename:f});
-  sandbox.GridfallNetwork=Network;sandbox.GridfallPresentation={reduced:()=>true,shake:()=>false,accents:Object.fromEntries(Object.entries(sandbox.Gridfall.CLASSES).map(([id,c])=>[id,c.color])),drawOperator(){},drawFieldOperator(){},setLobbyOperator(){},terrainPreview(){},icon:()=>'<svg></svg>',weaponIcon:()=>'<svg></svg>',setOperator(){},reset(){},showPane(){}};
+  for(const f of ['fate.js','vision.js','engine.js','tactics.js','practice.js','walkthrough.js','movement.js','replay.js','motion.js','effects.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),sandbox,{filename:f});
+  if(options.preparePractice){const create=sandbox.GridfallPractice.createState;sandbox.GridfallPractice.createState=(...args)=>{const state=create(...args);options.preparePractice(state);return state;};}
+  sandbox.GridfallNetwork=options.Network||Network;sandbox.GridfallPresentation={reduced:()=>true,shake:()=>false,accents:Object.fromEntries(Object.entries(sandbox.Gridfall.CLASSES).map(([id,c])=>[id,c.color])),drawOperator(){},drawFieldOperator(){},setLobbyOperator(){},terrainPreview(){},icon:()=>'<svg></svg>',weaponIcon:()=>'<svg></svg>',setOperator(){},reset(){},showPane(){}};
   for(const f of ['fate-ui.js','practice-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),sandbox,{filename:f});
   return{window:sandbox,document,$:id=>document.getElementById(id),frames(n=100){for(let i=0;i<n;i++){clock+=45;const frame=nextFrame;nextFrame=null;frame?.(clock);}},point(p){const s=sandbox.GRIDFALL_STATUS(),canvas=document.getElementById('arena');canvas.dispatchEvent({type:'pointerdown',button:0,pointerId:1,clientX:(p.x+.5-s.camera.x)/s.viewport.x*1280,clientY:(p.y+.5-s.camera.y)/s.viewport.y*720});}};
 }

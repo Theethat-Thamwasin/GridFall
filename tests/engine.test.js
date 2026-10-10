@@ -133,7 +133,7 @@ test('walking onto loot grants only its own resource next turn', () => {
 });
 test('auto pickup never takes adjacent items or consumes an AP', () => {
   const s = arena(), u = s.units[0]; s.tiles[u.y][u.x + 1].loot = { type: 'ammo', taken: true }; s.tiles[u.y + 1][u.x].loot = { type: 'shield', taken: false };
-  resolve(s, { 0: [{ type: 'move', path: [{ x: u.x + 1, y: u.y }] }, { type: 'guard' }] }); assert.equal(u.reserve, 60); assert.equal(u.shield, 0); assert.equal(s.tiles[u.y + 1][u.x - 1].loot.taken, false); assert.equal(u.guard, true);
+  resolve(s, { 0: [{ type: 'move', path: [{ x: u.x + 1, y: u.y }] }, { type: 'guard' }] }); assert.equal(u.reserve, 60); assert.equal(u.shield, 0); assert.equal(s.tiles[u.y + 1][u.x - 1].loot.taken, false); assert.equal(u.guard, false); assert.ok(s.events.some(e=>e.type==='guard'&&e.unitId===0));
 });
 test('a full inventory leaves loot on the ground, and an empty tile is harmless', () => {
   const s = arena(), u = s.units[0]; u.medkits = 3; s.tiles[u.y][u.x + 1].loot = { type: 'medkit', taken: false };

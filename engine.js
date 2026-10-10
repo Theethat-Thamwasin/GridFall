@@ -7,7 +7,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (F,V) {
   'use strict';
   const SIZE = 28;
-  const SKILLS = Object.freeze({ dashRange:5, blinkRange:5, mobilityCooldown:2, dashDodgeTicks:10, reflectShots:2, reflectDamage:.8 });
+  const SKILLS = Object.freeze({ dashRange:5, blinkRange:5, mobilityCooldown:2, dashDodgeTicks:39, scanRange:14, scanTurns:2, reflectShots:1, reflectDamage:1, reflectAbsorb:.8, mendHp:16, mendShield:12 });
   const TIMING = Object.freeze({ tickMs: 45 });
   const CLASH=Object.freeze({choiceMs:6000,revealMs:1500,damage:10});
   const THROW=Object.freeze({grenadeTicks:14,smokeTicks:10,skillTicks:10,smokeRadius:1});
@@ -48,7 +48,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     "skillType": "skillMove",
     "icon": "↗",
     "role": "BREACH / EVASION",
-    "description": "Dash up to 5 tiles along a clear path. Dodge bullets while dashing. Cooldown: 2 turns."
+    "description": "Dash up to 5 tiles along a clear path. Dodge every incoming bullet for the entire Dash action. Cooldown: 2 turns."
   },
   "volt": {
     "name": "WRAITH",
@@ -68,7 +68,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     "skillType": "scan",
     "icon": "⌖",
     "role": "RECON / PRECISION",
-    "description": "Vision: 12 tiles. Recoil reduced 65%. First bullet per Shoot gets +15 damage for 2 turns. Walls and smoke still block sight. Cooldown: 3 turns."
+    "description": "Scan enemies within 14 tiles through walls, Smoke and roofs for 2 turns. Recoil reduced 65%. First bullet per Shoot gets +15 damage. Cooldown: 3 turns."
   },
   "pyro": {
     "name": "CINDER",
@@ -88,12 +88,12 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     "skillType": "reflect",
     "icon": "◇",
     "role": "ANCHOR / COUNTER",
-    "description": "Gain 12 shield, up to your shield cap. Reflect 2 bullets at 80% damage this turn. Only bullets can be reflected. Void always eliminates you."
+    "description": "Gain 12 shield, up to your shield cap. Reflect every incoming bullet this turn at full damage. Absorb 80% of each hit; take the remaining 20%. Melee, blasts and Void are not reflected."
   }
 };
   Object.assign(CLASSES,{
     mire:{name:'MIRE',move:3,color:'#85e2bb',skill:'STASIS FIELD',skillType:'stasis',icon:'⌛',role:'CONTROL / SLOW',description:"Throw a 4×4 field within 5 tiles. Everyone inside can move only 1 tile per turn, shared across both actions. Lasts 3 turns. Affects you too. Cooldown: 4 turns."},
-    halo:{name:'HALO',move:3,color:'#ffd66e',skill:'MEND FIELD',skillType:'mend',icon:'✧',role:'SUPPORT / RECOVERY',description:"Throw a 3×3 field within 5 tiles. Restore 8 HP and 6 shield per turn to everyone inside. Lasts 2 turns. Cooldown: 4 turns."}
+    halo:{name:'HALO',move:3,color:'#ffd66e',skill:'MEND FIELD',skillType:'mend',icon:'✧',role:'SUPPORT / RECOVERY',description:"Throw a 3×3 field within 5 tiles. Restore 16 HP and 12 shield per turn inside. In Team Mode, heals your team only. Lasts 2 turns. Cooldown: 4 turns."}
   });
   const BIOMES={
     verdant:{name:'VERDANT',floor:'#566a61',grass:'#486c51',road:'#657570',forest:'#325444',water:'#4b8192',rubble:'#817c69'},
@@ -111,8 +111,11 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
   }
   function tile(s, x, y) { return Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < (s.width || s.size) && y < (s.height || s.size) ? s.tiles[y][x] : null; }
   function passable(s, x, y) { const t = tile(s, x, y); return t && !['wall', 'barricade', 'void'].includes(t.type); }
-  const sightRange=u=>Math.max(u.scan>0?12:9,WEAPONS[u.weapon]?.sight||0);
-  function visible(s,a,b,range=sightRange(a)){return b.id!==undefined&&b.id!==a.id?V.bodyExposure(s,a,b,range).visible:V.pointVisible(s,a,b,range);}
+  const sameTeam=(s,a,b)=>s.mode==='team'&&!!a&&!!b&&['A','B'].includes(a.team)&&a.team===b.team;
+  const opponents=(s,a,b)=>!!a&&!!b&&a.id!==b.id&&!sameTeam(s,a,b);
+  function matchOutcome(s){const alive=s.units.filter(u=>u.alive);if(s.mode==='team'){const teams=[...new Set(alive.map(u=>u.team))];if(teams.length>1)return false;s.winnerTeam=teams[0]||null;s.winner=alive[0]?.id??-1;}else{if(alive.length>1)return false;s.winner=alive[0]?.id??-1;}s.phase='ended';emit(s,'end',{winner:s.winner,winnerTeam:s.winnerTeam||null});return true;}
+  const sightRange=u=>Math.max(u.scan>0?SKILLS.scanRange:9,WEAPONS[u.weapon]?.sight||0);
+  function visible(s,a,b,range=sightRange(a)){return b.id!==undefined&&b.id!==a.id?(sameTeam(s,a,b)||V.bodyExposure(s,a,b,range).visible):V.pointVisible(s,a,b,range);}
   const terrainVisible=(s,a,b,range=9)=>V.pointVisible(s,a,b,range,false);
   function pathfind(s, from, to, budget = 3) {
     if (!passable(s, to.x, to.y)) return null;
@@ -262,6 +265,8 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     if (!Array.isArray(activeIds) || !activeIds.length || activeIds.length > 8 || new Set(activeIds).size !== activeIds.length || activeIds.some(id => !Number.isInteger(id) || id < 0 || id > 7)) throw new Error('Invalid active roster');
     mapId=normalizeMap(mapId);const rng=random(seed),map=MAPS[mapId],dimension=()=>map.min+4*Math.floor(rng()*((map.max-map.min)/4+1)),width=dimension(),height=dimension();
     const s = { seed, mapId, width, height, size: Math.max(width, height), initialLimit: Math.max(40, width + 8, height + 8), turn: 1, tick: 0, phase: 'planning', tiles: [], units: [], projectiles: [], smokes: [], canisters: [], grenades: [], fires: [], fields:[], events: [], plans: {}, schedule: [], canceled: new Set(), shots: 0, kills: 0, damage: 0, zoneCenter: { x: Math.floor(width / 2) + Math.floor(rng() * 3) - 1, y: Math.floor(height / 2) + Math.floor(rng() * 3) - 1 }, beacon: { x: Math.floor(width / 2), y: Math.floor(height / 2), cooldown: 0 }, winner: null };
+    s.mode=options.mode==='team'?'team':'ffa';s.winnerTeam=null;
+    const teamCounts={A:0,B:0};for(const id of activeIds){const team=options.teams?.[id]||(teamCounts.A<=teamCounts.B?'A':'B');if(s.mode==='team'&&(!['A','B'].includes(team)||++teamCounts[team]>4))throw new Error('Teams allow at most 4 operators per side');}
     s.safeLimit = s.nextLimit = s.initialLimit;
     if(mapId==='meadow')generateMeadow(s,rng);else generatePlatforms(s, rng);
     s.initialLimit=Math.max(s.initialLimit,Math.max(...s.tiles.flat().filter(t=>t.type!=='void').map(t=>t.rank))+1);s.safeLimit=s.nextLimit=s.initialLimit;
@@ -285,6 +290,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
       if (passable(s, x, y) && t.type !== 'water' && !t.loot && !s.units.some(u => u.x === x && u.y === y)) { t.loot = { type, taken: false }; break; }
     }
     s.maxZoneRank = Math.max(...s.tiles.flat().filter(t=>t.type!=='void').map(t => t.rank));
+    if(s.mode==='team'){const counts={A:0,B:0};for(const id of activeIds){const u=s.units[id];u.team=options.teams?.[id]||(counts.A<=counts.B?'A':'B');counts[u.team]++;}const points=activeIds.map(id=>({x:s.units[id].x,y:s.units[id].y})).sort((a,b)=>a.x-b.x||a.y-b.y);const ids=[...activeIds.filter(id=>s.units[id].team==='A'),...activeIds.filter(id=>s.units[id].team==='B')];ids.forEach((id,i)=>Object.assign(s.units[id],points[i]));}
     F.init(s);
     return s;
   }
@@ -337,7 +343,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
   }
   function observation(s, unit) {
     const range = sightRange(unit);
-    const seen=[];for(const u of s.units)if(u.alive&&u.id!==unit.id){const sight=V.bodyExposure(s,unit,u,range);if(sight.visible||u.fateRevealTurn===s.turn&&!V.sheltered(s,u))seen.push({id:u.id,name:u.name,x:u.x,y:u.y,hp:sight.visible?u.hp:null,shield:sight.visible?u.shield:null,aim:sight.point});}
+    const seen=[];for(const u of s.units)if(u.alive&&opponents(s,unit,u)){const sight=V.bodyExposure(s,unit,u,range);if(sight.visible||u.fateRevealTurn===s.turn&&!V.sheltered(s,u))seen.push({id:u.id,name:u.name,x:u.x,y:u.y,hp:sight.visible?u.hp:null,shield:sight.visible?u.shield:null,aim:sight.point});}
     for (const enemy of seen) unit.memory[enemy.id] = { ...enemy, turn: s.turn };
     return { self: { ...unit, memory: { ...unit.memory } }, enemies: seen, lastSeen: Object.values(unit.memory).filter(m => s.turn - m.turn <= 3), loot: s.tiles.flatMap((row, y) => row.flatMap((t, x) => t.loot && !t.loot.taken && visible(s, unit, { x, y }, range) ? [{ x, y, ...t.loot }] : [])), safeLimit: s.safeLimit, nextLimit: s.nextLimit, turn: s.turn };
   }
@@ -480,7 +486,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
   }
   function moveActor(s,m) {
     const u=s.units[m.unitId],from={x:u.x,y:u.y};if(u.stasisTurn===s.turn||inField(s,from,'stasis')||inField(s,m.target,'stasis')){u.stasisTurn=s.turn;u.stasisSteps=(u.stasisSteps||0)+1;}u.facing=Math.atan2(m.target.y-u.y,m.target.x-u.x);u.x=m.target.x;u.y=m.target.y;u.moved=true;
-    if(m.dodge)u.dodgeUntil=s.tick+SKILLS.dashDodgeTicks;
+    if(m.dodge)u.dodgeUntil=Math.floor(s.tick/40)*40+39;
     emit(s,m.type==='blink'?'blink':'move',{unitId:u.id,from,x:u.x,y:u.y});pickupAt(s,u);
   }
   function settleClash(s, auto=false) {
@@ -539,6 +545,11 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
       if(a.target.x===b.target.x&&a.target.y===b.target.y || a.target.x===ub.x&&a.target.y===ub.y&&b.target.x===ua.x&&b.target.y===ua.y){pair=[a.unitId,b.unitId];target={...a.target};break;}
     }
     if(!pair)for(const m of legal){const occupant=s.units.find(u=>u.alive&&u.id!==m.unitId&&u.x===m.target.x&&u.y===m.target.y);if(occupant&&!legal.some(n=>n.unitId===occupant.id)){pair=[m.unitId,occupant.id];target={...m.target};break;}}
+    if(pair&&sameTeam(s,s.units[pair[0]],s.units[pair[1]])){
+      const moves=legal.filter(m=>pair.includes(m.unitId));const a=s.units[pair[0]],b=s.units[pair[1]];
+      if(moves.length===2&&moves[0].target.x===b.x&&moves[0].target.y===b.y&&moves[1].target.x===a.x&&moves[1].target.y===a.y){for(const m of moves)moveActor(s,m);}else for(const m of moves){s.canceled.add(m.actionId);emit(s,'blocked',{unitId:m.unitId,x:s.units[m.unitId].x,y:s.units[m.unitId].y,reason:'teammate'});}
+      return resolveMoves(s,legal.filter(m=>!pair.includes(m.unitId)));
+    }
     if(pair){
       const occupied=s.units.find(u=>u.alive&&u.x===target.x&&u.y===target.y&&!pair.includes(u.id));if(occupied)pair=[pair[0],occupied.id];
       s._tickMoves=legal;s.clash={id:++s.clashSerial,ids:pair,target,intents:legal.filter(m=>pair.includes(m.unitId)),choices:{},round:1};s.phase='clash';
@@ -573,7 +584,6 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     if (s.phase !== 'resolution') return [];
     const eventStart = s.events.length, pending = [], terrainDamage = new Map(), at = s.schedule.filter(e => e.at === s.tick && s.units[e.unitId].alive && !s.canceled.has(e.actionId));
     if(s._tickEventStart==null)s._tickEventStart=eventStart;
-    if (s.tick === 40) s.units.forEach(u => { u.guard = false; });
     if (!s._tickMoves) {
       const moves=at.filter(e=>e.type==='move'||e.type==='blink').map(e=>e.delta?{...e,target:{x:s.units[e.unitId].x+e.delta.x,y:s.units[e.unitId].y+e.delta.y}}:e);
       s._tickMoves=moves.filter(m=>{const u=s.units[m.unitId];if(m.type==='blink'){if(u.skillCooldown>0||!visible(s,u,m.target,SKILLS.blinkRange))return false;u.skillCooldown=SKILLS.mobilityCooldown+1;}return true;});
@@ -581,8 +591,8 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     if (!resolveMoves(s,s._tickMoves)) return s.events.slice(eventStart);
     for (const e of at.filter(e => e.type !== 'move' && e.type !== 'blink')) {
       const u = s.units[e.unitId];
-      if (e.type === 'skillCost') { if (u.skillCooldown > 0) s.canceled.add(e.actionId); else u.skillCooldown = SKILLS.mobilityCooldown + 1; }
-      if (e.type === 'scan' && u.skillCooldown === 0) { u.scan = 3; u.skillCooldown = 4; emit(s, 'scan', { unitId: u.id, x: u.x, y: u.y }); }
+      if (e.type === 'skillCost') { if (u.skillCooldown > 0) s.canceled.add(e.actionId); else { u.skillCooldown = SKILLS.mobilityCooldown + 1; u.dodgeUntil=s.tick+SKILLS.dashDodgeTicks; } }
+      if (e.type === 'scan' && u.skillCooldown === 0) { u.scan = SKILLS.scanTurns; u.skillCooldown = 4; emit(s, 'scan', { unitId: u.id, x: u.x, y: u.y }); }
       if (e.type === 'reflect' && u.class === 'rook' && u.skillCooldown === 0) {
         u.skillCooldown = 5; u.shield = Math.min(F.stats(u).shield, u.shield + 12); u.reflectTurn = s.turn; u.reflectCharges = SKILLS.reflectShots;
         emit(s, 'reflectReady', { unitId: u.id, x: u.x, y: u.y });
@@ -613,7 +623,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
           const delta = Math.atan2(Math.sin(Math.atan2(y - u.y, x - u.x) - e.angle), Math.cos(Math.atan2(y - u.y, x - u.x) - e.angle));
           if (Math.abs(delta) <= Math.PI / 3 + .0001) terrainDamage.set(key(x, y), (terrainDamage.get(key(x, y)) || 0) + 45);
         }
-        for (const victim of s.units) if (victim.alive && victim.id !== u.id && distance(u, victim) <= 1.5 && terrainVisible(s, u, victim, 1.5)) {
+        for (const victim of s.units) if (victim.alive && opponents(s,u,victim) && distance(u, victim) <= 1.5 && terrainVisible(s, u, victim, 1.5)) {
           if (victim.x !== u.x && victim.y !== u.y && (!passable(s, victim.x, u.y) || !passable(s, u.x, victim.y))) continue;
           const direction = Math.atan2(victim.y - u.y, victim.x - u.x), delta = Math.atan2(Math.sin(direction - e.angle), Math.cos(direction - e.angle));
           if (Math.abs(delta) <= Math.PI / 3 + .0001){pending.push({target:victim.id,owner:u.id,damage:Math.min(70,F.stats(u).melee+(u.hp<45?(F.stats(u).lowMelee||0):0)),melee:true,origin:{x:u.x,y:u.y}});if(!u.fateOnce.slash){u.fateOnce.slash=true;u.shield=Math.min(F.stats(u).shield,u.shield+F.stats(u).slashShield);}}
@@ -624,11 +634,11 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
 
     }
     for(const c of s.canisters||[])if(c.land===s.tick){
-      if(c.item==='firebomb'){const b=skillArea(c.item,c);for(const u of s.units)if(u.alive&&inArea(u,b)&&passable(s,u.x,u.y)&&tile(s,u.x,u.y).type!=='water'&&!(u.burn?.remainingTicks>0))u.burn={owner:c.owner,remainingTicks:4,expires:s.turn+2,appliedTurn:s.turn,appliedTick:s.tick,pulseTurn:s.turn,pulses:0};emit(s,'firebomb',{unitId:c.owner,x:c.x,y:c.y,width:b.width,height:b.height});}
+      if(c.item==='firebomb'){const b=skillArea(c.item,c);for(const u of s.units)if(u.alive&&(u.id===c.owner||!sameTeam(s,s.units[c.owner],u))&&inArea(u,b)&&passable(s,u.x,u.y)&&tile(s,u.x,u.y).type!=='water'&&!(u.burn?.remainingTicks>0))u.burn={owner:c.owner,remainingTicks:4,expires:s.turn+2,appliedTurn:s.turn,appliedTick:s.tick,pulseTurn:s.turn,pulses:0};emit(s,'firebomb',{unitId:c.owner,x:c.x,y:c.y,width:b.width,height:b.height});}
       else if(c.item==='stasis'||c.item==='mend'){s.fields=s.fields||[];const shape=SKILL_AREAS[c.item];s.fields.push({kind:c.item,x:c.x,y:c.y,width:shape.width,height:shape.height,owner:c.owner,expires:s.turn+shape.turns});emit(s,'fieldDeploy',{unitId:c.owner,kind:c.item,x:c.x,y:c.y,width:shape.width,height:shape.height});}
       else{s.smokes.push({x:c.x,y:c.y,expires:s.turn+2,born:s.tick,bornTurn:s.turn});emit(s,'smoke',{unitId:c.owner,x:c.x,y:c.y});}
     }
-    for(const f of s.fields||[])if(f.kind==='mend'&&f.expires>s.turn&&s.tick>=20&&f.pulseTurn!==s.turn){f.pulseTurn=s.turn;for(const u of s.units)if(u.alive&&inArea(u,areaBounds(f))&&u.mendPulseTurn!==s.turn){u.mendPulseTurn=s.turn;const hp=u.hp,shield=u.shield;u.hp=Math.min(F.stats(u).maxHp,u.hp+8);u.shield=Math.min(F.stats(u).shield,u.shield+6);emit(s,'fieldPulse',{unitId:u.id,x:u.x,y:u.y,amount:u.hp-hp,shield:u.shield-shield});}}
+    for(const f of s.fields||[])if(f.kind==='mend'&&f.expires>s.turn&&s.tick>=20&&f.pulseTurn!==s.turn){f.pulseTurn=s.turn;for(const u of s.units)if(u.alive&&(s.mode!=='team'||sameTeam(s,s.units[f.owner],u))&&inArea(u,areaBounds(f))&&u.mendPulseTurn!==s.turn){u.mendPulseTurn=s.turn;const hp=u.hp,shield=u.shield;u.hp=Math.min(F.stats(u).maxHp,u.hp+SKILLS.mendHp);u.shield=Math.min(F.stats(u).shield,u.shield+SKILLS.mendShield);emit(s,'fieldPulse',{unitId:u.id,x:u.x,y:u.y,amount:u.hp-hp,shield:u.shield-shield});}}
     s.canisters=(s.canisters||[]).filter(c=>c.land>s.tick);
     for(const u of s.units)if(u.alive&&u.burn){
       const burn=u.burn;if(burn.expires<=s.turn||burn.remainingTicks<=0){delete u.burn;continue;}
@@ -653,10 +663,15 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
         if (!t) { hit = true; break; }
         const wall = segmentWall(s, previousX, previousY, b.x, b.y);
         if (wall) { terrainDamage.set(key(wall.x, wall.y), (terrainDamage.get(key(wall.x, wall.y)) || 0) + b.damage); emit(s, 'impact', { x: wall.x, y: wall.y }); hit = true; break; }
-        const victim = s.units.find(u => u.alive && u.id !== b.owner && segmentHitsCircle(previousX, previousY, b.x, b.y, u.x + .5, u.y + .5));
+        const victim = s.units.find(u => u.alive && opponents(s,s.units[b.owner],u) && segmentHitsCircle(previousX, previousY, b.x, b.y, u.x + .5, u.y + .5));
         if (victim) {
-          if (victim.reflectTurn === s.turn && victim.reflectCharges > 0) {
-            victim.reflectCharges--; b.owner = victim.id; b.dx = -b.dx; b.dy = -b.dy;
+          if (victim.dodgeUntil >= s.tick) { emit(s,'dodge',{unitId:victim.id,x,y});hit=true;break; }
+          if (victim.reflectTurn === s.turn && victim.reflectCharges > 0 && !b.reflections?.includes(victim.id)) {
+            const incomingOwner=b.owner;const incoming=((b.weapon==='shotgun'&&b.damage===48?(b.traveled<=2.5?48:b.traveled<=3.5?32:16):b.damage)+(b.precision||0))*(b.multiplier||1);
+            let absorbedDamage=incoming*(1-SKILLS.reflectAbsorb);
+            if(b.shotId){const k=b.shotId+':'+victim.id,previous=s.shotgunHits[k]||0;absorbedDamage=Math.max(0,absorbedDamage-previous);s.shotgunHits[k]=Math.max(previous,incoming*(1-SKILLS.reflectAbsorb));}
+            if(absorbedDamage>0)pending.push({target:victim.id,owner:incomingOwner,damage:absorbedDamage,origin:{x:victim.x-b.dx*2,y:victim.y-b.dy*2}});
+            b.reflections=[...(b.reflections||[]),victim.id];b.owner = victim.id; b.dx = -b.dx; b.dy = -b.dy;
             if (b.weapon === 'shotgun' && b.damage === 48) b.damage = b.traveled <= 2.5 ? 48 : b.traveled <= 3.5 ? 32 : 16;
             b.damage=(b.damage+(b.precision||0))*SKILLS.reflectDamage;delete b.precision;
             b.weapon = 'reflected'; b.left = Math.max(.2, b.traveled); b.traveled = 0; b.shotId = null; b.born = s.tick;
@@ -682,6 +697,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     for (const p of pending) {
       if (!totals.has(p.target)) totals.set(p.target, { damage: 0, heal: 0, sources: [] });
       const total = totals.get(p.target), u = s.units[p.target];
+      if(!p.heal&&p.owner!==u.id&&sameTeam(s,s.units[p.owner],u))continue;
       if (p.heal) { total.heal += p.heal; continue; }
       const t = tile(s, u.x, u.y);
       const cover = !p.burn && !p.blast && !p.melee && t.type === 'cover' && ((t.side === 'north' && p.origin.y < u.y) || (t.side === 'west' && p.origin.x < u.x));
@@ -719,6 +735,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     F.endTurn(s);
     if(!s.practice)collapsePlatforms(s);
     for (const u of s.units) {
+      u.guard = false;
       if (!u.alive) continue;
       if (u.skillCooldown > 0) u.skillCooldown--;
       if (u.scan > 0) u.scan--;
@@ -731,7 +748,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     s.fields=(s.fields||[]).filter(f=>f.expires>s.turn+1&&passable(s,f.x,f.y));
     if(s.practice){s.turn++;s.phase='planning';for(const u of s.units)if(u.alive)releasePickups(s,u);return;}
     const survivors = s.units.filter(u => u.alive);
-    if (survivors.length <= 1) { s.phase = 'ended'; s.winner = survivors.length ? survivors[0].id : -1; emit(s, 'end', { winner: s.winner }); return; }
+    if (matchOutcome(s)) return;
     s.turn++; s.phase = 'planning';
     for (const u of s.units) if (u.alive) releasePickups(s, u);
     // Advance a public two-turn warning contour. The final patch shrinks to one tile.
@@ -739,7 +756,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     const limitFor = turn => zoneLimit(s,turn);
     s.safeLimit = limitFor(s.turn - 2); s.nextLimit = limitFor(s.turn);
     collapsePlatforms(s);
-    const remaining=s.units.filter(u=>u.alive);if(remaining.length<=1){s.phase='ended';s.winner=remaining.length?remaining[0].id:-1;emit(s,'end',{winner:s.winner});return;}
+    const remaining=s.units.filter(u=>u.alive);if(matchOutcome(s))return;
     if (s.turn % 5 === 0) dropSupply(s);
     if (s.nextLimit < s.safeLimit) emit(s, 'zoneWarning', { limit: s.nextLimit });
   }
@@ -755,5 +772,5 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     if (count) { s.terrainVersion = (s.terrainVersion || 0) + 1; emit(s, 'supplyDrop', { count, turn: s.turn }); }
     return count;
   }
-  return { SKILL_AREAS, areaBounds, skillArea, inArea, recoilSpread, sightRange, flightPose, effectVisible, platformRounds, zoneLimit, BIOMES, inField, observedFields, slowBudget, movementForecast, CLASH, THROW, VISION:V, terrainVisible, CARDINAL, RPS, validateRoute, chooseClash, settleClash, clashWinner, SIZE, SKILLS, TIMING, MAPS, LOOT, WEAPONS, CLASSES, key, distance, cheb, random, line, tile, passable, visible, pathfind, canCollect, equipWeapon, nearbyLoot, segmentHitsCircle, segmentWall, moveRange, weaponStats, normalizeEquipment, normalizeMap, FATE:F, createState, observation, planBot, beginTurn, resolveMoves, step, finishTurn, dropSupply };
+  return { sameTeam, opponents, matchOutcome, SKILL_AREAS, areaBounds, skillArea, inArea, recoilSpread, sightRange, flightPose, effectVisible, platformRounds, zoneLimit, BIOMES, inField, observedFields, slowBudget, movementForecast, CLASH, THROW, VISION:V, terrainVisible, CARDINAL, RPS, validateRoute, chooseClash, settleClash, clashWinner, SIZE, SKILLS, TIMING, MAPS, LOOT, WEAPONS, CLASSES, key, distance, cheb, random, line, tile, passable, visible, pathfind, canCollect, equipWeapon, nearbyLoot, segmentHitsCircle, segmentWall, moveRange, weaponStats, normalizeEquipment, normalizeMap, FATE:F, createState, observation, planBot, beginTurn, resolveMoves, step, finishTurn, dropSupply };
 });

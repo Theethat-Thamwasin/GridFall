@@ -24,7 +24,7 @@ test('normal movement cannot cross Void while phase shift can land beyond a visi
 test('oracle focus reduces actual shot recoil by 65 percent and consumes an action',()=>{
  const shoot=focused=>{const s=open('deadeye');s.units[0].scan=focused?2:0;G.beginTurn(s,{0:[{type:'shoot',angle:.071}]});let shot;for(let i=0;i<20;i++){const events=G.step(s);shot=shot||events.find(e=>e.type==='shoot'&&e.unitId===0);}return shot;};
  assert.ok(Math.abs(shoot(true).recoil-shoot(false).recoil*.35)<1e-12);
- const s=open('deadeye');resolve(s,{0:[{type:'scan'}]});assert.equal(s.units[0].scan,2);assert.equal(s.units[0].skillCooldown,3);assert.equal(U.availability(s,0,'scan').code,'cooldown');
+ const s=open('deadeye');resolve(s,{0:[{type:'scan'}]});assert.equal(s.units[0].scan,1);assert.equal(s.units[0].skillCooldown,3);assert.equal(U.availability(s,0,'scan').code,'cooldown');
  const names=Object.values(G.CLASSES).map(c=>c.name);assert.deepEqual(names,['STRIDER','WRAITH','ORACLE','CINDER','AEGIS','MIRE','HALO']);assert.equal(G.CLASSES.vanguard.move,4);assert.ok(Object.entries(G.CLASSES).filter(([id])=>id!=='vanguard').every(([,c])=>c.move===3));
 });
 test('public platform losses preserve hidden enemy and inventory filtering and replay history',()=>{

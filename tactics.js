@@ -27,7 +27,7 @@
     const movement=(forecast||project(s,id,plan)).movement;
     const normal=G.CLASSES[s.units[id].class].move+Math.round(G.FATE.stats(s.units[id]).move);
     if(moves.includes(type))return Math.min(movement.remaining,type==='move'?Math.max(1,Math.min(5,normal)):type==='skillMove'?G.SKILLS.dashRange:G.SKILLS.blinkRange);
-    return { move: G.moveRange(s,s.units[id]), skillMove: G.SKILLS.dashRange, blink: G.SKILLS.blinkRange, shoot: G.WEAPONS[s.units[id].weapon].range, slash: 1.5, grenade: 6, smoke: 5, scan: 12, firebomb: 5, stasis:5, mend:5 }[type] || 0;
+    return { move: G.moveRange(s,s.units[id]), skillMove: G.SKILLS.dashRange, blink: G.SKILLS.blinkRange, shoot: G.WEAPONS[s.units[id].weapon].range, slash: 1.5, grenade: 6, smoke: 5, scan: G.SKILLS.scanRange, firebomb: 5, stasis:5, mend:5 }[type] || 0;
   }
   function availability(s, id, type, plan = []) {
     const u = s.units[id], p = project(s, id, plan), w = G.weaponStats(u);
@@ -110,13 +110,12 @@
       if(['stasis','mend'].includes(type)&&!G.passable(s,p.x,p.y))return no('solid',"Choose a tile with a platform");
       const radius=type==='grenade'?G.FATE.stats(s.units[id]).radius:1,diameter=radius*2+1,selfHit=type==='firebomb'?G.inArea(origin,G.skillArea(type,p)):type==='grenade'&&G.cheb(origin,p)<=radius;
       if(selfHit) warnings.push(type==='firebomb'?"Fire will hit you too.":"Grenade "+diameter+'×'+diameter+" hits you too");
-      const note=type==='stasis'?"4×4 area · Movement: 1 tile per turn · Lasts 3 turns · Affects everyone":type==='mend'?"3×3 area · Restore 8 HP and 6 shield per turn · Affects everyone":type==='firebomb'?"Molly 3×4 · Burn: 12 damage twice per turn for 2 turns, even after leaving the area":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
+      const note=type==='stasis'?"4×4 area · Movement: 1 tile per turn · Lasts 3 turns · Affects everyone":type==='mend'?"3×3 area · Restore 16 HP and 12 shield per turn · Heals allies in Team Mode":type==='firebomb'?"Molly 3×4 · Burn: 12 damage twice per turn for 2 turns, even after leaving the area":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
       return {ok:true,kind:selfHit?'risky':seen?'valid':'unknown',code:selfHit?'selfBlast':'inRange',reason:[note,...warnings,...(!seen?["Not visible · Target unknown."]:[])].join(' · '),seen,warnings};
     }
     if(type==='scan') {
-      if(G.distance(origin,p)>range) return no('range',"Scan range: 12");
-      if(!G.visible(s,origin,p,range))return no('sight',"Scan cannot see through walls or smoke.");
-      return {ok:true,kind:seen?'valid':'unknown',reason:"Scan increases vision to 12. Enemies remain hidden until used.",seen};
+      if(G.distance(origin,p)>range) return no('range',"Scan range: "+G.SKILLS.scanRange);
+      return {ok:true,kind:seen?'valid':'unknown',reason:"Scan reveals operators within 14 tiles through walls, Smoke and roofs for 2 turns.",seen};
     }
     return {ok:true,kind:'valid',reason:"Ready · 1 AP",seen};
   }
@@ -137,7 +136,7 @@
       const wall=G.segmentWall(s,previous.x,previous.y,p.x,p.y);
       if(wall&&visible.has(G.key(wall.x,wall.y)))return {kind:'wall',point:p,cell:wall,distance:d,reason:G.tile(s,wall.x,wall.y).type==='barricade'?"Barricade blocks bullets · Can be destroyed.":"Wall blocks bullets · Can be destroyed."};
       if(!visible.has(G.key(cell.x,cell.y))&&!(c.sight&&G.VISION.contains(c.sight,p)))return {kind:'unknown',point:p,cell,distance:d,reason:"Aim enters fog · Obstacles unknown."};
-      const victim=s.units.find(u=>u.alive&&!u.hidden&&!G.VISION.concealed(s,origin,u)&&u.id!==id&&(visible.has(G.key(u.x,u.y))||c.sight&&G.VISION.bodyInField(c.sight,u))&&G.segmentHitsCircle(previous.x,previous.y,p.x,p.y,u.x+.5,u.y+.5));
+      const victim=s.units.find(u=>u.alive&&!u.hidden&&!G.VISION.concealed(s,{...s.units[id],...origin},u)&&G.opponents(s,s.units[id],u)&&(visible.has(G.key(u.x,u.y))||G.visible(s,s.units[id],u)||c.sight&&G.VISION.bodyInField(c.sight,u))&&G.segmentHitsCircle(previous.x,previous.y,p.x,p.y,u.x+.5,u.y+.5));
       if(victim)return {kind:'unit',point:p,cell:{x:victim.x,y:victim.y},distance:d,reason:"Occupied by "+victim.name+" now · Target may move."};
       previous=p;
     }
