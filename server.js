@@ -53,9 +53,17 @@ function createServer(options = {}) {
     }
     let filename;try{filename=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));}catch{res.writeHead(400).end('Bad request');return;}
     if (!publicFiles.has(filename)) { res.writeHead(404).end('Not found'); return; }
-    fs.readFile(path.join(root, filename), (error, data) => {
+    const filePath=path.join(root,filename),extension=path.extname(filename);
+    fs.stat(filePath,(error,stat)=>{
+      if(error||!stat.isFile()){res.writeHead(404).end('Not found');return;}
+      // Revalidate every reuse so new deployments never reuse stale game rules.
+      const etag='W/"'+stat.size.toString(16)+'-'+stat.mtimeMs.toString(16)+'-'+stat.ctimeMs.toString(16)+'"',cacheHeaders={'Cache-Control':'public, no-cache',ETag:etag,'Last-Modified':stat.mtime.toUTCString()};
+      const matches=req.headers['if-none-match']?.split(',').some(value=>value.trim()==='*'||value.trim().replace(/^W\//,'')===etag.replace(/^W\//,''));
+      if((req.method==='GET'||req.method==='HEAD')&&!req.headers.range&&matches){res.writeHead(304,cacheHeaders).end();return;}
+      if(req.method==='HEAD'&&!req.headers.range){res.writeHead(200,{...cacheHeaders,'Content-Type':types[extension],'Content-Length':stat.size,...(extension==='.mp4'?{'Accept-Ranges':'bytes'}:{})}).end();return;}
+    fs.readFile(filePath, (error, data) => {
       if (error) { res.writeHead(404).end('Not found'); return; }
-      const media=path.extname(filename)==='.mp4',headers={ 'Content-Type': types[path.extname(filename)], 'Cache-Control': 'no-store', 'Content-Length':data.length };
+      const media=extension==='.mp4',headers={ ...cacheHeaders,'Content-Type': types[extension], 'Content-Length':data.length };
       if(media)headers['Accept-Ranges']='bytes';
       if(media&&req.headers.range){
         const match=/^bytes=(\d*)-(\d*)$/.exec(req.headers.range),size=data.length;
@@ -66,6 +74,7 @@ function createServer(options = {}) {
         res.writeHead(206,headers);res.end(req.method==='HEAD'?undefined:data.subarray(start,end+1));return;
       }
       res.writeHead(200,headers);res.end(req.method==='HEAD'?undefined:data);
+    });
     });
   });
   const sockets = new WebSocketServer({ noServer: true, maxPayload: 8192, perMessageDeflate: { threshold: 1024, serverNoContextTakeover: true, clientNoContextTakeover: true, concurrencyLimit: 4, zlibDeflateOptions: { level: 3 } } });

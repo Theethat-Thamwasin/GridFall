@@ -1,6 +1,15 @@
 const crypto = require('node:crypto');
 const G = require('./engine.js'), R = require('./replay.js');
 const clone = value => structuredClone(value);
+// Terrain is published as immutable snapshots; compare values before copying.
+function sameTerrainValue(a,b,ignoreLoot=false){
+  if(a===b)return true;
+  if(!a||!b||typeof a!=='object'||typeof b!=='object')return false;
+  const keys=Object.keys(a),other=Object.keys(b);
+  if(keys.length!==other.length)return false;
+  for(const key of keys){if(ignoreLoot&&key==='loot')continue;if(!Object.hasOwn(b,key)||!sameTerrainValue(a[key],b[key]))return false;}
+  return true;
+}
 const fail = message => { throw Object.assign(new Error(message), { status: 400 }); };
 function validatePlan(s, id, input) {
   const u = s.units[id], w = G.weaponStats(u);
@@ -120,17 +129,18 @@ class RoomHub {
     for (const id of this.botIds(room)) Object.assign(s.units[id],{name:'BOT '+(id+1),class:operators[crypto.randomInt(operators.length)]});
     for (const m of room.members) Object.assign(s.units[m.id], { name: m.name, class: m.class });
     for (const u of s.units) u.stats = { kills: 0, shots: 0, damage: 0 };
-    s.humanIds=room.members.map(m=>m.id); room.state = s; room.baseTerrain = clone(s.tiles).map(row => row.map(t => ({ ...t, loot: null }))); room.knowledge = new Map(); room.archive = new R.MatchArchive(); this.planning(room); this.broadcastState(room, [], true);
+    s.humanIds=room.members.map(m=>m.id); room.state = s; room.baseTerrain = clone(s.tiles).map(row => row.map(t => ({ ...t, loot: null }))); room.knowledge = new Map(); room.terrainViews=new Map(); room.archive = new R.MatchArchive(); this.planning(room); this.broadcastState(room, [], true);
   }
   planning(room) {
+    const botsOnly=!this.participants(room).some(m=>room.state.units[m.id]?.alive);
     if(G.FATE.open(room.state)){
-      room.stage='draft';room.locked={};room.deadline=this.now()+G.FATE.DRAFT_MS;
+      room.stage='draft';room.locked={};room.deadline=this.now()+(botsOnly?0:G.FATE.DRAFT_MS);
       for(const u of room.state.units)if(u.alive&&!this.participants(room).some(m=>m.id===u.id)){try{G.FATE.pick(room.state,u.id,G.FATE.botPick(room.state,u.id));}catch{}}
       return;
     }
     room.state.phase='planning';room.stage = 'planning'; room.locked = {}; room.botPlans = {};
     for (const u of room.state.units) if (u.alive && !this.participants(room).some(m => m.id === u.id)) room.botPlans[u.id] = G.planBot(room.state, u.id);
-    room.deadline = this.now() + (this.planningMs ?? room.options.planningSeconds * 1000);
+    room.deadline = this.now() + (botsOnly?0:(this.planningMs ?? room.options.planningSeconds * 1000));
   }
   command(code, token, message = {}) {
     const { room, member } = this.get(code, token), s = room.state;
@@ -165,7 +175,14 @@ class RoomHub {
     const visibility=G.VISION.field(s,observer,G.sightRange(observer)),lit=G.VISION.litCells(s,observer,visibility,visible);visibility.points=visibility.points.map(p=>({x:Math.round(p.x*1e5)/1e5,y:Math.round(p.y*1e5)/1e5}));
     const seen = p => visible.has(G.key(Math.floor(p.x), Math.floor(p.y)));
     let knowledge = room.knowledge.get(member.id); if (!knowledge) { knowledge = clone(room.baseTerrain); room.knowledge.set(member.id, knowledge); }
-    const tiles = s.tiles.map((row, y) => row.map((t, x) => { if (lit.has(G.key(x, y))) knowledge[y][x] = {...clone(t),loot:null}; return { ...knowledge[y][x], rank: t.rank, ...(t.rank>s.safeLimit?{type:'void',hp:0,fellTurn:t.fellTurn}:{}), loot: t.rank<=s.safeLimit&&visible.has(G.key(x, y)) ? clone(t.loot) : null }; }));
+    for(const key of lit){const [x,y]=key.split(',').map(Number),terrain=s.tiles[y]?.[x];if(terrain&&!sameTerrainValue(terrain,knowledge[y][x],true))knowledge[y][x]={...clone(terrain),loot:null};}
+    room.terrainViews??=new Map();const prior=room.terrainViews.get(member.id),cache=prior?.state===s?prior:null;
+    const sources=[],tiles=Object.freeze(s.tiles.map((row,y)=>{sources[y]=[];return Object.freeze(row.map((t,x)=>{
+      const known=knowledge[y][x],previous=cache?.tiles[y]?.[x],collapsed=t.rank>s.safeLimit,loot=!collapsed&&visible.has(G.key(x,y))?t.loot:null;sources[y][x]=known;
+      if(previous&&cache.sources[y][x]===known&&previous.rank===t.rank&&collapsed===(previous.rank>cache.safeLimit)&&(!collapsed||previous.fellTurn===t.fellTurn)&&sameTerrainValue(previous.loot,loot))return previous;
+      const safeLoot=loot?Object.freeze(clone(loot)):null;
+      return Object.freeze({...known,rank:t.rank,...(collapsed?{type:'void',hp:0,fellTurn:t.fellTurn}:{}),loot:safeLoot});
+    }));}));room.terrainViews.set(member.id,{state:s,sources,tiles,safeLimit:s.safeLimit});
     const units = s.units.map(u => u.id === member.id ? {...clone(u),...(u.burn?{burn:{remainingTicks:u.burn.remainingTicks}}:{})} : u.alive && G.visible(s,observer,u,G.sightRange(observer)) ? { id: u.id, name: u.name, class: u.class, team:u.team, scan:u.scan, facing:u.facing,weapon:u.weapon,x: u.x, y: u.y, hp: u.hp, shield: u.shield, alive: true, guard: u.guard, reflectTurn: u.reflectTurn, reflectCharges: u.reflectCharges, ...(u.burn?.remainingTicks>0?{burn:{remainingTicks:u.burn.remainingTicks}}:{}), memory: {} } : { id: u.id, name: u.name, class: u.class, team:u.team, x: -100, y: -100, hp: 0, shield: 0, alive: false, hidden: true, removed: !!u.removed, memory: {} });
     const safeEvents = [];
     for (const e of events) {
@@ -189,9 +206,10 @@ class RoomHub {
   broadcastState(room, events = [], init = false) { room.seq++; for (const m of room.members) this.sendState(room, m, events, init); }
   advance(room) {
     if (!room.state || room.stage === 'ended') return;
-    if(room.stage==='draft'){if(this.now()>=room.deadline){this.finishDraft(room);this.broadcastState(room);}return;}
-    if(room.stage==='draftReveal'){if(this.now()>=room.deadline){this.planning(room);this.broadcastState(room);}return;}
-    if (room.stage === 'planning') { if (this.now() >= room.deadline) this.begin(room); return; }
+    const botsOnly=!this.participants(room).some(m=>room.state.units[m.id]?.alive);
+    if(room.stage==='draft'){if(botsOnly||this.now()>=room.deadline){this.finishDraft(room);this.broadcastState(room);}return;}
+    if(room.stage==='draftReveal'){if(botsOnly||this.now()>=room.deadline){this.planning(room);this.broadcastState(room);}return;}
+    if (room.stage === 'planning') { if (botsOnly||this.now() >= room.deadline) this.begin(room); return; }
     if(room.stage==='clash'){
       const before=room.state.events.length, c=room.state.clash;
       const outcome=G.settleClash(room.state,this.now()>=room.deadline);
@@ -211,6 +229,7 @@ class RoomHub {
   recordCombat(room,events){for (const e of events) { if (e.type === 'shoot') room.state.units[e.unitId].stats.shots++; if (e.type === 'damage' && e.owner != null && e.owner !== e.unitId) room.state.units[e.owner].stats.damage += e.amount; if (e.type === 'eliminated' && e.owner != null && e.owner !== e.unitId) room.state.units[e.owner].stats.kills++; }}
   finishDraft(room){
     const summary=G.FATE.settle(room.state);G.normalizeEquipment(room.state);room.stage='draftReveal';room.deadline=this.now()+2000;
+    if(!this.participants(room).some(m=>room.state.units[m.id]?.alive))room.deadline=this.now();
     room.pendingEvents=[{type:'fateAccepted',turn:room.state.turn,tick:0,summary}];
     room.archive.draftHistory=clone(room.state.fate.history);
     this.broadcastState(room,room.pendingEvents);room.pendingEvents=[];
@@ -236,7 +255,7 @@ class RoomHub {
   }
   removeMember(room,member,reason='left') {
     this.send(room,member,{type:'removed',reason});room.connections.delete(member.id);this.forfeit(room,member);
-    room.members=room.members.filter(m=>m!==member);member.exited=true;member.connected=false;
+    room.members=room.members.filter(m=>m!==member);room.terrainViews?.delete(member.id);room.knowledge?.delete(member.id);member.exited=true;member.connected=false;
     if(!room.members.length){this.rooms.delete(room.code);return;}
     if(room.host===member.id)room.host=(room.members.find(m=>m.connected)||room.members[0]).id;
     // Waiting players receive the updated roster; active players retain their match view.

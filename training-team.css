@@ -53,3 +53,13 @@ body[data-training-mode="guided"] #practice-panel h2{font-size:15px}
 .practice-tabs button:hover:not(:disabled),#walkthrough-retry:hover:not(:disabled){border-color:currentColor;box-shadow:0 0 0 2px #cee6ef12;filter:brightness(1.12)}
 .practice-tabs button:focus-visible,#walkthrough-retry:focus-visible{outline:2px solid #c7edff;outline-offset:3px}
 .practice-tabs button:disabled,#walkthrough-retry:disabled{opacity:.4;cursor:not-allowed;filter:none;box-shadow:none}
+
+/* Keep battlefield drags and repeated clicks from selecting interface text. */
+body,body *{-webkit-user-select:none;user-select:none}
+body input,body textarea,body [contenteditable=""],body [contenteditable="true"],body [contenteditable="plaintext-only"],body [contenteditable=""] *,body [contenteditable="true"] *,body [contenteditable="plaintext-only"] *{-webkit-user-select:text;user-select:text}
+body img,body a{-webkit-user-drag:none}
+
+/* Keep battlefield drags and repeated clicks from selecting interface text. */
+body,body *{-webkit-user-select:none;user-select:none}
+body input,body textarea,body [contenteditable=""],body [contenteditable="true"],body [contenteditable="plaintext-only"],body [contenteditable=""] *,body [contenteditable="true"] *,body [contenteditable="plaintext-only"] *{-webkit-user-select:text;user-select:text}
+body img,body a{-webkit-user-drag:none}

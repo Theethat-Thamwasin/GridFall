@@ -51,7 +51,7 @@
   for(const [id,label,icon]of [['camera-out','Zoom out','zoomOut'],['camera-in','Zoom in','zoomIn'],['camera-fit','Fit whole map','fit'],['camera-center','Follow operator [C]','follow']]){
     const button=$(id);button.setAttribute('aria-label',label);button.title=label;button.innerHTML=P.icon(icon);
   }
-  function settleSoloDraft(){G.FATE.settle(state);G.normalizeEquipment(state);if(state.practice)TUTORIAL.afterTurn(state);archive.draftHistory=structuredClone(state.fate.history);deadline=performance.now()+2000;plan=[];updateUI();}
+  function settleSoloDraft(){G.FATE.settle(state);G.normalizeEquipment(state);if(state.practice)TUTORIAL.afterTurn(state);archive.draftHistory=structuredClone(state.fate.history);deadline=performance.now()+(player().alive?2000:0);plan=[];updateUI();}
 
   const viewSpan = () => ({ x: canvas.width / CELL / camera.zoom, y: canvas.height / CELL / camera.zoom });
   let camera = { x: 0, y: 0, zoom: window.innerWidth <= 790 ? .9 : 1.2, follow: true }, drag = null;
@@ -262,20 +262,19 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     if(state.walkthrough&&W.current(state)?.id==='fate'&&state.phase==='draft'){for(const u of state.units)if(u.alive&&u.id!==playerId&&!state.fate.draft.picks[u.id])G.FATE.pick(state,u.id,G.FATE.botPick(state,u.id));deadline=performance.now()+G.FATE.DRAFT_MS;updateUI();return;}
     if(!network.active&&!state.walkthrough&&G.FATE.open(state)){
       plan=[];for(const u of state.units)if(u.alive&&u.id!==playerId){try{G.FATE.pick(state,u.id,G.FATE.botPick(state,u.id));}catch{}}
-      deadline=performance.now()+(player().alive?G.FATE.DRAFT_MS:2000);updateUI();return;
+      if(!player().alive){settleSoloDraft();return;}deadline=performance.now()+G.FATE.DRAFT_MS;updateUI();return;
     }
     if(state.fate?.history?.at(-1)?.turn===state.turn&&fateFxTurn!==state.turn){fateFxTurn=state.turn;if(player().alive)makeEffect('fate',player().x,player().y,{duration:.9,color:'#cbb5f3'});}
     turnFeedback();
     if (network.active) { updateUI(); return; }
     cancelRoute(); plan = []; selected = 'move'; botPlans = {};
     for (const u of state.units) if (u.id && u.alive) botPlans[u.id] = state.walkthrough&&!state.walkthrough.finished?W.botPlan(state):state.practice?TUTORIAL.botPlan(state):G.planBot(state, u.id);
-    deadline = performance.now() + (spectating ? 2000 : planningDuration * 1000); warnedSecond = -1;
+    deadline = performance.now() + (player().alive ? planningDuration * 1000 : 0); warnedSecond = -1;
     G.observation(state, player()); updateUI();
     $('field-note').textContent = spectating ? "Watch survivors · ‹ › switch player · EXIT to menu" : "1 Move · 2 Shoot · 3 Slash · Q Undo · SPACE Confirm";
   }
   function lock() {
     clearActionFlights();cancelRoute(); if (state.phase !== 'planning' || replay || !started || isPaused()) return;
-    if (!player().alive && !spectating) return;
     if(state.walkthrough&&!state.walkthrough.finished&&!W.canConfirm(state,plan)){toast('Try the lesson before confirming your plan.');return;}
     while (plan.length < 2) plan.push({ type: 'wait' });
     if (network.active) { if (!canPlan()) return; sound.play('lock'); toast('PLAN COMMITTED'); network.command({action:'lock',turn:state.turn,plan:structuredClone(plan)}).then(()=>{network.locked = state.phase === 'planning';updateUI();}).catch(()=>log("Command failed · Try again.")); return; }
@@ -353,8 +352,8 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     if(state.practice){practiceTurns++;for(const a of state.plans[playerId]||[])practiceUsed.add(a.type);const reset=TUTORIAL.afterTurn(state);if(reset.before>reset.hp)makeEffect('damage',player().x,player().y,{amount:reset.before-reset.hp,duration:.7});if(reset.respawned){makeEffect('blink',reset.respawned.x,reset.respawned.y,{duration:.8});log('Training bot respawned.','good');}if(archive.turns.length>3)archive.turns.shift();}
     turnReport();
     replayFrames = archive.finish(); signals = signals.filter(s => s.expires >= state.turn); fogCache.stamp = '';
-    if (!player().alive && !deathShown) { deathShown = true; playerDeathTurn = frozenBefore.turn; showResult(false); }
-    else if (state.phase === 'ended') showResult(state.mode==='team'?state.winnerTeam===player().team:state.winner === playerId);
+    if (!player().alive && !deathShown) { deathShown = true; playerDeathTurn = frozenBefore.turn; if(state.phase!=='ended')showResult(false); }
+    if (state.phase === 'ended') showResult(state.mode==='team'?state.winnerTeam===player().team:state.winner === playerId);
     else startPlanning(); updateUI();
   }
   function showResult(victory) {
@@ -410,7 +409,7 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   function sight(s,terrain=false){
     if(!started||allVisible())return null;
     const u=s.units[viewerId()],pose=unitMotion.sample(viewerId(),motionTime)||u,range=s.visibility?.range||(G.sightRange(u));
-    const stamp=[viewerId(),s.turn,s.terrainVersion,u.x,u.y,pose.x.toFixed(2),pose.y.toFixed(2),range,JSON.stringify(s.smokes)].join('|');
+    const stamp=[viewerId(),s.turn,s.terrainVersion,u.x,u.y,pose.x,pose.y,range,JSON.stringify(s.smokes)].join('|');
     if(sightCache.state!==s||sightCache.stamp!==stamp)sightCache={state:s,stamp,field:V.field(s,pose,range),terrain:null};
     if(terrain)return sightCache.terrain||(sightCache.terrain=V.field(s,pose,range,false));
     return sightCache.field;
@@ -423,7 +422,9 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     const f=sight(s);if(!f)return;
     if(fogSurface.width!==canvas.width||fogSurface.height!==canvas.height){fogSurface.width=canvas.width;fogSurface.height=canvas.height;}
     fogInk.setTransform(1,0,0,1,0,0);fogInk.clearRect(0,0,fogSurface.width,fogSurface.height);fogInk.setTransform(ctx.getTransform());fogInk.fillStyle='#0d19288f';fogInk.fillRect(0,0,s.width*CELL,s.height*CELL);
-    fogInk.save();clipSight(s,false,fogInk);fogInk.clearRect(0,0,s.width*CELL,s.height*CELL);fogInk.restore();ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(fogSurface,0,0);ctx.restore();
+    // Terrain shadows follow the displayed movement, not discrete network poses.
+    // Actors and effects still use clipSight's authoritative visibility boundary.
+    fogInk.save();traceSight(fogInk,f);fogInk.clip();fogInk.clearRect(0,0,s.width*CELL,s.height*CELL);fogInk.restore();ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(fogSurface,0,0);ctx.restore();
   }
   function roundedRect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
   function render(s, time) {
@@ -764,8 +765,8 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
           motionTime=targetTime;updateReplayControls();updateUI();
         }
       }
-      else if(started&&!network.active&&state.phase==='draft'){if(!state.walkthrough&&now>=deadline)settleSoloDraft();}
-      else if(started&&!network.active&&state.phase==='draftReveal'){if(now>=deadline){state.phase='planning';startPlanning();}}
+      else if(started&&!network.active&&state.phase==='draft'){if(!state.walkthrough&&(!player().alive||now>=deadline))settleSoloDraft();}
+      else if(started&&!network.active&&state.phase==='draftReveal'){if(!player().alive||now>=deadline){state.phase='planning';startPlanning();}}
       else if(started&&!network.active&&soloClashOutcome){if(now>=soloClashUntil){soloClashOutcome=null;if(state.phase==='clash')soloClashUntil=now+G.CLASH.choiceMs;accumulator=0;updateUI();}}
       else if(started&&!network.active&&state.phase==='clash'){
         const count=state.events.length,outcome=G.settleClash(state,now>=soloClashUntil);
@@ -779,8 +780,8 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
           if (state.phase === 'clash'){soloClashUntil=now+G.CLASH.choiceMs;accumulator=0;}else if(state.phase!=='resolution')afterResolution();
         }
         if (advanced) updateUI();
-      } else if (started && state.phase === 'planning' && !$('result').classList.contains('hidden')) { /* The result screen pauses the match until spectating. */ }
-      else if (started && !network.active && state.phase === 'planning' && (planningDuration > 0 || spectating)) {
+      } else if (started && state.phase === 'planning' && player().alive && !$('result').classList.contains('hidden')) { /* Preserve the result screen for a living player. */ }
+      else if (started && !network.active && state.phase === 'planning' && (planningDuration > 0 || spectating || !player().alive)) {
         const seconds = Math.max(0, Math.ceil((deadline - now) / 1000));
         if (seconds <= 5 && seconds > 0 && warnedSecond !== seconds && !spectating) { warnedSecond = seconds; sound.play('tick'); }
         if (now >= deadline) lock();

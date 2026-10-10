@@ -1,0 +1,4513 @@
+{
+  "measuredDate": "2026-10-10",
+  "method": "Three paired runs; fixed seed 731 and fixed bot classes; baseline source from Git d95e2ca538d4451a7e44f4616ed2025ad1f37b1b",
+  "limits": "Local CPU benchmark with profiling overhead. Excludes network, compression and real Canvas/GPU. Does not guarantee Render Free capacity. Four synchronized rooms still have occasional ticks above 45 ms.",
+  "runs": [
+    {
+      "before": {
+        "baselineRef": "d95e2ca538d4451a7e44f4616ed2025ad1f37b1b",
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 118.05,
+              "meanMs": 1.476,
+              "p95Ms": 3.634,
+              "maxMs": 9.294
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 27.89,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.56,
+                "meanMs": 0.282,
+                "p95Ms": 0.529,
+                "maxMs": 0.529
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.63,
+                "meanMs": 0.313,
+                "p95Ms": 0.617,
+                "maxMs": 0.617
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 8.2,
+                "meanMs": 1.171,
+                "p95Ms": 2.803,
+                "maxMs": 2.803
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 8.41,
+                "meanMs": 8.411,
+                "p95Ms": 8.411,
+                "maxMs": 8.411
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 1.08,
+                "meanMs": 1.082,
+                "p95Ms": 1.082,
+                "maxMs": 1.082
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 7.59,
+                "meanMs": 7.587,
+                "p95Ms": 7.587,
+                "maxMs": 7.587
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 219,
+            "heapGrowthMiB": 6.05,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 6,
+                "meanMs": 0.075,
+                "p95Ms": 0.22,
+                "maxMs": 2.137
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 6.43,
+                "meanMs": 0.161,
+                "p95Ms": 0.393,
+                "maxMs": 0.686
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 69.68,
+                "meanMs": 1.742,
+                "p95Ms": 2.899,
+                "maxMs": 4.095
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 18.46,
+                "meanMs": 0.462,
+                "p95Ms": 0.738,
+                "maxMs": 0.923
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.57,
+                "meanMs": 0.064,
+                "p95Ms": 0.094,
+                "maxMs": 0.109
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 6.37,
+                "meanMs": 0.909,
+                "p95Ms": 2.111,
+                "maxMs": 2.111
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 6.45,
+                "meanMs": 6.445,
+                "p95Ms": 6.445,
+                "maxMs": 6.445
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 122.48,
+              "meanMs": 1.531,
+              "p95Ms": 3.947,
+              "maxMs": 8.478
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 22.86,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.58,
+                "meanMs": 0.289,
+                "p95Ms": 0.551,
+                "maxMs": 0.551
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.59,
+                "meanMs": 0.293,
+                "p95Ms": 0.583,
+                "maxMs": 0.583
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.9,
+                "meanMs": 0.843,
+                "p95Ms": 2.199,
+                "maxMs": 2.199
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.98,
+                "meanMs": 5.978,
+                "p95Ms": 5.978,
+                "maxMs": 5.978
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.12,
+                "meanMs": 0.122,
+                "p95Ms": 0.122,
+                "maxMs": 0.122
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 4.25,
+                "meanMs": 4.254,
+                "p95Ms": 4.254,
+                "maxMs": 4.254
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 140,
+            "heapGrowthMiB": 8.51,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.15,
+                "meanMs": 0.027,
+                "p95Ms": 0.063,
+                "maxMs": 0.361
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 3.66,
+                "meanMs": 0.092,
+                "p95Ms": 0.141,
+                "maxMs": 0.196
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 70.02,
+                "meanMs": 1.75,
+                "p95Ms": 2.812,
+                "maxMs": 3.862
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 27.99,
+                "meanMs": 0.7,
+                "p95Ms": 1.032,
+                "maxMs": 1.542
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.4,
+                "meanMs": 0.06,
+                "p95Ms": 0.09,
+                "maxMs": 0.124
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 4.51,
+                "meanMs": 0.645,
+                "p95Ms": 1.447,
+                "maxMs": 1.447
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 4.58,
+                "meanMs": 4.575,
+                "p95Ms": 4.575,
+                "maxMs": 4.575
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 134.31,
+              "meanMs": 1.679,
+              "p95Ms": 3.707,
+              "maxMs": 17.694
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 29.46,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.53,
+                "meanMs": 0.264,
+                "p95Ms": 0.527,
+                "maxMs": 0.527
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.45,
+                "meanMs": 0.225,
+                "p95Ms": 0.444,
+                "maxMs": 0.444
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 9.09,
+                "meanMs": 1.299,
+                "p95Ms": 3.347,
+                "maxMs": 3.347
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 9.14,
+                "meanMs": 9.143,
+                "p95Ms": 9.143,
+                "maxMs": 9.143
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.34,
+                "meanMs": 0.336,
+                "p95Ms": 0.336,
+                "maxMs": 0.336
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 4.24,
+                "meanMs": 4.235,
+                "p95Ms": 4.235,
+                "maxMs": 4.235
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 187,
+            "heapGrowthMiB": -7.27,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.06,
+                "meanMs": 0.026,
+                "p95Ms": 0.081,
+                "maxMs": 0.399
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 4.37,
+                "meanMs": 0.109,
+                "p95Ms": 0.15,
+                "maxMs": 0.171
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 72.74,
+                "meanMs": 1.819,
+                "p95Ms": 2.777,
+                "maxMs": 3.004
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 24.76,
+                "meanMs": 0.619,
+                "p95Ms": 0.897,
+                "maxMs": 1.049
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.56,
+                "meanMs": 0.064,
+                "p95Ms": 0.082,
+                "maxMs": 0.283
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 13.88,
+                "meanMs": 1.983,
+                "p95Ms": 3.543,
+                "maxMs": 3.543
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 13.93,
+                "meanMs": 13.934,
+                "p95Ms": 13.934,
+                "maxMs": 13.934
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 960.57,
+              "meanMs": 12.007,
+              "p95Ms": 27.164,
+              "maxMs": 28.672
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 63.84,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 6.53,
+                "meanMs": 0.148,
+                "p95Ms": 0.878,
+                "maxMs": 0.97
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 5.7,
+                "meanMs": 0.13,
+                "p95Ms": 0.851,
+                "maxMs": 0.927
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.02,
+                "meanMs": 0.022,
+                "p95Ms": 0.022,
+                "maxMs": 0.022
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 3.09,
+                "meanMs": 0.386,
+                "p95Ms": 2.056,
+                "maxMs": 2.056
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 36.08,
+                "meanMs": 4.51,
+                "p95Ms": 6.046,
+                "maxMs": 6.046
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 1047,
+            "heapGrowthMiB": 22,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 4.04,
+                "meanMs": 0.05,
+                "p95Ms": 0.18,
+                "maxMs": 0.304
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 34.02,
+                "meanMs": 0.106,
+                "p95Ms": 0.175,
+                "maxMs": 0.39
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 654.79,
+                "meanMs": 2.046,
+                "p95Ms": 2.944,
+                "maxMs": 3.888
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 263.24,
+                "meanMs": 0.823,
+                "p95Ms": 1.081,
+                "maxMs": 2.359
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 22.47,
+                "meanMs": 0.07,
+                "p95Ms": 0.119,
+                "maxMs": 0.248
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.014,
+                "p95Ms": 0.014,
+                "maxMs": 0.014
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 935.03,
+              "meanMs": 38.96,
+              "p95Ms": 82.342,
+              "maxMs": 82.853
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 178.82,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 20.24,
+                "meanMs": 0.115,
+                "p95Ms": 0.696,
+                "maxMs": 1.837
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 18.3,
+                "meanMs": 0.104,
+                "p95Ms": 0.623,
+                "maxMs": 1.224
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.1,
+                "meanMs": 0.024,
+                "p95Ms": 0.048,
+                "maxMs": 0.048
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.56,
+                "meanMs": 0.111,
+                "p95Ms": 0.188,
+                "maxMs": 0.398
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 111.23,
+                "meanMs": 3.476,
+                "p95Ms": 5.439,
+                "maxMs": 8.528
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 12,
+            "cpuMs": 1016,
+            "heapGrowthMiB": 14.98,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 5.5,
+                "meanMs": 0.057,
+                "p95Ms": 0.199,
+                "maxMs": 0.346
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 48.99,
+                "meanMs": 0.128,
+                "p95Ms": 0.2,
+                "maxMs": 2.287
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 648.15,
+                "meanMs": 1.688,
+                "p95Ms": 2.594,
+                "maxMs": 4.637
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 242.13,
+                "meanMs": 0.631,
+                "p95Ms": 0.906,
+                "maxMs": 2.96
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 24.84,
+                "meanMs": 0.065,
+                "p95Ms": 0.108,
+                "maxMs": 0.308
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 496.35,
+            "samplePercent": 14.03
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 288.22,
+            "samplePercent": 8.15
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 197.74,
+            "samplePercent": 5.59
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 191.64,
+            "samplePercent": 5.42
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 172.14,
+            "samplePercent": 4.87
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 140.77,
+            "samplePercent": 3.98
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 162,
+            "selfMs": 118.84,
+            "samplePercent": 3.36
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 116.68,
+            "samplePercent": 3.3
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 106.81,
+            "samplePercent": 3.02
+          },
+          {
+            "function": "structuredClone",
+            "file": "",
+            "line": 0,
+            "selfMs": 105.33,
+            "samplePercent": 2.98
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 77.59,
+            "samplePercent": 2.19
+          },
+          {
+            "function": "key",
+            "file": "engine.js",
+            "line": 103,
+            "selfMs": 72.96,
+            "samplePercent": 2.06
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 68.13,
+            "samplePercent": 1.93
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 65.99,
+            "samplePercent": 1.87
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 65.48,
+            "samplePercent": 1.85
+          },
+          {
+            "function": "structuredClone",
+            "file": "",
+            "line": 0,
+            "selfMs": 50.49,
+            "samplePercent": 1.43
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 49.26,
+            "samplePercent": 1.39
+          },
+          {
+            "function": "field",
+            "file": "vision.js",
+            "line": 60,
+            "selfMs": 43.96,
+            "samplePercent": 1.24
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 41.34,
+            "samplePercent": 1.17
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 38.42,
+            "samplePercent": 1.09
+          }
+        ]
+      },
+      "after": {
+        "baselineRef": null,
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 83.07,
+              "meanMs": 1.038,
+              "p95Ms": 2.947,
+              "maxMs": 8.791
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 32.4,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.16,
+                "meanMs": 0.581,
+                "p95Ms": 1.102,
+                "maxMs": 1.102
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.44,
+                "meanMs": 0.219,
+                "p95Ms": 0.422,
+                "maxMs": 0.422
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 10.47,
+                "meanMs": 1.495,
+                "p95Ms": 5.064,
+                "maxMs": 5.064
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 10.68,
+                "meanMs": 10.677,
+                "p95Ms": 10.677,
+                "maxMs": 10.677
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 1.07,
+                "meanMs": 1.073,
+                "p95Ms": 1.073,
+                "maxMs": 1.073
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 6.93,
+                "meanMs": 6.929,
+                "p95Ms": 6.929,
+                "maxMs": 6.929
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 172,
+            "heapGrowthMiB": 0.73,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 6.37,
+                "meanMs": 0.08,
+                "p95Ms": 0.268,
+                "maxMs": 1.521
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 6.58,
+                "meanMs": 0.165,
+                "p95Ms": 0.284,
+                "maxMs": 0.9
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 48.71,
+                "meanMs": 1.218,
+                "p95Ms": 2.834,
+                "maxMs": 3.693
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 2.9,
+                "meanMs": 0.072,
+                "p95Ms": 0.123,
+                "maxMs": 0.169
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 3.48,
+                "meanMs": 0.087,
+                "p95Ms": 0.145,
+                "maxMs": 0.518
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.62,
+                "meanMs": 0.803,
+                "p95Ms": 1.868,
+                "maxMs": 1.868
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.68,
+                "meanMs": 5.681,
+                "p95Ms": 5.681,
+                "maxMs": 5.681
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 88.49,
+              "meanMs": 1.106,
+              "p95Ms": 2.639,
+              "maxMs": 6.082
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 26.69,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.61,
+                "meanMs": 0.807,
+                "p95Ms": 1.583,
+                "maxMs": 1.583
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 1,
+                "meanMs": 0.499,
+                "p95Ms": 0.993,
+                "maxMs": 0.993
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.04,
+                "meanMs": 0.72,
+                "p95Ms": 0.945,
+                "maxMs": 0.945
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.12,
+                "meanMs": 5.115,
+                "p95Ms": 5.115,
+                "maxMs": 5.115
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.23,
+                "meanMs": 0.226,
+                "p95Ms": 0.226,
+                "maxMs": 0.226
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5.79,
+                "meanMs": 5.791,
+                "p95Ms": 5.791,
+                "maxMs": 5.791
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 172,
+            "heapGrowthMiB": 2.75,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.25,
+                "meanMs": 0.041,
+                "p95Ms": 0.088,
+                "maxMs": 0.958
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 6.82,
+                "meanMs": 0.17,
+                "p95Ms": 0.483,
+                "maxMs": 1.149
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 54.1,
+                "meanMs": 1.353,
+                "p95Ms": 2.215,
+                "maxMs": 4.3
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 6.32,
+                "meanMs": 0.158,
+                "p95Ms": 0.24,
+                "maxMs": 0.384
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.99,
+                "meanMs": 0.075,
+                "p95Ms": 0.096,
+                "maxMs": 0.147
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 4.6,
+                "meanMs": 0.657,
+                "p95Ms": 1.015,
+                "maxMs": 1.015
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 4.65,
+                "meanMs": 4.65,
+                "p95Ms": 4.65,
+                "maxMs": 4.65
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 82.88,
+              "meanMs": 1.036,
+              "p95Ms": 3.161,
+              "maxMs": 14.485
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 32.72,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.39,
+                "meanMs": 0.695,
+                "p95Ms": 1.39,
+                "maxMs": 1.39
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.94,
+                "meanMs": 0.468,
+                "p95Ms": 0.933,
+                "maxMs": 0.933
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 11.26,
+                "meanMs": 1.608,
+                "p95Ms": 3.414,
+                "maxMs": 3.414
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 11.31,
+                "meanMs": 11.314,
+                "p95Ms": 11.314,
+                "maxMs": 11.314
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.45,
+                "meanMs": 0.451,
+                "p95Ms": 0.451,
+                "maxMs": 0.451
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5.67,
+                "meanMs": 5.666,
+                "p95Ms": 5.666,
+                "maxMs": 5.666
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 171,
+            "heapGrowthMiB": 12.65,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 1.88,
+                "meanMs": 0.024,
+                "p95Ms": 0.082,
+                "maxMs": 0.387
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 5.66,
+                "meanMs": 0.141,
+                "p95Ms": 0.301,
+                "maxMs": 0.878
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 43.1,
+                "meanMs": 1.078,
+                "p95Ms": 1.749,
+                "maxMs": 2.955
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 4.68,
+                "meanMs": 0.117,
+                "p95Ms": 0.216,
+                "maxMs": 0.321
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.38,
+                "meanMs": 0.06,
+                "p95Ms": 0.083,
+                "maxMs": 0.122
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 12.56,
+                "meanMs": 1.794,
+                "p95Ms": 2.722,
+                "maxMs": 2.722
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 12.64,
+                "meanMs": 12.64,
+                "p95Ms": 12.64,
+                "maxMs": 12.64
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 414.75,
+              "meanMs": 5.184,
+              "p95Ms": 12.221,
+              "maxMs": 14.177
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 81.98,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 25.02,
+                "meanMs": 0.569,
+                "p95Ms": 1.857,
+                "maxMs": 12.414
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 7.11,
+                "meanMs": 0.162,
+                "p95Ms": 0.886,
+                "maxMs": 1.339
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.02,
+                "meanMs": 0.02,
+                "p95Ms": 0.02,
+                "maxMs": 0.02
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 1.37,
+                "meanMs": 0.172,
+                "p95Ms": 0.345,
+                "maxMs": 0.345
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 37.26,
+                "meanMs": 4.657,
+                "p95Ms": 9.666,
+                "maxMs": 9.666
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 437,
+            "heapGrowthMiB": 3.93,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.88,
+                "meanMs": 0.049,
+                "p95Ms": 0.175,
+                "maxMs": 0.348
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 30.36,
+                "meanMs": 0.095,
+                "p95Ms": 0.145,
+                "maxMs": 0.607
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 307.84,
+                "meanMs": 0.962,
+                "p95Ms": 1.543,
+                "maxMs": 2.637
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 71.46,
+                "meanMs": 0.223,
+                "p95Ms": 0.334,
+                "maxMs": 0.567
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 19.64,
+                "meanMs": 0.061,
+                "p95Ms": 0.101,
+                "maxMs": 0.281
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.014,
+                "p95Ms": 0.014,
+                "maxMs": 0.014
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 457.38,
+              "meanMs": 19.058,
+              "p95Ms": 43.318,
+              "maxMs": 51.401
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 216.95,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 53.34,
+                "meanMs": 0.303,
+                "p95Ms": 1.492,
+                "maxMs": 14.053
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 22.08,
+                "meanMs": 0.125,
+                "p95Ms": 0.798,
+                "maxMs": 1.929
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.06,
+                "meanMs": 0.015,
+                "p95Ms": 0.02,
+                "maxMs": 0.02
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.4,
+                "meanMs": 0.106,
+                "p95Ms": 0.154,
+                "maxMs": 0.179
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 108.14,
+                "meanMs": 3.379,
+                "p95Ms": 7.305,
+                "maxMs": 12.466
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 1,
+            "cpuMs": 563,
+            "heapGrowthMiB": -35.29,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 4.36,
+                "meanMs": 0.045,
+                "p95Ms": 0.136,
+                "maxMs": 0.181
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 39.51,
+                "meanMs": 0.103,
+                "p95Ms": 0.147,
+                "maxMs": 1.488
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 348.48,
+                "meanMs": 0.907,
+                "p95Ms": 1.517,
+                "maxMs": 13.723
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 68.93,
+                "meanMs": 0.18,
+                "p95Ms": 0.292,
+                "maxMs": 1.096
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 22.75,
+                "meanMs": 0.059,
+                "p95Ms": 0.096,
+                "maxMs": 0.335
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 160.96,
+            "samplePercent": 7.94
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 127.19,
+            "samplePercent": 6.28
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 125.82,
+            "samplePercent": 6.21
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 108.66,
+            "samplePercent": 5.36
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 63.08,
+            "samplePercent": 3.11
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 61.73,
+            "samplePercent": 3.05
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 59.24,
+            "samplePercent": 2.92
+          },
+          {
+            "function": "clone",
+            "file": "multiplayer.js",
+            "line": 3,
+            "selfMs": 53.86,
+            "samplePercent": 2.66
+          },
+          {
+            "function": "copy",
+            "file": "replay.js",
+            "line": 7,
+            "selfMs": 52.52,
+            "samplePercent": 2.59
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 49.77,
+            "samplePercent": 2.46
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 46.88,
+            "samplePercent": 2.31
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 38.38,
+            "samplePercent": 1.89
+          },
+          {
+            "function": "(anonymous)",
+            "file": "tools/profile-game.js",
+            "line": 30,
+            "selfMs": 36.79,
+            "samplePercent": 1.82
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 36.02,
+            "samplePercent": 1.78
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 35.67,
+            "samplePercent": 1.76
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 34.22,
+            "samplePercent": 1.69
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 27.8,
+            "samplePercent": 1.37
+          },
+          {
+            "function": "sameTerrainValue",
+            "file": "multiplayer.js",
+            "line": 5,
+            "selfMs": 25.49,
+            "samplePercent": 1.26
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 22.86,
+            "samplePercent": 1.13
+          },
+          {
+            "function": "(anonymous)",
+            "file": "tools/profile-game.js",
+            "line": 30,
+            "selfMs": 22.07,
+            "samplePercent": 1.09
+          }
+        ]
+      }
+    },
+    {
+      "before": {
+        "baselineRef": "d95e2ca538d4451a7e44f4616ed2025ad1f37b1b",
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 127.94,
+              "meanMs": 1.599,
+              "p95Ms": 4.476,
+              "maxMs": 8.797
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 32.75,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.44,
+                "meanMs": 0.222,
+                "p95Ms": 0.393,
+                "maxMs": 0.393
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.29,
+                "meanMs": 0.147,
+                "p95Ms": 0.278,
+                "maxMs": 0.278
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 10.24,
+                "meanMs": 1.462,
+                "p95Ms": 3.798,
+                "maxMs": 3.798
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 10.51,
+                "meanMs": 10.506,
+                "p95Ms": 10.506,
+                "maxMs": 10.506
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.79,
+                "meanMs": 0.787,
+                "p95Ms": 0.787,
+                "maxMs": 0.787
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 8.25,
+                "meanMs": 8.253,
+                "p95Ms": 8.253,
+                "maxMs": 8.253
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 156,
+            "heapGrowthMiB": 5.92,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 6.25,
+                "meanMs": 0.078,
+                "p95Ms": 0.336,
+                "maxMs": 1.501
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 7,
+                "meanMs": 0.175,
+                "p95Ms": 0.542,
+                "maxMs": 0.715
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 75.75,
+                "meanMs": 1.894,
+                "p95Ms": 2.652,
+                "maxMs": 4.18
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 20.56,
+                "meanMs": 0.514,
+                "p95Ms": 0.672,
+                "maxMs": 1.647
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 3.34,
+                "meanMs": 0.084,
+                "p95Ms": 0.146,
+                "maxMs": 0.262
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 4.91,
+                "meanMs": 0.701,
+                "p95Ms": 1.453,
+                "maxMs": 1.453
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.04,
+                "meanMs": 5.036,
+                "p95Ms": 5.036,
+                "maxMs": 5.036
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 130.11,
+              "meanMs": 1.626,
+              "p95Ms": 3.711,
+              "maxMs": 11.852
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 28.92,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.03,
+                "meanMs": 0.515,
+                "p95Ms": 1.003,
+                "maxMs": 1.003
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.89,
+                "meanMs": 0.447,
+                "p95Ms": 0.886,
+                "maxMs": 0.886
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 6.61,
+                "meanMs": 0.945,
+                "p95Ms": 1.558,
+                "maxMs": 1.558
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 6.7,
+                "meanMs": 6.705,
+                "p95Ms": 6.705,
+                "maxMs": 6.705
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.21,
+                "meanMs": 0.213,
+                "p95Ms": 0.213,
+                "maxMs": 0.213
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 6.31,
+                "meanMs": 6.309,
+                "p95Ms": 6.309,
+                "maxMs": 6.309
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 187,
+            "heapGrowthMiB": 2.72,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 1.89,
+                "meanMs": 0.024,
+                "p95Ms": 0.071,
+                "maxMs": 0.288
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 3.61,
+                "meanMs": 0.09,
+                "p95Ms": 0.125,
+                "maxMs": 0.18
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 70.71,
+                "meanMs": 1.768,
+                "p95Ms": 2.54,
+                "maxMs": 2.812
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 30.68,
+                "meanMs": 0.767,
+                "p95Ms": 0.968,
+                "maxMs": 1.571
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.86,
+                "meanMs": 0.072,
+                "p95Ms": 0.131,
+                "maxMs": 0.156
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 8.25,
+                "meanMs": 1.178,
+                "p95Ms": 2.664,
+                "maxMs": 2.664
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 8.32,
+                "meanMs": 8.325,
+                "p95Ms": 8.325,
+                "maxMs": 8.325
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 142.67,
+              "meanMs": 1.783,
+              "p95Ms": 4.655,
+              "maxMs": 15.317
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 37.78,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.08,
+                "meanMs": 0.54,
+                "p95Ms": 1.08,
+                "maxMs": 1.08
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.7,
+                "meanMs": 0.351,
+                "p95Ms": 0.699,
+                "maxMs": 0.699
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 12.56,
+                "meanMs": 1.795,
+                "p95Ms": 3.435,
+                "maxMs": 3.435
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 12.65,
+                "meanMs": 12.655,
+                "p95Ms": 12.655,
+                "maxMs": 12.655
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.6,
+                "meanMs": 0.596,
+                "p95Ms": 0.596,
+                "maxMs": 0.596
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 6.26,
+                "meanMs": 6.264,
+                "p95Ms": 6.264,
+                "maxMs": 6.264
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 187,
+            "heapGrowthMiB": 22.73,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.24,
+                "meanMs": 0.028,
+                "p95Ms": 0.096,
+                "maxMs": 0.344
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 5.34,
+                "meanMs": 0.133,
+                "p95Ms": 0.209,
+                "maxMs": 0.26
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 79.87,
+                "meanMs": 1.997,
+                "p95Ms": 2.663,
+                "maxMs": 3.046
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 26.76,
+                "meanMs": 0.669,
+                "p95Ms": 0.822,
+                "maxMs": 1.828
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.61,
+                "meanMs": 0.065,
+                "p95Ms": 0.09,
+                "maxMs": 0.114
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 11.63,
+                "meanMs": 1.661,
+                "p95Ms": 3.828,
+                "maxMs": 3.828
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 11.69,
+                "meanMs": 11.686,
+                "p95Ms": 11.686,
+                "maxMs": 11.686
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 943.82,
+              "meanMs": 11.798,
+              "p95Ms": 26.128,
+              "maxMs": 27.285
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 65.62,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 6.48,
+                "meanMs": 0.147,
+                "p95Ms": 0.921,
+                "maxMs": 1.044
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 5.91,
+                "meanMs": 0.134,
+                "p95Ms": 0.8,
+                "maxMs": 0.854
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.05,
+                "meanMs": 0.048,
+                "p95Ms": 0.048,
+                "maxMs": 0.048
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 1.54,
+                "meanMs": 0.193,
+                "p95Ms": 0.393,
+                "maxMs": 0.393
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 38.18,
+                "meanMs": 4.772,
+                "p95Ms": 5.766,
+                "maxMs": 5.766
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 1031,
+            "heapGrowthMiB": 50.48,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.64,
+                "meanMs": 0.046,
+                "p95Ms": 0.151,
+                "maxMs": 0.308
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 32.76,
+                "meanMs": 0.102,
+                "p95Ms": 0.163,
+                "maxMs": 0.362
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 645.95,
+                "meanMs": 2.019,
+                "p95Ms": 2.907,
+                "maxMs": 5.296
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 259.88,
+                "meanMs": 0.812,
+                "p95Ms": 1.196,
+                "maxMs": 1.9
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 20.98,
+                "meanMs": 0.066,
+                "p95Ms": 0.096,
+                "maxMs": 0.3
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.013,
+                "p95Ms": 0.013,
+                "maxMs": 0.013
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 901.46,
+              "meanMs": 37.561,
+              "p95Ms": 84.721,
+              "maxMs": 87.672
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 177.43,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 18.58,
+                "meanMs": 0.106,
+                "p95Ms": 0.725,
+                "maxMs": 0.885
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 17.99,
+                "meanMs": 0.102,
+                "p95Ms": 0.646,
+                "maxMs": 1.725
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.07,
+                "meanMs": 0.017,
+                "p95Ms": 0.022,
+                "maxMs": 0.022
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.52,
+                "meanMs": 0.11,
+                "p95Ms": 0.268,
+                "maxMs": 0.315
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 110.15,
+                "meanMs": 3.442,
+                "p95Ms": 5.324,
+                "maxMs": 8.517
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 12,
+            "cpuMs": 938,
+            "heapGrowthMiB": 11.62,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 5.42,
+                "meanMs": 0.056,
+                "p95Ms": 0.153,
+                "maxMs": 0.253
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 37.1,
+                "meanMs": 0.097,
+                "p95Ms": 0.155,
+                "maxMs": 0.33
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 624.71,
+                "meanMs": 1.627,
+                "p95Ms": 2.525,
+                "maxMs": 4.989
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 233.21,
+                "meanMs": 0.607,
+                "p95Ms": 0.889,
+                "maxMs": 1.932
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 23.57,
+                "meanMs": 0.061,
+                "p95Ms": 0.1,
+                "maxMs": 0.233
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 494.78,
+            "samplePercent": 14.27
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 306.21,
+            "samplePercent": 8.83
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 204.52,
+            "samplePercent": 5.9
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 200.65,
+            "samplePercent": 5.79
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 198.24,
+            "samplePercent": 5.72
+          },
+          {
+            "function": "structuredClone",
+            "file": "",
+            "line": 0,
+            "selfMs": 124.03,
+            "samplePercent": 3.58
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 162,
+            "selfMs": 120.87,
+            "samplePercent": 3.49
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 111.16,
+            "samplePercent": 3.21
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 101.93,
+            "samplePercent": 2.94
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 86.21,
+            "samplePercent": 2.49
+          },
+          {
+            "function": "key",
+            "file": "engine.js",
+            "line": 103,
+            "selfMs": 67.44,
+            "samplePercent": 1.94
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 66.09,
+            "samplePercent": 1.91
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 57.31,
+            "samplePercent": 1.65
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 56.57,
+            "samplePercent": 1.63
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 55.82,
+            "samplePercent": 1.61
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 55.56,
+            "samplePercent": 1.6
+          },
+          {
+            "function": "copy",
+            "file": "replay.js",
+            "line": 7,
+            "selfMs": 36.72,
+            "samplePercent": 1.06
+          },
+          {
+            "function": "field",
+            "file": "vision.js",
+            "line": 60,
+            "selfMs": 35.48,
+            "samplePercent": 1.02
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 35.39,
+            "samplePercent": 1.02
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 34.02,
+            "samplePercent": 0.98
+          }
+        ]
+      },
+      "after": {
+        "baselineRef": null,
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 72.77,
+              "meanMs": 0.91,
+              "p95Ms": 2.078,
+              "maxMs": 7.756
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 28.1,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.19,
+                "meanMs": 0.593,
+                "p95Ms": 1.148,
+                "maxMs": 1.148
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.44,
+                "meanMs": 0.219,
+                "p95Ms": 0.428,
+                "maxMs": 0.428
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 8.63,
+                "meanMs": 1.233,
+                "p95Ms": 3.578,
+                "maxMs": 3.578
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 8.89,
+                "meanMs": 8.885,
+                "p95Ms": 8.885,
+                "maxMs": 8.885
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.56,
+                "meanMs": 0.562,
+                "p95Ms": 0.562,
+                "maxMs": 0.562
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 6.58,
+                "meanMs": 6.579,
+                "p95Ms": 6.579,
+                "maxMs": 6.579
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 172,
+            "heapGrowthMiB": 9.56,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 5.23,
+                "meanMs": 0.065,
+                "p95Ms": 0.188,
+                "maxMs": 1.311
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 6.58,
+                "meanMs": 0.164,
+                "p95Ms": 0.421,
+                "maxMs": 0.55
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 42.19,
+                "meanMs": 1.055,
+                "p95Ms": 1.756,
+                "maxMs": 2.683
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 3.36,
+                "meanMs": 0.084,
+                "p95Ms": 0.157,
+                "maxMs": 0.22
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.76,
+                "meanMs": 0.069,
+                "p95Ms": 0.103,
+                "maxMs": 0.263
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.23,
+                "meanMs": 0.747,
+                "p95Ms": 1.437,
+                "maxMs": 1.437
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.29,
+                "meanMs": 5.288,
+                "p95Ms": 5.288,
+                "maxMs": 5.288
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 82.09,
+              "meanMs": 1.026,
+              "p95Ms": 2.589,
+              "maxMs": 6.39
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 29.69,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 2.74,
+                "meanMs": 1.371,
+                "p95Ms": 2.695,
+                "maxMs": 2.695
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.89,
+                "meanMs": 0.445,
+                "p95Ms": 0.881,
+                "maxMs": 0.881
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.78,
+                "meanMs": 0.826,
+                "p95Ms": 1.212,
+                "maxMs": 1.212
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.9,
+                "meanMs": 5.896,
+                "p95Ms": 5.896,
+                "maxMs": 5.896
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.21,
+                "meanMs": 0.209,
+                "p95Ms": 0.209,
+                "maxMs": 0.209
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5.94,
+                "meanMs": 5.941,
+                "p95Ms": 5.941,
+                "maxMs": 5.941
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 93,
+            "heapGrowthMiB": 7.99,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.07,
+                "meanMs": 0.026,
+                "p95Ms": 0.085,
+                "maxMs": 0.366
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 7.57,
+                "meanMs": 0.189,
+                "p95Ms": 0.227,
+                "maxMs": 2.662
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 50.82,
+                "meanMs": 1.271,
+                "p95Ms": 2.19,
+                "maxMs": 4.098
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 5.1,
+                "meanMs": 0.127,
+                "p95Ms": 0.237,
+                "maxMs": 0.259
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 3.3,
+                "meanMs": 0.083,
+                "p95Ms": 0.133,
+                "maxMs": 0.274
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 4.38,
+                "meanMs": 0.625,
+                "p95Ms": 0.904,
+                "maxMs": 0.904
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 4.43,
+                "meanMs": 4.432,
+                "p95Ms": 4.432,
+                "maxMs": 4.432
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 92.94,
+              "meanMs": 1.162,
+              "p95Ms": 3.229,
+              "maxMs": 15.752
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 33.86,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.94,
+                "meanMs": 0.471,
+                "p95Ms": 0.942,
+                "maxMs": 0.942
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.65,
+                "meanMs": 0.327,
+                "p95Ms": 0.651,
+                "maxMs": 0.651
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 11.56,
+                "meanMs": 1.652,
+                "p95Ms": 4.093,
+                "maxMs": 4.093
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 11.63,
+                "meanMs": 11.626,
+                "p95Ms": 11.626,
+                "maxMs": 11.626
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.33,
+                "meanMs": 0.332,
+                "p95Ms": 0.332,
+                "maxMs": 0.332
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 4.38,
+                "meanMs": 4.379,
+                "p95Ms": 4.379,
+                "maxMs": 4.379
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 110,
+            "heapGrowthMiB": -2.45,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.45,
+                "meanMs": 0.031,
+                "p95Ms": 0.078,
+                "maxMs": 0.549
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 5.74,
+                "meanMs": 0.144,
+                "p95Ms": 0.227,
+                "maxMs": 0.425
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 47.75,
+                "meanMs": 1.194,
+                "p95Ms": 1.727,
+                "maxMs": 2.938
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 5.23,
+                "meanMs": 0.131,
+                "p95Ms": 0.235,
+                "maxMs": 0.387
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.83,
+                "meanMs": 0.071,
+                "p95Ms": 0.103,
+                "maxMs": 0.203
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 14.06,
+                "meanMs": 2.009,
+                "p95Ms": 4.417,
+                "maxMs": 4.417
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 14.1,
+                "meanMs": 14.103,
+                "p95Ms": 14.103,
+                "maxMs": 14.103
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 412.97,
+              "meanMs": 5.162,
+              "p95Ms": 12.437,
+              "maxMs": 12.787
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 75.58,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 11.96,
+                "meanMs": 0.272,
+                "p95Ms": 1.668,
+                "maxMs": 1.903
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 6.6,
+                "meanMs": 0.15,
+                "p95Ms": 0.933,
+                "maxMs": 0.982
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.02,
+                "meanMs": 0.022,
+                "p95Ms": 0.022,
+                "maxMs": 0.022
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 5.66,
+                "meanMs": 0.707,
+                "p95Ms": 4.754,
+                "maxMs": 4.754
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 46.67,
+                "meanMs": 5.834,
+                "p95Ms": 12.306,
+                "maxMs": 12.306
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 516,
+            "heapGrowthMiB": 3.54,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.44,
+                "meanMs": 0.043,
+                "p95Ms": 0.156,
+                "maxMs": 0.356
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 32.82,
+                "meanMs": 0.103,
+                "p95Ms": 0.145,
+                "maxMs": 0.967
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 304.06,
+                "meanMs": 0.95,
+                "p95Ms": 1.384,
+                "maxMs": 2.578
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 74.5,
+                "meanMs": 0.233,
+                "p95Ms": 0.381,
+                "maxMs": 0.699
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 19.6,
+                "meanMs": 0.061,
+                "p95Ms": 0.09,
+                "maxMs": 0.269
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.013,
+                "p95Ms": 0.013,
+                "maxMs": 0.013
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 459.68,
+              "meanMs": 19.154,
+              "p95Ms": 42.957,
+              "maxMs": 46.801
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 206.31,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 53.97,
+                "meanMs": 0.307,
+                "p95Ms": 1.312,
+                "maxMs": 14.004
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 19,
+                "meanMs": 0.108,
+                "p95Ms": 0.621,
+                "maxMs": 1.132
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.06,
+                "meanMs": 0.015,
+                "p95Ms": 0.023,
+                "maxMs": 0.023
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.35,
+                "meanMs": 0.105,
+                "p95Ms": 0.151,
+                "maxMs": 0.168
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 104.12,
+                "meanMs": 3.254,
+                "p95Ms": 4.884,
+                "maxMs": 11.795
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 1,
+            "cpuMs": 563,
+            "heapGrowthMiB": -13.2,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 4.98,
+                "meanMs": 0.052,
+                "p95Ms": 0.167,
+                "maxMs": 0.189
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 38.31,
+                "meanMs": 0.1,
+                "p95Ms": 0.15,
+                "maxMs": 0.36
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 343.83,
+                "meanMs": 0.895,
+                "p95Ms": 1.405,
+                "maxMs": 2.729
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 73.12,
+                "meanMs": 0.19,
+                "p95Ms": 0.289,
+                "maxMs": 0.489
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 24.66,
+                "meanMs": 0.064,
+                "p95Ms": 0.106,
+                "maxMs": 0.822
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 171.74,
+            "samplePercent": 8.55
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 132.18,
+            "samplePercent": 6.58
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 118.73,
+            "samplePercent": 5.91
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 83.66,
+            "samplePercent": 4.17
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 58.64,
+            "samplePercent": 2.92
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 58.56,
+            "samplePercent": 2.92
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 53.33,
+            "samplePercent": 2.66
+          },
+          {
+            "function": "clone",
+            "file": "multiplayer.js",
+            "line": 3,
+            "selfMs": 52.85,
+            "samplePercent": 2.63
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 50.4,
+            "samplePercent": 2.51
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 45.49,
+            "samplePercent": 2.27
+          },
+          {
+            "function": "field",
+            "file": "vision.js",
+            "line": 60,
+            "selfMs": 39.43,
+            "samplePercent": 1.96
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 38.83,
+            "samplePercent": 1.93
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 34.87,
+            "samplePercent": 1.74
+          },
+          {
+            "function": "(anonymous)",
+            "file": "tools/profile-game.js",
+            "line": 30,
+            "selfMs": 34.61,
+            "samplePercent": 1.72
+          },
+          {
+            "function": "copy",
+            "file": "replay.js",
+            "line": 7,
+            "selfMs": 33,
+            "samplePercent": 1.64
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 30.85,
+            "samplePercent": 1.54
+          },
+          {
+            "function": "ray",
+            "file": "vision.js",
+            "line": 26,
+            "selfMs": 28.53,
+            "samplePercent": 1.42
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 25.91,
+            "samplePercent": 1.29
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 25.86,
+            "samplePercent": 1.29
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 25.6,
+            "samplePercent": 1.27
+          }
+        ]
+      }
+    },
+    {
+      "before": {
+        "baselineRef": "d95e2ca538d4451a7e44f4616ed2025ad1f37b1b",
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 127.97,
+              "meanMs": 1.6,
+              "p95Ms": 3.783,
+              "maxMs": 8.764
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 32.91,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.89,
+                "meanMs": 0.447,
+                "p95Ms": 0.842,
+                "maxMs": 0.842
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.47,
+                "meanMs": 0.237,
+                "p95Ms": 0.362,
+                "maxMs": 0.362
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 9.54,
+                "meanMs": 1.363,
+                "p95Ms": 3.207,
+                "maxMs": 3.207
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 9.82,
+                "meanMs": 9.815,
+                "p95Ms": 9.815,
+                "maxMs": 9.815
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 1.43,
+                "meanMs": 1.434,
+                "p95Ms": 1.434,
+                "maxMs": 1.434
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 8.23,
+                "meanMs": 8.231,
+                "p95Ms": 8.231,
+                "maxMs": 8.231
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 203,
+            "heapGrowthMiB": 6.48,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 5.67,
+                "meanMs": 0.071,
+                "p95Ms": 0.288,
+                "maxMs": 1.234
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 6.74,
+                "meanMs": 0.168,
+                "p95Ms": 0.404,
+                "maxMs": 0.548
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 77.71,
+                "meanMs": 1.943,
+                "p95Ms": 3.052,
+                "maxMs": 4.217
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 19.72,
+                "meanMs": 0.493,
+                "p95Ms": 0.651,
+                "maxMs": 1.006
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.84,
+                "meanMs": 0.071,
+                "p95Ms": 0.091,
+                "maxMs": 0.166
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.4,
+                "meanMs": 0.772,
+                "p95Ms": 1.297,
+                "maxMs": 1.297
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.46,
+                "meanMs": 5.457,
+                "p95Ms": 5.457,
+                "maxMs": 5.457
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 149.5,
+              "meanMs": 1.869,
+              "p95Ms": 4.614,
+              "maxMs": 8.624
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 26.7,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.92,
+                "meanMs": 0.459,
+                "p95Ms": 0.89,
+                "maxMs": 0.89
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 1,
+                "meanMs": 0.501,
+                "p95Ms": 0.996,
+                "maxMs": 0.996
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.87,
+                "meanMs": 0.839,
+                "p95Ms": 1.418,
+                "maxMs": 1.418
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.96,
+                "meanMs": 5.958,
+                "p95Ms": 5.958,
+                "maxMs": 5.958
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.2,
+                "meanMs": 0.196,
+                "p95Ms": 0.196,
+                "maxMs": 0.196
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5.92,
+                "meanMs": 5.919,
+                "p95Ms": 5.919,
+                "maxMs": 5.919
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 156,
+            "heapGrowthMiB": -4.01,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.14,
+                "meanMs": 0.027,
+                "p95Ms": 0.082,
+                "maxMs": 0.393
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 4.31,
+                "meanMs": 0.108,
+                "p95Ms": 0.175,
+                "maxMs": 0.345
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 87.13,
+                "meanMs": 2.178,
+                "p95Ms": 3.423,
+                "maxMs": 4.487
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 34.34,
+                "meanMs": 0.859,
+                "p95Ms": 1.115,
+                "maxMs": 1.818
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 3.21,
+                "meanMs": 0.08,
+                "p95Ms": 0.132,
+                "maxMs": 0.204
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 4.34,
+                "meanMs": 0.62,
+                "p95Ms": 0.894,
+                "maxMs": 0.894
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 4.39,
+                "meanMs": 4.391,
+                "p95Ms": 4.391,
+                "maxMs": 4.391
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 139.3,
+              "meanMs": 1.741,
+              "p95Ms": 4.23,
+              "maxMs": 16.097
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 32.24,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 0.49,
+                "meanMs": 0.246,
+                "p95Ms": 0.492,
+                "maxMs": 0.492
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.45,
+                "meanMs": 0.224,
+                "p95Ms": 0.443,
+                "maxMs": 0.443
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 12.12,
+                "meanMs": 1.731,
+                "p95Ms": 3.853,
+                "maxMs": 3.853
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 12.18,
+                "meanMs": 12.185,
+                "p95Ms": 12.185,
+                "maxMs": 12.185
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.46,
+                "meanMs": 0.458,
+                "p95Ms": 0.458,
+                "maxMs": 0.458
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5,
+                "meanMs": 5.001,
+                "p95Ms": 5.001,
+                "maxMs": 5.001
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 172,
+            "heapGrowthMiB": -7.47,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2,
+                "meanMs": 0.025,
+                "p95Ms": 0.073,
+                "maxMs": 0.318
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 4.85,
+                "meanMs": 0.121,
+                "p95Ms": 0.179,
+                "maxMs": 0.194
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 76.29,
+                "meanMs": 1.907,
+                "p95Ms": 2.878,
+                "maxMs": 3.424
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 27.08,
+                "meanMs": 0.677,
+                "p95Ms": 0.975,
+                "maxMs": 1.212
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.42,
+                "meanMs": 0.061,
+                "p95Ms": 0.079,
+                "maxMs": 0.111
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 12.71,
+                "meanMs": 1.815,
+                "p95Ms": 3.404,
+                "maxMs": 3.404
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 12.74,
+                "meanMs": 12.743,
+                "p95Ms": 12.743,
+                "maxMs": 12.743
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 892.04,
+              "meanMs": 11.151,
+              "p95Ms": 24.656,
+              "maxMs": 29.104
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 63.53,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 7.51,
+                "meanMs": 0.171,
+                "p95Ms": 1.021,
+                "maxMs": 1.171
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 5.73,
+                "meanMs": 0.13,
+                "p95Ms": 0.694,
+                "maxMs": 1.114
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.02,
+                "meanMs": 0.023,
+                "p95Ms": 0.023,
+                "maxMs": 0.023
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 1.57,
+                "meanMs": 0.196,
+                "p95Ms": 0.474,
+                "maxMs": 0.474
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 36.98,
+                "meanMs": 4.622,
+                "p95Ms": 7.164,
+                "maxMs": 7.164
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 968,
+            "heapGrowthMiB": 9.2,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.56,
+                "meanMs": 0.045,
+                "p95Ms": 0.149,
+                "maxMs": 0.315
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 33.99,
+                "meanMs": 0.106,
+                "p95Ms": 0.154,
+                "maxMs": 1.378
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 591.22,
+                "meanMs": 1.848,
+                "p95Ms": 2.874,
+                "maxMs": 3.804
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 262.38,
+                "meanMs": 0.82,
+                "p95Ms": 1.222,
+                "maxMs": 3.078
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 20.82,
+                "meanMs": 0.065,
+                "p95Ms": 0.112,
+                "maxMs": 0.236
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.013,
+                "p95Ms": 0.013,
+                "maxMs": 0.013
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 943.11,
+              "meanMs": 39.296,
+              "p95Ms": 80.876,
+              "maxMs": 81.505
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 173.69,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 18.54,
+                "meanMs": 0.105,
+                "p95Ms": 0.64,
+                "maxMs": 0.906
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 17.53,
+                "meanMs": 0.1,
+                "p95Ms": 0.632,
+                "maxMs": 1.338
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.06,
+                "meanMs": 0.015,
+                "p95Ms": 0.019,
+                "maxMs": 0.019
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.41,
+                "meanMs": 0.106,
+                "p95Ms": 0.159,
+                "maxMs": 0.234
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 98.76,
+                "meanMs": 3.086,
+                "p95Ms": 4.09,
+                "maxMs": 4.511
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 12,
+            "cpuMs": 985,
+            "heapGrowthMiB": 15.63,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 5.15,
+                "meanMs": 0.054,
+                "p95Ms": 0.173,
+                "maxMs": 0.218
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 38.85,
+                "meanMs": 0.101,
+                "p95Ms": 0.163,
+                "maxMs": 0.407
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 652.86,
+                "meanMs": 1.7,
+                "p95Ms": 2.784,
+                "maxMs": 4.505
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 245.52,
+                "meanMs": 0.639,
+                "p95Ms": 0.873,
+                "maxMs": 2.607
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 24.19,
+                "meanMs": 0.063,
+                "p95Ms": 0.096,
+                "maxMs": 0.226
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 449.39,
+            "samplePercent": 12.75
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 316.38,
+            "samplePercent": 8.98
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 235.09,
+            "samplePercent": 6.67
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 226.04,
+            "samplePercent": 6.41
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 217.51,
+            "samplePercent": 6.17
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 162,
+            "selfMs": 163.36,
+            "samplePercent": 4.63
+          },
+          {
+            "function": "structuredClone",
+            "file": "",
+            "line": 0,
+            "selfMs": 120.25,
+            "samplePercent": 3.41
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 119.64,
+            "samplePercent": 3.39
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 107.76,
+            "samplePercent": 3.06
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 7,
+            "selfMs": 75.58,
+            "samplePercent": 2.14
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 75.1,
+            "samplePercent": 2.13
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 74.32,
+            "samplePercent": 2.11
+          },
+          {
+            "function": "clone",
+            "file": "multiplayer.js",
+            "line": 3,
+            "selfMs": 59.51,
+            "samplePercent": 1.69
+          },
+          {
+            "function": "(anonymous)",
+            "file": "tools/profile-game.js",
+            "line": 30,
+            "selfMs": 46.06,
+            "samplePercent": 1.31
+          },
+          {
+            "function": "field",
+            "file": "vision.js",
+            "line": 60,
+            "selfMs": 45.73,
+            "samplePercent": 1.3
+          },
+          {
+            "function": "copy",
+            "file": "replay.js",
+            "line": 7,
+            "selfMs": 45.32,
+            "samplePercent": 1.29
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 44.46,
+            "samplePercent": 1.26
+          },
+          {
+            "function": "structuredClone",
+            "file": "",
+            "line": 0,
+            "selfMs": 43.45,
+            "samplePercent": 1.23
+          },
+          {
+            "function": "key",
+            "file": "engine.js",
+            "line": 103,
+            "selfMs": 43.03,
+            "samplePercent": 1.22
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 168,
+            "selfMs": 41.52,
+            "samplePercent": 1.18
+          }
+        ]
+      },
+      "after": {
+        "baselineRef": null,
+        "seed": 731,
+        "environment": {
+          "node": "v24.15.0",
+          "cpu": "Intel(R) Core(TM) Ultra 5 235U",
+          "logicalCPUs": 14,
+          "platform": "win32"
+        },
+        "note": "Local synchronous RoomHub workloads, profiled with Node inspector; includes filtered views, terrain deltas and JSON but excludes sockets, zlib and real Canvas/GPU. Timings include profiling overhead. Component timings are inclusive and overlap. Fixed map seeds and bot classes for paired comparisons. Heap growth is not retained memory.",
+        "cases": [
+          {
+            "map": "medium",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 85.24,
+              "meanMs": 1.066,
+              "p95Ms": 2.432,
+              "maxMs": 8.386
+            },
+            "dimensions": [
+              [
+                44,
+                36
+              ]
+            ],
+            "setupMs": 34.67,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.2,
+                "meanMs": 0.601,
+                "p95Ms": 1.139,
+                "maxMs": 1.139
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.3,
+                "meanMs": 0.148,
+                "p95Ms": 0.282,
+                "maxMs": 0.282
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 10.53,
+                "meanMs": 1.504,
+                "p95Ms": 3.694,
+                "maxMs": 3.694
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 10.8,
+                "meanMs": 10.801,
+                "p95Ms": 10.801,
+                "maxMs": 10.801
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 1.1,
+                "meanMs": 1.103,
+                "p95Ms": 1.103,
+                "maxMs": 1.103
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 7.94,
+                "meanMs": 7.939,
+                "p95Ms": 7.939,
+                "maxMs": 7.939
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 202,
+            "heapGrowthMiB": 9.08,
+            "packets": 40,
+            "packetBytes": 452878,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 6.82,
+                "meanMs": 0.085,
+                "p95Ms": 0.228,
+                "maxMs": 2.348
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 7.19,
+                "meanMs": 0.18,
+                "p95Ms": 0.401,
+                "maxMs": 0.444
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 50.06,
+                "meanMs": 1.251,
+                "p95Ms": 1.986,
+                "maxMs": 3.224
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 3.32,
+                "meanMs": 0.083,
+                "p95Ms": 0.144,
+                "maxMs": 0.186
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 3.12,
+                "meanMs": 0.078,
+                "p95Ms": 0.141,
+                "maxMs": 0.199
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.79,
+                "meanMs": 0.827,
+                "p95Ms": 1.559,
+                "maxMs": 1.559
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.86,
+                "meanMs": 5.857,
+                "p95Ms": 5.857,
+                "maxMs": 5.857
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 80.12,
+              "meanMs": 1.001,
+              "p95Ms": 3.046,
+              "maxMs": 5.801
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 28.96,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 3.09,
+                "meanMs": 1.545,
+                "p95Ms": 2.869,
+                "maxMs": 2.869
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.8,
+                "meanMs": 0.402,
+                "p95Ms": 0.795,
+                "maxMs": 0.795
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 5.43,
+                "meanMs": 0.775,
+                "p95Ms": 1.245,
+                "maxMs": 1.245
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 5.5,
+                "meanMs": 5.503,
+                "p95Ms": 5.503,
+                "maxMs": 5.503
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.17,
+                "meanMs": 0.172,
+                "p95Ms": 0.172,
+                "maxMs": 0.172
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 5.92,
+                "meanMs": 5.918,
+                "p95Ms": 5.918,
+                "maxMs": 5.918
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 94,
+            "heapGrowthMiB": 8.41,
+            "packets": 40,
+            "packetBytes": 472181,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 1.98,
+                "meanMs": 0.025,
+                "p95Ms": 0.085,
+                "maxMs": 0.442
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 4.25,
+                "meanMs": 0.106,
+                "p95Ms": 0.17,
+                "maxMs": 0.222
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 48.76,
+                "meanMs": 1.219,
+                "p95Ms": 2.001,
+                "maxMs": 3.708
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 5.72,
+                "meanMs": 0.143,
+                "p95Ms": 0.24,
+                "maxMs": 0.743
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.8,
+                "meanMs": 0.07,
+                "p95Ms": 0.107,
+                "maxMs": 0.14
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 3.81,
+                "meanMs": 0.545,
+                "p95Ms": 0.76,
+                "maxMs": 0.76
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 3.86,
+                "meanMs": 3.863,
+                "p95Ms": 3.863,
+                "maxMs": 3.863
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "meadow",
+            "humans": 1,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 89.34,
+              "meanMs": 1.117,
+              "p95Ms": 3.188,
+              "maxMs": 15.871
+            },
+            "dimensions": [
+              [
+                48,
+                56
+              ]
+            ],
+            "setupMs": 36.06,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 2,
+                "totalMs": 1.43,
+                "meanMs": 0.716,
+                "p95Ms": 1.431,
+                "maxMs": 1.431
+              },
+              "packetJSON": {
+                "count": 2,
+                "totalMs": 0.9,
+                "meanMs": 0.448,
+                "p95Ms": 0.888,
+                "maxMs": 0.888
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 12.31,
+                "meanMs": 1.759,
+                "p95Ms": 4.357,
+                "maxMs": 4.357
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 12.39,
+                "meanMs": 12.389,
+                "p95Ms": 12.389,
+                "maxMs": 12.389
+              },
+              "visibilityPolygon": {
+                "count": 1,
+                "totalMs": 0.46,
+                "meanMs": 0.464,
+                "p95Ms": 0.464,
+                "maxMs": 0.464
+              },
+              "filteredPlayerView": {
+                "count": 1,
+                "totalMs": 3.92,
+                "meanMs": 3.925,
+                "p95Ms": 3.925,
+                "maxMs": 3.925
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 125,
+            "heapGrowthMiB": -2.63,
+            "packets": 40,
+            "packetBytes": 397052,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 2.07,
+                "meanMs": 0.026,
+                "p95Ms": 0.078,
+                "maxMs": 0.356
+              },
+              "visibilityPolygon": {
+                "count": 40,
+                "totalMs": 7.37,
+                "meanMs": 0.184,
+                "p95Ms": 0.249,
+                "maxMs": 1.986
+              },
+              "filteredPlayerView": {
+                "count": 40,
+                "totalMs": 45.6,
+                "meanMs": 1.14,
+                "p95Ms": 1.878,
+                "maxMs": 3.161
+              },
+              "terrainDelta": {
+                "count": 40,
+                "totalMs": 5.3,
+                "meanMs": 0.133,
+                "p95Ms": 0.255,
+                "maxMs": 0.28
+              },
+              "packetJSON": {
+                "count": 40,
+                "totalMs": 2.44,
+                "meanMs": 0.061,
+                "p95Ms": 0.079,
+                "maxMs": 0.097
+              },
+              "botPlan": {
+                "count": 7,
+                "totalMs": 13.93,
+                "meanMs": 1.99,
+                "p95Ms": 3.397,
+                "maxMs": 3.397
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 13.97,
+                "meanMs": 13.967,
+                "p95Ms": 13.967,
+                "maxMs": 13.967
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 1,
+            "ticks": {
+              "count": 80,
+              "totalMs": 410.52,
+              "meanMs": 5.131,
+              "p95Ms": 12.226,
+              "maxMs": 12.888
+            },
+            "dimensions": [
+              [
+                56,
+                56
+              ]
+            ],
+            "setupMs": 78.02,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 44,
+                "totalMs": 22.56,
+                "meanMs": 0.513,
+                "p95Ms": 1.874,
+                "maxMs": 10.63
+              },
+              "packetJSON": {
+                "count": 44,
+                "totalMs": 7.76,
+                "meanMs": 0.176,
+                "p95Ms": 0.905,
+                "maxMs": 1.612
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.02,
+                "meanMs": 0.024,
+                "p95Ms": 0.024,
+                "maxMs": 0.024
+              },
+              "visibilityPolygon": {
+                "count": 8,
+                "totalMs": 1.4,
+                "meanMs": 0.175,
+                "p95Ms": 0.321,
+                "maxMs": 0.321
+              },
+              "filteredPlayerView": {
+                "count": 8,
+                "totalMs": 34.68,
+                "meanMs": 4.336,
+                "p95Ms": 6.785,
+                "maxMs": 6.785
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 0,
+            "cpuMs": 468,
+            "heapGrowthMiB": 3.37,
+            "packets": 320,
+            "packetBytes": 3258151,
+            "components": {
+              "engineStep": {
+                "count": 80,
+                "totalMs": 3.74,
+                "meanMs": 0.047,
+                "p95Ms": 0.147,
+                "maxMs": 0.28
+              },
+              "visibilityPolygon": {
+                "count": 320,
+                "totalMs": 31.68,
+                "meanMs": 0.099,
+                "p95Ms": 0.156,
+                "maxMs": 0.649
+              },
+              "filteredPlayerView": {
+                "count": 320,
+                "totalMs": 303.95,
+                "meanMs": 0.95,
+                "p95Ms": 1.48,
+                "maxMs": 3.385
+              },
+              "terrainDelta": {
+                "count": 320,
+                "totalMs": 69.65,
+                "meanMs": 0.218,
+                "p95Ms": 0.341,
+                "maxMs": 0.891
+              },
+              "packetJSON": {
+                "count": 320,
+                "totalMs": 19.62,
+                "meanMs": 0.061,
+                "p95Ms": 0.09,
+                "maxMs": 0.29
+              },
+              "planningWithBots": {
+                "count": 1,
+                "totalMs": 0.01,
+                "meanMs": 0.011,
+                "p95Ms": 0.011,
+                "maxMs": 0.011
+              }
+            },
+            "stages": [
+              "planning"
+            ]
+          },
+          {
+            "map": "large",
+            "humans": 8,
+            "rooms": 4,
+            "ticks": {
+              "count": 24,
+              "totalMs": 474.47,
+              "meanMs": 19.769,
+              "p95Ms": 47.384,
+              "maxMs": 62.578
+            },
+            "dimensions": [
+              [
+                56,
+                52
+              ],
+              [
+                44,
+                48
+              ],
+              [
+                52,
+                52
+              ],
+              [
+                52,
+                48
+              ]
+            ],
+            "setupMs": 214.05,
+            "setupStats": {
+              "terrainDelta": {
+                "count": 176,
+                "totalMs": 38.29,
+                "meanMs": 0.218,
+                "p95Ms": 1.404,
+                "maxMs": 2.626
+              },
+              "packetJSON": {
+                "count": 176,
+                "totalMs": 20.7,
+                "meanMs": 0.118,
+                "p95Ms": 0.745,
+                "maxMs": 1.527
+              },
+              "planningWithBots": {
+                "count": 4,
+                "totalMs": 0.06,
+                "meanMs": 0.014,
+                "p95Ms": 0.016,
+                "maxMs": 0.016
+              },
+              "visibilityPolygon": {
+                "count": 32,
+                "totalMs": 3.48,
+                "meanMs": 0.109,
+                "p95Ms": 0.204,
+                "maxMs": 0.229
+              },
+              "filteredPlayerView": {
+                "count": 32,
+                "totalMs": 125.52,
+                "meanMs": 3.922,
+                "p95Ms": 13.248,
+                "maxMs": 14.364
+              }
+            },
+            "tickBudgetMs": 45,
+            "ticksOverBudget": 2,
+            "cpuMs": 625,
+            "heapGrowthMiB": -15.66,
+            "packets": 384,
+            "packetBytes": 4028738,
+            "components": {
+              "engineStep": {
+                "count": 96,
+                "totalMs": 4.77,
+                "meanMs": 0.05,
+                "p95Ms": 0.164,
+                "maxMs": 0.187
+              },
+              "visibilityPolygon": {
+                "count": 384,
+                "totalMs": 39.59,
+                "meanMs": 0.103,
+                "p95Ms": 0.173,
+                "maxMs": 1.444
+              },
+              "filteredPlayerView": {
+                "count": 384,
+                "totalMs": 356.54,
+                "meanMs": 0.929,
+                "p95Ms": 1.456,
+                "maxMs": 15.691
+              },
+              "terrainDelta": {
+                "count": 384,
+                "totalMs": 74.98,
+                "meanMs": 0.195,
+                "p95Ms": 0.345,
+                "maxMs": 0.784
+              },
+              "packetJSON": {
+                "count": 384,
+                "totalMs": 24.54,
+                "meanMs": 0.064,
+                "p95Ms": 0.107,
+                "maxMs": 0.271
+              }
+            },
+            "stages": [
+              "resolution",
+              "resolution",
+              "resolution",
+              "resolution"
+            ]
+          }
+        ],
+        "hotFunctions": [
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 169.68,
+            "samplePercent": 8.32
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 134.27,
+            "samplePercent": 6.58
+          },
+          {
+            "function": "(garbage collector)",
+            "file": "",
+            "line": 0,
+            "selfMs": 125.95,
+            "samplePercent": 6.17
+          },
+          {
+            "function": "view",
+            "file": "multiplayer.js",
+            "line": 171,
+            "selfMs": 84.35,
+            "samplePercent": 4.13
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 76.57,
+            "samplePercent": 3.75
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 57.36,
+            "samplePercent": 2.81
+          },
+          {
+            "function": "copy",
+            "file": "replay.js",
+            "line": 7,
+            "selfMs": 54.13,
+            "samplePercent": 2.65
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 52.91,
+            "samplePercent": 2.59
+          },
+          {
+            "function": "clone",
+            "file": "multiplayer.js",
+            "line": 3,
+            "selfMs": 52.8,
+            "samplePercent": 2.59
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 50.55,
+            "samplePercent": 2.48
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 46.53,
+            "samplePercent": 2.28
+          },
+          {
+            "function": "pointVisible",
+            "file": "vision.js",
+            "line": 43,
+            "selfMs": 43,
+            "samplePercent": 2.11
+          },
+          {
+            "function": "(anonymous)",
+            "file": "wire.js",
+            "line": 8,
+            "selfMs": 34.11,
+            "samplePercent": 1.67
+          },
+          {
+            "function": "field",
+            "file": "vision.js",
+            "line": 60,
+            "selfMs": 32.85,
+            "samplePercent": 1.61
+          },
+          {
+            "function": "(anonymous)",
+            "file": "tools/profile-game.js",
+            "line": 30,
+            "selfMs": 32.09,
+            "samplePercent": 1.57
+          },
+          {
+            "function": "(anonymous)",
+            "file": "multiplayer.js",
+            "line": 179,
+            "selfMs": 30.77,
+            "samplePercent": 1.51
+          },
+          {
+            "function": "(anonymous)",
+            "file": "engine.js",
+            "line": 348,
+            "selfMs": 26.73,
+            "samplePercent": 1.31
+          },
+          {
+            "function": "structuredClone",
+            "file": "node:internal/worker/js_transferable",
+            "line": 112,
+            "selfMs": 26.46,
+            "samplePercent": 1.3
+          },
+          {
+            "function": "litCells",
+            "file": "vision.js",
+            "line": 79,
+            "selfMs": 25.8,
+            "samplePercent": 1.26
+          },
+          {
+            "function": "visible",
+            "file": "engine.js",
+            "line": 118,
+            "selfMs": 25.29,
+            "samplePercent": 1.24
+          }
+        ]
+      }
+    }
+  ]
+}
