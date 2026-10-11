@@ -1,6 +1,6 @@
 /* Touch HUD has its own space. The arena ends above the dock, so even edge
    spawns and drag destinations remain visible and reachable. */
-#mobile-dock[hidden],#mobile-dock [hidden]{display:none!important}
+#mobile-dock[hidden],#mobile-dock [hidden],#mobile-field-hud[hidden],#mobile-field-hud [hidden]{display:none!important}
 body.mobile-layout.mobile-playing .topbar,body.mobile-layout.mobile-playing #left-hud,body.mobile-layout.mobile-playing .command-panel,body.mobile-layout.mobile-playing .plan-heading,body.mobile-layout.mobile-playing .field-note,body.mobile-layout.mobile-playing #action-feedback{display:none!important}
 body.mobile-layout.mobile-playing .arena-frame{position:fixed!important;inset:0 0 var(--mobile-dock-height,280px)!important;width:auto!important;height:auto!important;margin:0!important;border:0;border-radius:0}
 body.mobile-layout.mobile-playing #canvas-wrap{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0;touch-action:none}
@@ -44,56 +44,74 @@ body.mobile-layout #mobile-dock{position:fixed;z-index:25;inset:auto 0 0;padding
 #mobile-dock .plan-slot .slot-number{font-size:10px;width:auto;min-width:14px}
 #mobile-dock .plan-slot>div{min-width:0}#mobile-dock .plan-slot b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 #mobile-dock .plan-slot small,#mobile-dock .plan-slot>span:last-child{display:none}
-#mobile-commit{grid-area:commit;display:grid;grid-template-columns:48px 48px 48px minmax(0,1fr);gap:5px}
-#mobile-dock #mobile-cancel,#mobile-dock #mobile-pan,#mobile-dock #undo-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin:0;padding:3px;min-height:44px;height:44px;min-width:0;border:1px solid #4c6676;border-radius:9px;background:#1c3040;font:700 12px var(--interface);color:#c7dbe8}
-#mobile-dock #mobile-cancel{grid-column:1;grid-row:1;border-color:#92605e;color:#f2b9b5;background:#382930}
-#mobile-dock #undo-button{grid-column:2;grid-row:1;font-size:10px}
-#mobile-dock #mobile-pan{grid-column:3;grid-row:1;color:#b0d8f2}
-#mobile-dock #mobile-pan.selected{background:#284b65;border-color:#8bcaef;color:#edfaff}
-#mobile-dock #mobile-cancel span,#mobile-dock #mobile-pan span{font-size:9px}
-#mobile-dock #mobile-pan svg{width:15px;height:15px}
+#mobile-commit{grid-area:commit;display:grid;grid-template-columns:48px 64px minmax(0,1fr);gap:5px}
+#mobile-dock #camera-center,#mobile-dock #undo-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin:0;padding:3px;min-height:44px;height:44px;min-width:0;border:1px solid #4c6676;border-radius:9px;background:#1c3040;font:700 12px var(--interface);color:#c7dbe8}
+#mobile-dock #undo-button{grid-column:1;grid-row:1;font-size:10px}
+#mobile-dock #camera-center{grid-column:2;grid-row:1;color:#bde8f8;border-color:#538397;background:#213d4e}
+#mobile-dock #camera-center::before,#mobile-dock #camera-center::after{content:none;display:none}
+#mobile-follow-label{font-size:9px}
+#mobile-dock #camera-center svg{display:block;width:16px;height:16px;flex:none}
 #mobile-dock #undo-button kbd{display:none}
-#mobile-dock #lock-button{grid-column:4;grid-row:1;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px;height:44px;min-height:44px;padding:5px 8px;margin:0;border-radius:10px;background:linear-gradient(115deg,#b4edc8,#8ed8bf);box-shadow:0 2px 8px #0003}
+#mobile-dock #lock-button{grid-column:3;grid-row:1;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px;height:44px;min-height:44px;padding:5px 8px;margin:0;border-radius:10px;background:linear-gradient(115deg,#b4edc8,#8ed8bf);box-shadow:0 2px 8px #0003}
 #mobile-dock #lock-label{font-size:12px;white-space:nowrap}#mobile-dock #lock-button kbd{display:none}#mobile-dock .confirm-symbol{width:22px;height:22px}
-#mobile-dock #loadout-dock,#mobile-dock #field-tools,#mobile-dock #practice-panel{position:static!important;inset:auto!important;transform:none;width:100%!important;max-height:none!important;min-height:0;margin:0;flex:none;overflow:visible;box-sizing:border-box}
-#mobile-dock #loadout-dock .operator-card{padding:8px}#mobile-dock .operator-title{margin-bottom:6px}#mobile-dock .operator-title h2{font-size:15px}
-#mobile-dock #loadout-dock .weapon-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-height:none;overflow:visible}
-#mobile-dock #loadout-dock .weapon-tabs button{min-height:48px}
-#mobile-dock #fate-build{position:static;inset:auto;transform:none;width:100%;max-height:none;padding:10px;box-sizing:border-box;margin-top:8px}
-#mobile-dock #fate-build button,#mobile-dock #fate-build select{min-height:44px}
+#mobile-dock #field-tools,#mobile-dock #practice-panel{position:static!important;inset:auto!important;transform:none;width:100%!important;max-height:none!important;min-height:0;margin:0;flex:none;overflow:visible;box-sizing:border-box}
 #mobile-dock #practice-panel{padding:10px}#mobile-dock #practice-body{max-height:none;overflow:visible}
 #mobile-dock #practice-collapse,#mobile-dock #practice-reset,#mobile-dock .walkthrough-controls button,#mobile-dock #walkthrough-lesson,#mobile-dock #practice-field{min-height:44px}
 #mobile-dock #practice-operators{grid-template-columns:repeat(2,minmax(0,1fr))}#mobile-dock #practice-operators button{min-height:48px}
 #mobile-dock #walkthrough-keyboard{display:none}#mobile-dock #walkthrough-input-label{font-size:10px}
-#mobile-dock .camera-controls{position:static!important;display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;width:auto;background:none;border:0;padding:0}
-#mobile-dock .camera-controls>span{display:none}#mobile-dock .camera-controls button{display:grid;place-items:center;min-width:48px;min-height:48px;padding:10px;border:1px solid #53768a;border-radius:10px;background:#203a4b}
+#mobile-dock .camera-controls{display:none}
 #mobile-dock #drop-countdown,#mobile-dock #platform-legend,#mobile-dock #camera-mode{position:static!important;inset:auto!important;width:auto;margin:5px 0;max-width:100%}
-.mobile-camera-help{font:500 12px/1.5 var(--interface);color:#b6cedb;margin:5px 0}
-#mobile-dock .top-right{position:static;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;width:100%;margin:0}
+#mobile-dock .top-right{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%;margin:0}
 #mobile-dock .top-right button{width:auto;height:48px;min-height:48px;border-radius:10px}
 #mobile-dock .top-right #sound-label{display:none}#mobile-dock .top-right button svg{width:22px;height:22px}
 #mobile-dock .top-right button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px}
-#mobile-dock .top-right #help-button::after{content:'Help'}#mobile-dock .top-right #sound-button::after{content:'Sound'}#mobile-dock .top-right #audio-settings-button::after{content:'Audio'}#mobile-dock .top-right #fullscreen-button::after{content:'Full screen'}#mobile-dock .top-right #restart-button::after{content:'Exit'}
+#mobile-dock .top-right #help-button::after{content:'Help'}#mobile-dock .top-right #sound-button::after{content:'Sound'}#mobile-dock .top-right #audio-settings-button::after{content:'Audio'}#mobile-dock .top-right #restart-button::after{content:'Exit'}
 #mobile-dock #replay-controls,#mobile-dock #spectator-bar{position:static!important;inset:auto!important;transform:none;width:100%;max-width:none;margin:0;box-sizing:border-box}
 #mobile-dock #replay-controls button,#mobile-dock #replay-controls select,#mobile-dock #spectator-bar button{min-height:44px}
 body.mobile-layout #ingame-audio-panel{bottom:calc(var(--mobile-dock-height) + 8px);top:auto;right:8px;left:8px;width:auto;max-height:55dvh;overflow:auto}
 body.mobile-layout.mobile-playing .arena-toast{top:auto;bottom:10px;height:auto;width:max-content;max-width:calc(100% - 20px);font-size:11px;padding:8px 12px;border-radius:9px}
+/* Floating equipment and fullscreen stay accessible without consuming map space. */
+#mobile-field-hud{position:fixed;z-index:26;top:max(8px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));pointer-events:none;color:#e6f1f6;max-width:calc(100vw - 20px)}
+#mobile-floating-buttons{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+#mobile-field-hud button{pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#mobile-gear-button,#mobile-field-hud #fullscreen-button{height:48px;min-height:48px;border:1px solid #65879b;border-radius:12px;background:linear-gradient(145deg,#243c4ef5,#142838f5);color:#d6edf6;box-shadow:0 3px 12px #0005}
+#mobile-gear-button{display:flex;align-items:center;gap:9px;width:158px;padding:6px 10px;text-align:left}
+#mobile-gear-button[aria-expanded=true]{border-color:#a1dfc5;background:#29493f}
+#mobile-gear-icon{display:flex;align-items:center;flex:none;width:30px}#mobile-gear-icon svg{width:30px;height:23px}
+#mobile-gear-button>span{min-width:0}#mobile-gear-name{display:block;font:750 13px/1.3 var(--interface);letter-spacing:.3px}
+#mobile-gear-info{display:block;font:500 10px/1.4 var(--interface);white-space:nowrap;color:#afc9d7}
+#mobile-field-hud #fullscreen-button{display:flex;align-items:center;justify-content:center;padding:0;width:48px;min-width:48px;flex:none}
+#mobile-field-hud #fullscreen-button svg{width:23px;height:23px}
+#mobile-pane-gear{pointer-events:auto;display:flex;flex-direction:column;margin-top:8px;width:min(360px,calc(100vw - 20px));max-height:min(440px,calc(100dvh - var(--mobile-dock-height,280px) - 76px));min-height:0;background:#152a38f7;border:1px solid #7193a8;border-radius:14px;box-shadow:0 12px 32px #0008;overflow:hidden}
+.mobile-gear-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;flex:none;padding:0 6px 0 12px;border-bottom:1px solid #5c7b8e50;font:700 12px var(--interface)}
+#mobile-gear-close{display:grid;place-items:center;width:44px;height:44px;flex:none;padding:0;border:0;background:transparent;color:#bfd6e3;font:24px var(--interface)}
+#mobile-gear-content{overflow:auto;min-height:0;overscroll-behavior:contain;scrollbar-width:thin}
+#mobile-field-hud #loadout-dock,#mobile-field-hud #fate-build{position:static!important;inset:auto!important;transform:none;width:100%!important;max-height:none!important;margin:0;overflow:visible;box-sizing:border-box}
+#mobile-field-hud .operator-card{display:flex;flex-direction:column;gap:8px;padding:9px;width:100%}
+#mobile-field-hud .operator-card>.eyebrow{display:none}
+#mobile-field-hud .operator-title{order:2;margin:0}#mobile-field-hud .operator-title h2{font-size:15px}
+#mobile-field-hud .health-stats{order:1}#mobile-field-hud .weapon-line{order:3;padding-top:0}
+#mobile-field-hud .weapon-tabs{order:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;width:100%;max-width:none!important;max-height:none;margin:0;overflow:visible}
+#mobile-field-hud .weapon-tabs button{min-height:48px;min-width:0;padding:5px;border-radius:8px}
+#mobile-field-hud #fate-build{padding:10px}#mobile-field-hud #fate-build button,#mobile-field-hud #fate-build select{min-height:44px}
 @media(max-height:540px) and (min-width:600px){
-  body.mobile-layout #mobile-dock{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:'status tabs' 'lesson lesson' 'pane commit' 'plan plan';gap:4px;padding-top:3px;max-height:64dvh}
+  body.mobile-layout #mobile-dock{grid-template-columns:minmax(0,1fr) 220px;grid-template-areas:'status tabs' 'lesson lesson' 'pane commit' 'plan plan';gap:4px;padding-top:3px;max-height:64dvh}
   #mobile-dock #mobile-action-grid{grid-template-columns:repeat(10,minmax(0,1fr));grid-auto-rows:48px;gap:3px}
   #mobile-dock #skill-name{font-size:9px}#mobile-dock #skill-button{padding:4px;gap:1px 3px;grid-template-columns:17px minmax(0,1fr)}
   #mobile-dock #skill-button>span:first-child,#mobile-dock #skill-button svg{width:17px;height:17px}
   #mobile-dock #mobile-touch-hint{margin-top:3px;font-size:9px}
   #mobile-dock #mobile-tabs button{min-height:44px;font-size:10px}
-  #mobile-dock #mobile-commit{align-self:start;grid-template-columns:44px 44px 44px minmax(0,1fr);gap:3px}
+  #mobile-dock #mobile-commit{align-self:start;grid-template-columns:44px 54px minmax(0,1fr);gap:3px}
   #mobile-dock #lock-button{padding:4px}#mobile-dock #lock-label{font-size:10px;white-space:normal}#mobile-dock .confirm-symbol{display:none}
   #mobile-dock #mobile-plan{max-width:600px;justify-self:center;width:100%}
   #mobile-dock .mobile-pane{max-height:120px}
+  #mobile-field-hud .weapon-tabs{display:flex;overflow-x:auto;overscroll-behavior:contain}
+  #mobile-field-hud .weapon-tabs button{flex:0 0 80px;min-height:48px}
 }
 @media(max-height:540px) and (min-width:600px) and (max-width:740px){
   body.mobile-layout #mobile-dock{grid-template-columns:1fr 1fr;grid-template-areas:'status plan' 'tabs tabs' 'lesson lesson' 'pane pane' 'commit commit';gap:3px;max-height:72dvh}
   #mobile-dock #mobile-action-grid{grid-template-columns:repeat(10,minmax(0,1fr))}
-  #mobile-dock #mobile-commit{grid-template-columns:48px 48px 48px minmax(0,1fr)}
+  #mobile-dock #mobile-commit{grid-template-columns:48px 64px minmax(0,1fr)}
   #mobile-dock #mobile-touch-hint{display:none}#mobile-dock .status-row .alive-box{display:none}
   #mobile-dock .mobile-pane{max-height:96px}
 }

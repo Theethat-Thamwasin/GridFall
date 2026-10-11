@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),{harness}=require('./helpers/game-harness');
-async function setup(width=390,mode='free'){
-  const h=harness(width,{preparePractice:s=>{for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',loot:null});}});await h.$(mode==='walkthrough'?'menu-walkthrough':'menu-free-practice').click();
+async function setup(width=390,mode='free',options={}){
+  const h=harness(width,{...options,preparePractice:s=>{for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',loot:null});}});await h.$(mode==='walkthrough'?'menu-walkthrough':'menu-free-practice').click();
   const status=()=>h.window.GRIDFALL_STATUS();
   function touch(type,p,id=1){const s=status(),r=h.$('arena').getBoundingClientRect();h.$('arena').dispatchEvent({type,pointerType:'touch',pointerId:id,button:0,buttons:type==='pointerup'?0:1,clientX:p.pixel?p.x:(p.x+.5-s.camera.x)/s.viewport.x*r.width,clientY:p.pixel?p.y:(p.y+.5-s.camera.y)/s.viewport.y*r.height});}
   return {...h,status,touch,choose:type=>h.$('actions').querySelector('[data-type="'+type+'"]').click()};
@@ -18,17 +18,19 @@ test('Smoke, grenade and targetable skills all commit only on touch release',asy
     const s=h.status(),p={x:s.player.x+1,y:s.player.y};h.touch('pointerdown',p);assert.equal(h.status().queued,0,type+' previews');h.touch('pointerup',p);assert.equal(h.status().plan[0]?.type,type,type+' release');h.$('undo-button').click();
   }
 });
-test('Cancel, outside release, pointer cancellation, lost capture and blur discard the aim',async()=>{
+test('outside release, pointer cancellation, lost capture and blur discard the aim',async()=>{
   const h=await setup();h.choose('shoot');const s=h.status(),p={x:s.player.x+2,y:s.player.y};
-  for(const trigger of [()=>h.$('mobile-cancel').click(),()=>h.touch('pointercancel',p),()=>h.$('arena').dispatchEvent({type:'lostpointercapture',pointerId:1}),()=>h.window.dispatchEvent({type:'blur'})]){h.touch('pointerdown',p);trigger();h.touch('pointerup',p);assert.equal(h.status().queued,0);}
+  for(const trigger of [()=>h.touch('pointercancel',p),()=>h.$('arena').dispatchEvent({type:'lostpointercapture',pointerId:1}),()=>h.window.dispatchEvent({type:'blur'})]){h.touch('pointerdown',p);trigger();h.touch('pointerup',p);assert.equal(h.status().queued,0);}
   h.touch('pointerdown',p);h.touch('pointerup',{pixel:true,x:-5,y:20});assert.equal(h.status().queued,0);
 });
 test('a second finger cancels shooting, pans and pinches, and never queues on the last finger release',async()=>{
   const h=await setup();h.choose('shoot');const a={pixel:true,x:550,y:320},b={pixel:true,x:650,y:320};h.touch('pointerdown',a,1);h.touch('pointerdown',b,2);const before=h.status().camera;
   h.touch('pointermove',{pixel:true,x:720,y:340},2);assert.ok(h.status().camera.zoom>before.zoom);assert.notEqual(h.status().camera.x,before.x);assert.equal(h.status().camera.follow,false);h.touch('pointerup',b,2);h.touch('pointermove',{pixel:true,x:500,y:320},1);h.touch('pointerup',a,1);assert.equal(h.status().queued,0);
 });
-test('Pan toggles one-finger camera controls; selecting an action returns to aiming',async()=>{
-  const h=await setup(),p={pixel:true,x:550,y:320};h.$('mobile-pan').click();assert.equal(h.$('mobile-pan').getAttribute('aria-pressed'),'true');const x=h.status().camera.x;h.touch('pointerdown',p);h.touch('pointermove',{pixel:true,x:620,y:320});h.touch('pointerup',p);assert.notEqual(h.status().camera.x,x);assert.equal(h.status().queued,0);h.choose('shoot');assert.equal(h.$('mobile-pan').getAttribute('aria-pressed'),'false');
+test('Follow returns to the operator after a two-finger pan without queuing an action',async()=>{
+  const h=await setup(),a={pixel:true,x:550,y:320},b={pixel:true,x:650,y:320},x=h.status().camera.x;
+  h.touch('pointerdown',a,1);h.touch('pointerdown',b,2);h.touch('pointermove',{pixel:true,x:720,y:320},2);h.touch('pointerup',b,2);h.touch('pointerup',a,1);assert.notEqual(h.status().camera.x,x);assert.equal(h.status().camera.follow,false);
+  h.$('camera-center').click();h.frames(25);assert.equal(h.status().camera.follow,true);assert.equal(h.status().queued,0);
 });
 test('changing action, reset, visibility, or camera controls cancels an outstanding aim',async()=>{
   const h=await setup();
@@ -38,19 +40,35 @@ test('changing action, reset, visibility, or camera controls cancels an outstand
   h.choose('shoot');let s=h.status(),p={x:s.player.x+2,y:s.player.y};h.touch('pointerdown',p);await h.$('practice-reset').click();h.touch('pointerup',p);assert.equal(h.status().queued,0);
 });
 test('mobile tabs preserve equipment controls and restore the desktop DOM on resize',async()=>{
-  const h=await setup();assert.equal(h.$('skill-button').parentElement,h.$('mobile-action-grid'));assert.equal(h.$('loadout-dock').parentElement,h.$('mobile-pane-gear'));assert.equal(h.$('lock-button').parentElement,h.$('mobile-commit'));assert.equal(h.$('mobile-dock').hidden,false);
-  h.$('mobile-tabs').children[1].click();assert.equal(h.$('mobile-pane-gear').hidden,false);h.$('weapon-tabs').querySelector('[data-weapon="shotgun"]').click();assert.equal(h.$('weapon-tabs').querySelector('[data-weapon="shotgun"]').getAttribute('aria-pressed'),'true');
-  h.window.innerWidth=1280;h.window.dispatchEvent({type:'resize'});assert.equal(h.$('skill-button').parentElement,h.document.querySelector('.command-panel'));assert.equal(h.$('loadout-dock').parentElement,h.$('left-hud'));assert.equal(h.$('mobile-dock').hidden,true);
+  const h=await setup();assert.equal(h.$('skill-button').parentElement,h.$('mobile-action-grid'));assert.equal(h.$('loadout-dock').parentElement,h.$('mobile-gear-content'));assert.equal(h.$('lock-button').parentElement,h.$('mobile-commit'));assert.equal(h.$('mobile-dock').hidden,false);assert.equal(h.$('fullscreen-button').parentElement,h.$('mobile-floating-buttons'));assert.equal(h.$('camera-center').parentElement,h.$('mobile-commit'));
+  assert.equal(h.$('mobile-pane-map'),null);assert.equal(h.$('mobile-cancel'),null);assert.equal(h.$('mobile-pan'),null);assert.equal(h.$('mobile-tabs').children.length,3);
+  h.$('mobile-gear-button').click();assert.equal(h.$('mobile-pane-gear').hidden,false);h.$('weapon-tabs').querySelector('[data-weapon="shotgun"]').click();assert.equal(h.$('weapon-tabs').querySelector('[data-weapon="shotgun"]').getAttribute('aria-pressed'),'true');assert.match(h.$('mobile-gear-name').textContent,/SG/);h.$('mobile-gear-close').click();assert.equal(h.$('mobile-pane-gear').hidden,true);
+  h.window.innerWidth=1280;h.window.dispatchEvent({type:'resize'});assert.equal(h.$('skill-button').parentElement,h.document.querySelector('.command-panel'));assert.equal(h.$('loadout-dock').parentElement,h.$('left-hud'));assert.equal(h.$('mobile-dock').hidden,true);assert.equal(h.$('fullscreen-button').parentElement,h.document.querySelector('.top-right'));assert.equal(h.$('camera-center').parentElement,h.document.querySelector('.camera-controls'));assert.equal(h.$('mobile-field-hud').hidden,true);
   h.window.innerWidth=390;h.window.dispatchEvent({type:'resize'});assert.equal(h.$('skill-button').parentElement,h.$('mobile-action-grid'));assert.equal(h.$('actions').children.length,8);
 });
 test('touch walkthrough teaches gestures and directs loadout lessons to the correct panel',async()=>{
-  const h=await setup(390,'walkthrough');assert.match(h.$('walkthrough-task').textContent,/Pinch/);h.$('walkthrough-lesson').onchange({target:{value:'pickup'}});assert.match(h.$('walkthrough-task').textContent,/Hold/);h.$('walkthrough-lesson').onchange({target:{value:'zoom'}});assert.match(h.$('walkthrough-task').textContent,/Pinch/);assert.equal(h.$('mobile-pane-map').hidden,false);h.$('walkthrough-lesson').onchange({target:{value:'weapon'}});assert.equal(h.$('mobile-pane-gear').hidden,false);h.$('walkthrough-lesson').onchange({target:{value:'operator'}});assert.equal(h.$('mobile-pane-guide').hidden,false);assert.match(h.$('walkthrough-task').textContent,/operator/);
+  const h=await setup(390,'walkthrough');assert.match(h.$('walkthrough-task').textContent,/Pinch/);h.$('walkthrough-lesson').onchange({target:{value:'pickup'}});assert.match(h.$('walkthrough-task').textContent,/Hold/);h.$('walkthrough-lesson').onchange({target:{value:'zoom'}});assert.match(h.$('walkthrough-task').textContent,/Pinch/);assert.equal(h.$('mobile-pane-actions').hidden,false);h.$('walkthrough-lesson').onchange({target:{value:'pan'}});assert.match(h.$('walkthrough-task').textContent,/two fingers/);h.$('walkthrough-lesson').onchange({target:{value:'weapon'}});assert.equal(h.$('mobile-pane-gear').hidden,false);h.$('walkthrough-lesson').onchange({target:{value:'operator'}});assert.equal(h.$('mobile-pane-guide').hidden,false);assert.equal(h.$('mobile-pane-gear').hidden,true);assert.match(h.$('walkthrough-task').textContent,/operator/);
 });
-test('a new match opens Actions and clears the previous camera Pan mode',async()=>{
-  const h=await setup();h.$('mobile-pan').click();h.$('mobile-tabs').children[3].click();h.$('restart-button').click();h.$('exit-confirm').click();await h.$('start-button').click();assert.equal(h.$('mobile-pane-actions').hidden,false);assert.equal(h.$('mobile-pan').getAttribute('aria-pressed'),'false');
+test('a new match opens Actions and closes the previous floating equipment panel',async()=>{
+  const h=await setup();h.$('mobile-gear-button').click();h.$('mobile-tabs').children[2].click();h.$('restart-button').click();h.$('exit-confirm').click();await h.$('start-button').click();assert.equal(h.$('mobile-pane-actions').hidden,false);assert.equal(h.$('mobile-pane-gear').hidden,true);assert.equal(h.$('mobile-field-hud').hidden,false);
 });
 test('desktop mouse still queues shooting on press',async()=>{
   const h=await setup(1280);h.choose('shoot');const s=h.status();h.point({x:s.player.x+2,y:s.player.y});assert.equal(h.status().queued,1);assert.equal(h.$('mobile-dock').hidden,true);
+});
+test('high-density rendering preserves the visible map, aiming and camera gesture coordinates',async()=>{
+  for(const density of [2,3]){
+    const baseline=await setup(),before=baseline.status();
+    const h=await setup(390,'free',{devicePixelRatio:density}),s=h.status(),canvas=h.$('arena'),ratio=Math.min(density,Math.sqrt(6000000/(1280*720)));
+    assert.equal(canvas.width,Math.round(1280*ratio));assert.equal(canvas.height,Math.round(720*ratio));assert.deepEqual({...s.viewport},{...before.viewport});assert.deepEqual({...s.camera},{...before.camera});
+    h.choose('shoot');h.touch('pointerdown',{x:s.player.x+2,y:s.player.y});h.touch('pointerup',{x:s.player.x+2,y:s.player.y});assert.ok(Math.abs(h.status().plan[0].angle)<.001);h.$('undo-button').click();
+    const a={pixel:true,x:550,y:320},b={pixel:true,x:650,y:320};
+    for(const game of [baseline,h]){game.touch('pointerdown',a,1);game.touch('pointerdown',b,2);game.touch('pointermove',{pixel:true,x:720,y:340},2);game.touch('pointerup',b,2);game.touch('pointerup',a,1);}
+    assert.deepEqual({...h.status().camera},{...baseline.status().camera});
+  }
+});
+test('floating Gear dismisses safely without queuing a battlefield press',async()=>{
+  const h=await setup();h.$('mobile-gear-button').click();let stopped=false;h.document.dispatchEvent({type:'pointerdown',target:h.$('arena'),stopPropagation(){stopped=true;}});assert.equal(h.$('mobile-pane-gear').hidden,true);assert.equal(stopped,true);assert.equal(h.status().queued,0);
+  h.$('mobile-gear-button').click();h.document.dispatchEvent({type:'keydown',code:'Escape'});assert.equal(h.$('mobile-pane-gear').hidden,true);assert.equal(h.document.activeElement,h.$('mobile-gear-button'));
 });
 test('Confirm plan cancels a held aim and touch release cannot edit a resolving turn',async()=>{
   const h=await setup();h.choose('guard');assert.equal(h.status().queued,1);h.choose('shoot');const s=h.status(),p={x:s.player.x+2,y:s.player.y};h.touch('pointerdown',p);h.$('lock-button').click();assert.equal(h.status().phase,'resolution');h.touch('pointerup',p);assert.equal(h.status().plan[1].type,'wait');

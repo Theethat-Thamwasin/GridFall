@@ -27,6 +27,8 @@
   let playerDeathTurn = null, practiceTurns=0, practiceUsed=new Set();
   let previewCache = { stamp: '', context: null, cells: [] };
   const CELL = 32;
+  // Camera and input use CSS pixels; the bitmap uses the screen's pixel density.
+  const arenaSize={width:canvas.width,height:canvas.height,ratio:1};
   const M = window.GridfallMotion, TICK = G.TIMING.tickMs / 1000;
   const projectileMotion=new M.EffectMotion('projectile'),flightMotion=new M.EffectMotion('flight');let effectScene='';
   const unitMotion = new M.UnitMotion(TICK), trails = new window.GridfallEffects.MotionTrails(384);
@@ -54,7 +56,7 @@
   }
   function settleSoloDraft(){G.FATE.settle(state);G.normalizeEquipment(state);if(state.practice)TUTORIAL.afterTurn(state);archive.draftHistory=structuredClone(state.fate.history);deadline=performance.now()+(player().alive?2000:0);plan=[];updateUI();}
 
-  const viewSpan = () => ({ x: canvas.width / CELL / camera.zoom, y: canvas.height / CELL / camera.zoom });
+  const viewSpan = () => ({ x: arenaSize.width / CELL / camera.zoom, y: arenaSize.height / CELL / camera.zoom });
   let camera = { x: 0, y: 0, zoom: window.innerWidth <= 790 ? .9 : 1.2, follow: true }, drag = null;
   function player() { return state.units[playerId]; }
   function viewerId() { return !replay && spectating && spectateId != null ? spectateId : playerId; }
@@ -87,15 +89,15 @@
   }
   function coord(p) { if (!p) return ''; let n = p.x + 1, label = ''; while (n > 0) { n--; label = String.fromCharCode(65 + n % 26) + label; n = Math.floor(n / 26); } return label + (p.y + 1); }
   function angleLabel(angle) { return ((angle * 180 / Math.PI + 360) % 360).toFixed(1) + '°'; }
-  function replayPadding() { return replay&&!mobileHUD?.enabled ? Math.min(canvas.height * .35, $('replay-controls').getBoundingClientRect().height + 20) : 0; }
+  function replayPadding() { return replay&&!mobileHUD?.enabled ? Math.min(arenaSize.height * .35, $('replay-controls').getBoundingClientRect().height + 20) : 0; }
   // Follow may look beyond the map edge so random edge spawns stay in the
   // usable center of the screen instead of disappearing beneath floating HUD.
-  function cameraPose(c = camera) { return { cx: c.x + canvas.width / CELL / c.zoom / 2, cy: c.y + canvas.height / CELL / c.zoom / 2, zoom: c.zoom }; }
+  function cameraPose(c = camera) { return { cx: c.x + arenaSize.width / CELL / c.zoom / 2, cy: c.y + arenaSize.height / CELL / c.zoom / 2, zoom: c.zoom }; }
   function applyPose(pose) { camera.zoom = pose.zoom; const span = viewSpan(); camera.x = pose.cx - span.x / 2; camera.y = pose.cy - span.y / 2; }
   function resetMotion() { stopKeyboardPan(); projectileMotion.clear();flightMotion.clear();effectScene='';unitMotion.clear(); trails.clear();unitFacing.clear(); motionTime = 0; cameraFlight = null; }
   function centerCamera(s = state) { resetMotion(); const u = s.units[viewerId()]; applyPose({ cx: u.x + .5-(s.practice?viewSpan().x*.07:0), cy: u.y + .5-(s.practice?viewSpan().y*.15:0), zoom: camera.zoom }); }
   function flyCamera(target, duration = .85, follow = false) { camera.follow = follow; cameraFlight = { from: cameraPose(), target, duration, elapsed: 0 }; }
-  function overviewPose(s) { const zoom = Math.min(canvas.width / CELL / s.width, (canvas.height - replayPadding()) / CELL / s.height); return { cx: s.width / 2, cy: s.height / 2 + replayPadding() / (2 * CELL * zoom), zoom }; }
+  function overviewPose(s) { const zoom = Math.min(arenaSize.width / CELL / s.width, (arenaSize.height - replayPadding()) / CELL / s.height); return { cx: s.width / 2, cy: s.height / 2 + replayPadding() / (2 * CELL * zoom), zoom }; }
   function fitCamera(s = state) { cancelFieldInput();flyCamera(overviewPose(s), 1.15); }
   const panKeys = new Set(), PAN_KEYS = {KeyW:[0,-1],KeyA:[-1,0],KeyS:[0,1],KeyD:[1,0],ArrowUp:[0,-1],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowRight:[1,0]};
   function stopKeyboardPan() { panKeys.clear(); }
@@ -123,7 +125,7 @@
   function allVisible() { return !!replay && replay.kind === 'match' && state.phase === 'ended'; }
   function panCamera(dx, dy, direct = false) { if(dx||dy)walkEvent('pan');cancelRoute(); const target = !direct && cameraFlight ? { ...cameraFlight.target } : cameraPose(); target.cx = Math.max(0, Math.min(state.width, target.cx + dx)); target.cy = Math.max(0, Math.min(state.height, target.cy + dy)); if (direct) { cameraFlight = null; camera.follow = false; applyPose(target); } else flyCamera(target, .55); hover = aimMouse = null; }
   function zoomCamera(factor) { cancelFieldInput();walkEvent('zoom');const target = cameraFlight ? { ...cameraFlight.target } : cameraPose(); target.zoom = Math.max(.35, Math.min(2.5, target.zoom * factor)); flyCamera(target, .6, camera.follow); hover = aimMouse = null; }
-  function resizeArena() { cancelFieldInput(); const rect = $('canvas-wrap').getBoundingClientRect(); if (rect.width > 0 && rect.height > 0) { const pose = cameraPose(); canvas.width = Math.round(rect.width); canvas.height = Math.round(rect.height); hover = aimMouse = null; applyPose(pose); } }
+  function resizeArena() { cancelFieldInput(); const rect = $('canvas-wrap').getBoundingClientRect(); if (rect.width > 0 && rect.height > 0) { const pose = cameraPose();arenaSize.width=Math.round(rect.width);arenaSize.height=Math.round(rect.height);arenaSize.ratio=Math.max(1,Math.min(window.devicePixelRatio||1,3,Math.sqrt(6000000/(arenaSize.width*arenaSize.height))));canvas.width=Math.round(arenaSize.width*arenaSize.ratio);canvas.height=Math.round(arenaSize.height*arenaSize.ratio); hover = aimMouse = null; applyPose(pose); } }
   new ResizeObserver(resizeArena).observe($('canvas-wrap'));
   function lootNearPlan() { return G.nearbyLoot(state, { ...player(), ...virtualPosition() }); }
   function virtualPosition() { let p = { x: player().x, y: player().y }; for (const a of plan) if (a.target && ['move', 'skillMove', 'blink'].includes(a.type)) p = { ...a.target }; return p; }
@@ -258,7 +260,7 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     for(const [id,value]of [['hp-value',u.hp],['shield-value',u.shield],['ammo-value',u.ammo],['skill-cooldown',u.skillCooldown]]){const node=$(id);if(node.dataset.raw!==undefined&&node.dataset.raw!==String(value)&&started&&!replay&&!P.reduced())node.animate([{color:'#d6e5c6'},{color:'#eff6ff'}],{duration:220});node.dataset.raw=String(value);}
 
   }
-  function updateMobileHUD(){touchControls?.validate();mobileHUD?.update({started,practice:!!state.practice,walkthrough:state.walkthrough?{...state.walkthrough,step:W.current(state)?.id}:null,replay:!!replay,spectating,canPlan:canPlan(),hp:player().hp,queued:plan.length,touch:{aiming:!!touchControls?.aiming,pan:!!touchControls?.pan}});}
+  function updateMobileHUD(){touchControls?.validate();mobileHUD?.update({started,practice:!!state.practice,walkthrough:state.walkthrough?{...state.walkthrough,step:W.current(state)?.id}:null,replay:!!replay,spectating,canPlan:canPlan(),hp:player().hp,weapon:player().weapon,ammo:player().ammo,queued:plan.length,touch:{aiming:!!touchControls?.aiming}});}
   function turnFeedback() { const stamp='T'+state.turn;if($('turn-transition').dataset.turn===stamp)return;$('turn-transition').dataset.turn=stamp;pulseSlots('#98cadb');$('turn-transition').textContent='TURN '+String(state.turn).padStart(2,'0')+' / PLANNING';$('turn-transition').classList.remove('hidden');setTimeout(()=>$('turn-transition').classList.add('hidden'),650);sound.play('turn'); }
   function turnReport() { if(!reportTurn)return;const r=$('turn-report');r.replaceChildren();const title=document.createElement('b');title.textContent='TURN '+String(reportTurn).padStart(2,'0')+' / REPORT';r.append(title);for(const [label,value]of[['DAMAGE DEALT',report.dealt],['DAMAGE RECEIVED',report.received],['SHOTS',report.shots],['ITEMS PICKED UP',report.items]]){const row=document.createElement('div');row.textContent=label+'  '+value;r.append(row);}r.classList.remove('hidden');setTimeout(()=>r.classList.add('hidden'),2800); }
   function startPlanning() {
@@ -442,13 +444,13 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   function roundedRect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
   function render(s, time) {
     if(P.reduced())time=0;
-    const cells = visibleCells(s), u = s.units[viewerId()];for(const cell of cells)explored.add(cell); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.save();
-    ctx.fillStyle = '#0e1925'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const cells = visibleCells(s), u = s.units[viewerId()];for(const cell of cells)explored.add(cell);ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.setTransform(arenaSize.ratio,0,0,arenaSize.ratio,0,0);ctx.save();
+    ctx.fillStyle = '#0e1925'; ctx.fillRect(0, 0, arenaSize.width, arenaSize.height);
     const shake=P.shake()&&motionTime<shakeUntil?Math.sin(motionTime*110)*.8:0;ctx.translate(-camera.x*CELL*camera.zoom+shake,-camera.y*CELL*camera.zoom);  ctx.scale(camera.zoom, camera.zoom);
     ctx.fillStyle = '#17212a'; ctx.fillRect(0, 0, s.width * CELL, s.height * CELL);
     const terrain = { floor:'#435565',road:'#536877',wall:'#8da3b3',barricade:'#9b7956',forest:'#355a53',water:'#356a84',cover:'#6b807c',rubble:'#7c7770',void:'#080b16',...(G.BIOMES[s.biome]||G.BIOMES.verdant) };
     // Draw the visible portion at full detail; the rest is outside the canvas.
-    const left=Math.max(0,Math.floor(camera.x)-1),top=Math.max(0,Math.floor(camera.y)-1),right=Math.min(s.width,Math.ceil(camera.x+canvas.width/CELL/camera.zoom)+1),bottom=Math.min(s.height,Math.ceil(camera.y+canvas.height/CELL/camera.zoom)+1);
+    const left=Math.max(0,Math.floor(camera.x)-1),top=Math.max(0,Math.floor(camera.y)-1),right=Math.min(s.width,Math.ceil(camera.x+viewSpan().x)+1),bottom=Math.min(s.height,Math.ceil(camera.y+viewSpan().y)+1);
     for (let y = top; y < bottom; y++) for (let x = left; x < right; x++) {
       const t = s.tiles[y][x], px = x * CELL, py = y * CELL, seen = cells.has(G.key(x, y)), variant = ((x * 13 + y * 7 + s.seed) % 4);
       ctx.fillStyle = terrain[t.type]; ctx.fillRect(px, py, CELL, CELL);
@@ -694,7 +696,7 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     clashSpotlight.classList.toggle('active',!!choosing);
     if(choosing)clashLitIds=[...clash.ids];else if(outcome?.ids)clashLitIds=[...outcome.ids];
     // Cut out only actors we can already see; this overlay never alters line of sight.
-    const rect=canvas.getBoundingClientRect(),sx=rect.width/canvas.width,sy=rect.height/canvas.height,core=Math.max(24,Math.min(50,CELL*camera.zoom*1.1)),edge=core+Math.max(18,Math.min(32,24*camera.zoom));
+    const rect=canvas.getBoundingClientRect(),sx=rect.width/arenaSize.width,sy=rect.height/arenaSize.height,core=Math.max(24,Math.min(50,CELL*camera.zoom*1.1)),edge=core+Math.max(18,Math.min(32,24*camera.zoom));
     const masks=[];
     for(const id of clashLitIds){
       const unit=state.units[id];if(!knownUnit(state,unit))continue;const pose=unitMotion.sample(id,motionTime)||unit;
@@ -850,7 +852,7 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   function touchCamera(from,to){
     const r=canvas.getBoundingClientRect(),old=cameraPose(),factor=from.d&&to.d?to.d/from.d:1,zoom=Math.max(.35,Math.min(2.5,old.zoom*factor));
     const world={x:camera.x+(from.x-r.left)/r.width*viewSpan().x,y:camera.y+(from.y-r.top)/r.height*viewSpan().y};
-    cameraFlight=null;camera.follow=false;applyPose({cx:Math.max(0,Math.min(state.width,world.x+(r.width/2-(to.x-r.left))*canvas.width/r.width/CELL/zoom)),cy:Math.max(0,Math.min(state.height,world.y+(r.height/2-(to.y-r.top))*canvas.height/r.height/CELL/zoom)),zoom});
+    cameraFlight=null;camera.follow=false;applyPose({cx:Math.max(0,Math.min(state.width,world.x+(r.width/2-(to.x-r.left))*arenaSize.width/r.width/CELL/zoom)),cy:Math.max(0,Math.min(state.height,world.y+(r.height/2-(to.y-r.top))*arenaSize.height/r.height/CELL/zoom)),zoom});
     if(Math.abs(factor-1)>.001)walkEvent('zoom');if(Math.hypot(to.x-from.x,to.y-from.y)>.1)walkEvent('pan');hover=aimMouse=null;
   }
   canvas.style.touchAction='none';
@@ -1144,6 +1146,6 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
 
   for(const i of [0,1]){const slot=document.createElement('div');slot.className='plan-slot';$('plan-slots').append(slot);}
   touchControls=window.GridfallTouch.create({canvas,context:()=>({allowed:canPlan()&&plan.length<2&&['move','skillMove','shoot','slash','blink','grenade','smoke','firebomb','stasis','mend'].includes(selected),stamp:[state.turn,state.phase,playerId,player().class,player().weapon,player().x,player().y,selected,JSON.stringify(plan)].join('|')}),preview:touchPreview,commit:touchCommit,clear:()=>{cancelRoute(false);hover=aimMouse=null;previewCache.stamp='';},transform:touchCamera,changed:()=>mobileHUD?.feedback({aiming:touchControls.aiming,pan:touchControls.pan})});
-  mobileHUD=window.GridfallMobileUI.create({cancel:cancelFieldInput,togglePan:()=>touchControls.setPan(!touchControls.pan),layout:()=>{resizeArena();updateUI();}});
+  mobileHUD=window.GridfallMobileUI.create({cancel:cancelFieldInput,layout:()=>{resizeArena();updateUI();}});
   updateUI();requestAnimationFrame(frame);
 })();
