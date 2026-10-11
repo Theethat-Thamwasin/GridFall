@@ -1,0 +1,100 @@
+/* Touch HUD has its own space. The arena ends above the dock, so even edge
+   spawns and drag destinations remain visible and reachable. */
+#mobile-dock[hidden],#mobile-dock [hidden]{display:none!important}
+body.mobile-layout.mobile-playing .topbar,body.mobile-layout.mobile-playing #left-hud,body.mobile-layout.mobile-playing .command-panel,body.mobile-layout.mobile-playing .plan-heading,body.mobile-layout.mobile-playing .field-note,body.mobile-layout.mobile-playing #action-feedback{display:none!important}
+body.mobile-layout.mobile-playing .arena-frame{position:fixed!important;inset:0 0 var(--mobile-dock-height,280px)!important;width:auto!important;height:auto!important;margin:0!important;border:0;border-radius:0}
+body.mobile-layout.mobile-playing #canvas-wrap{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0;touch-action:none}
+body.mobile-layout.mobile-playing #arena{display:block;width:100%;height:100%;touch-action:none;-webkit-touch-callout:none}
+body.mobile-layout.mobile-playing .arena-top,body.mobile-layout.mobile-playing .arena-bottom,body.mobile-layout.mobile-playing .sector-label{display:none}
+body.mobile-layout #mobile-dock{position:fixed;z-index:25;inset:auto 0 0;padding:5px max(8px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:linear-gradient(155deg,#1b2d3b,#0c1825);border-top:1px solid #7396ad70;box-shadow:0 -6px 20px #0004;display:grid;gap:5px;grid-template-areas:'status' 'tabs' 'lesson' 'pane' 'plan' 'commit';color:#e6f1f6;box-sizing:border-box;max-height:72dvh;overflow:hidden}
+#mobile-dock button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#mobile-dock .status-row{grid-area:status;position:relative!important;inset:auto!important;transform:none!important;width:100%!important;height:29px;min-height:29px;margin:0;padding:0 0 3px;box-shadow:none;border:0;border-radius:0;background:none}
+#mobile-dock .status-row .turn-box,#mobile-dock .status-row .alive-box{display:flex;flex-direction:row;align-items:center;gap:5px;width:auto!important;padding:0 8px;min-width:0}
+#mobile-dock .status-row .turn-box b,#mobile-dock .status-row .alive-box b,#mobile-dock .status-row .clock>span{font-size:15px;line-height:1}
+#mobile-dock .status-row .phase-box{padding:0 7px;gap:5px;flex:1;min-width:0}
+#mobile-dock .status-row .phase-box b{font-size:10px;max-width:none}
+#mobile-dock #phase-detail,#mobile-dock #timer-unit{display:none}
+#mobile-dock .status-row .clock{min-width:34px!important;padding:0 5px}
+#mobile-dock .status-row .countdown-bar{height:2px;border-radius:0}
+#mobile-tabs{grid-area:tabs;display:flex;gap:4px}
+#mobile-tabs button{flex:1;min-width:0;min-height:44px;border:1px solid #486071;border-radius:9px;background:#172936;color:#aac1d0;font:700 11px var(--interface)}
+#mobile-tabs button[aria-pressed=true]{background:#304d59;border-color:#a6d9cd;color:#e1fff5}
+#mobile-lesson{grid-area:lesson;min-height:32px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid #72b39b77;background:#294a40;color:#d1f3e5;border-radius:8px;padding:5px 9px;font:650 11px var(--interface)}
+#mobile-dock .mobile-pane{grid-area:pane;min-height:0;max-height:min(210px,32dvh);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+#mobile-dock #mobile-pane-actions{overflow:visible;max-height:none}
+#mobile-action-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-auto-rows:48px;gap:5px}
+#mobile-dock #actions{display:contents!important}
+#mobile-dock #actions .action-button,#mobile-dock #actions .action-button:has(small){position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;width:auto;height:48px;min-height:48px;margin:0;padding:4px 2px 7px;border-radius:9px;border-width:1px;border-left-width:3px;box-shadow:none;overflow:hidden}
+#mobile-dock #actions .action-button>b.action-name{font-size:9px;letter-spacing:0;line-height:1}
+#mobile-dock #actions .action-icon,#mobile-dock #actions svg{width:17px;height:17px;min-width:17px}
+#mobile-dock #actions kbd,#mobile-dock #skill-button kbd{display:none}
+#mobile-dock #actions small{position:absolute;right:3px;bottom:2px;min-width:12px;font-size:9px;padding:0 2px;line-height:11px}
+#mobile-dock #skill-button{grid-column:span 2;display:grid;grid-template-columns:21px minmax(0,1fr);grid-template-rows:1fr 12px;gap:1px 5px;height:48px;min-height:48px;margin:0;padding:6px 7px;border-radius:9px;box-shadow:none;border-width:1px;border-left-width:3px}
+#mobile-dock #skill-button>span:first-child{grid-row:1/3;grid-column:1;width:21px;height:21px;align-self:center}
+#mobile-dock #skill-button svg{width:21px;height:21px}
+#mobile-dock #skill-button>div{display:block;grid-row:1;grid-column:2;min-width:0;align-self:center}
+#mobile-dock #skill-name{font-size:10px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+#mobile-dock #skill-info{display:none}
+#mobile-dock #skill-cooldown{grid-row:2;grid-column:2;font-size:9px;line-height:1;margin:0;text-align:left}
+#mobile-touch-hint{font:500 10px/1.2 var(--interface);margin:5px 0 0;text-align:center;color:#b4cdd5}
+#mobile-dock.mobile-aiming #mobile-touch-hint{color:#c5f3da}
+#mobile-plan{grid-area:plan;min-width:0}
+#mobile-dock #plan-slots{position:static!important;inset:auto!important;transform:none!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;width:100%!important;margin:0;height:32px}
+#mobile-dock .plan-slot{height:32px;min-height:32px;padding:4px 6px;gap:5px;border-radius:7px;min-width:0;overflow:hidden}
+#mobile-dock .plan-slot .slot-number{font-size:10px;width:auto;min-width:14px}
+#mobile-dock .plan-slot>div{min-width:0}#mobile-dock .plan-slot b{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+#mobile-dock .plan-slot small,#mobile-dock .plan-slot>span:last-child{display:none}
+#mobile-commit{grid-area:commit;display:grid;grid-template-columns:48px 48px 48px minmax(0,1fr);gap:5px}
+#mobile-dock #mobile-cancel,#mobile-dock #mobile-pan,#mobile-dock #undo-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin:0;padding:3px;min-height:44px;height:44px;min-width:0;border:1px solid #4c6676;border-radius:9px;background:#1c3040;font:700 12px var(--interface);color:#c7dbe8}
+#mobile-dock #mobile-cancel{grid-column:1;grid-row:1;border-color:#92605e;color:#f2b9b5;background:#382930}
+#mobile-dock #undo-button{grid-column:2;grid-row:1;font-size:10px}
+#mobile-dock #mobile-pan{grid-column:3;grid-row:1;color:#b0d8f2}
+#mobile-dock #mobile-pan.selected{background:#284b65;border-color:#8bcaef;color:#edfaff}
+#mobile-dock #mobile-cancel span,#mobile-dock #mobile-pan span{font-size:9px}
+#mobile-dock #mobile-pan svg{width:15px;height:15px}
+#mobile-dock #undo-button kbd{display:none}
+#mobile-dock #lock-button{grid-column:4;grid-row:1;display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px;height:44px;min-height:44px;padding:5px 8px;margin:0;border-radius:10px;background:linear-gradient(115deg,#b4edc8,#8ed8bf);box-shadow:0 2px 8px #0003}
+#mobile-dock #lock-label{font-size:12px;white-space:nowrap}#mobile-dock #lock-button kbd{display:none}#mobile-dock .confirm-symbol{width:22px;height:22px}
+#mobile-dock #loadout-dock,#mobile-dock #field-tools,#mobile-dock #practice-panel{position:static!important;inset:auto!important;transform:none;width:100%!important;max-height:none!important;min-height:0;margin:0;flex:none;overflow:visible;box-sizing:border-box}
+#mobile-dock #loadout-dock .operator-card{padding:8px}#mobile-dock .operator-title{margin-bottom:6px}#mobile-dock .operator-title h2{font-size:15px}
+#mobile-dock #loadout-dock .weapon-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-height:none;overflow:visible}
+#mobile-dock #loadout-dock .weapon-tabs button{min-height:48px}
+#mobile-dock #fate-build{position:static;inset:auto;transform:none;width:100%;max-height:none;padding:10px;box-sizing:border-box;margin-top:8px}
+#mobile-dock #fate-build button,#mobile-dock #fate-build select{min-height:44px}
+#mobile-dock #practice-panel{padding:10px}#mobile-dock #practice-body{max-height:none;overflow:visible}
+#mobile-dock #practice-collapse,#mobile-dock #practice-reset,#mobile-dock .walkthrough-controls button,#mobile-dock #walkthrough-lesson,#mobile-dock #practice-field{min-height:44px}
+#mobile-dock #practice-operators{grid-template-columns:repeat(2,minmax(0,1fr))}#mobile-dock #practice-operators button{min-height:48px}
+#mobile-dock #walkthrough-keyboard{display:none}#mobile-dock #walkthrough-input-label{font-size:10px}
+#mobile-dock .camera-controls{position:static!important;display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;width:auto;background:none;border:0;padding:0}
+#mobile-dock .camera-controls>span{display:none}#mobile-dock .camera-controls button{display:grid;place-items:center;min-width:48px;min-height:48px;padding:10px;border:1px solid #53768a;border-radius:10px;background:#203a4b}
+#mobile-dock #drop-countdown,#mobile-dock #platform-legend,#mobile-dock #camera-mode{position:static!important;inset:auto!important;width:auto;margin:5px 0;max-width:100%}
+.mobile-camera-help{font:500 12px/1.5 var(--interface);color:#b6cedb;margin:5px 0}
+#mobile-dock .top-right{position:static;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;width:100%;margin:0}
+#mobile-dock .top-right button{width:auto;height:48px;min-height:48px;border-radius:10px}
+#mobile-dock .top-right #sound-label{display:none}#mobile-dock .top-right button svg{width:22px;height:22px}
+#mobile-dock .top-right button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px}
+#mobile-dock .top-right #help-button::after{content:'Help'}#mobile-dock .top-right #sound-button::after{content:'Sound'}#mobile-dock .top-right #audio-settings-button::after{content:'Audio'}#mobile-dock .top-right #fullscreen-button::after{content:'Full screen'}#mobile-dock .top-right #restart-button::after{content:'Exit'}
+#mobile-dock #replay-controls,#mobile-dock #spectator-bar{position:static!important;inset:auto!important;transform:none;width:100%;max-width:none;margin:0;box-sizing:border-box}
+#mobile-dock #replay-controls button,#mobile-dock #replay-controls select,#mobile-dock #spectator-bar button{min-height:44px}
+body.mobile-layout #ingame-audio-panel{bottom:calc(var(--mobile-dock-height) + 8px);top:auto;right:8px;left:8px;width:auto;max-height:55dvh;overflow:auto}
+body.mobile-layout.mobile-playing .arena-toast{top:auto;bottom:10px;height:auto;width:max-content;max-width:calc(100% - 20px);font-size:11px;padding:8px 12px;border-radius:9px}
+@media(max-height:540px) and (min-width:600px){
+  body.mobile-layout #mobile-dock{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:'status tabs' 'lesson lesson' 'pane commit' 'plan plan';gap:4px;padding-top:3px;max-height:64dvh}
+  #mobile-dock #mobile-action-grid{grid-template-columns:repeat(10,minmax(0,1fr));grid-auto-rows:48px;gap:3px}
+  #mobile-dock #skill-name{font-size:9px}#mobile-dock #skill-button{padding:4px;gap:1px 3px;grid-template-columns:17px minmax(0,1fr)}
+  #mobile-dock #skill-button>span:first-child,#mobile-dock #skill-button svg{width:17px;height:17px}
+  #mobile-dock #mobile-touch-hint{margin-top:3px;font-size:9px}
+  #mobile-dock #mobile-tabs button{min-height:44px;font-size:10px}
+  #mobile-dock #mobile-commit{align-self:start;grid-template-columns:44px 44px 44px minmax(0,1fr);gap:3px}
+  #mobile-dock #lock-button{padding:4px}#mobile-dock #lock-label{font-size:10px;white-space:normal}#mobile-dock .confirm-symbol{display:none}
+  #mobile-dock #mobile-plan{max-width:600px;justify-self:center;width:100%}
+  #mobile-dock .mobile-pane{max-height:120px}
+}
+@media(max-height:540px) and (min-width:600px) and (max-width:740px){
+  body.mobile-layout #mobile-dock{grid-template-columns:1fr 1fr;grid-template-areas:'status plan' 'tabs tabs' 'lesson lesson' 'pane pane' 'commit commit';gap:3px;max-height:72dvh}
+  #mobile-dock #mobile-action-grid{grid-template-columns:repeat(10,minmax(0,1fr))}
+  #mobile-dock #mobile-commit{grid-template-columns:48px 48px 48px minmax(0,1fr)}
+  #mobile-dock #mobile-touch-hint{display:none}#mobile-dock .status-row .alive-box{display:none}
+  #mobile-dock .mobile-pane{max-height:96px}
+}
+@media(prefers-reduced-motion:reduce){#mobile-dock *{animation:none!important}}

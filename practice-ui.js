@@ -54,10 +54,10 @@
         const completed=walkthrough.completed||[],count=completed.length,total=W.steps.length;
         $('walkthrough-position').textContent=count+' / '+total+' LESSONS PRACTICED';$('walkthrough-progress').value=count;$('walkthrough-progress').max=total;
         $('walkthrough-lesson').value=step?.id||'';for(const option of $('walkthrough-lesson').querySelectorAll('[data-lesson]'))option.textContent=(completed.includes(option.dataset.lesson)?'✓ ':'')+option.dataset.label;
-        $('walkthrough-title').textContent=step?.title||'Ready for the battlefield';$('walkthrough-copy').textContent=step?.copy||'You practiced '+count+' of '+total+' lessons. Pick any lesson above to try it again, or continue in Free Mode.';
+        $('walkthrough-title').textContent=step?.title||'Ready for the battlefield';$('walkthrough-copy').textContent=(document.body.classList.contains('mobile-layout')&&step?(step.character?G.CLASSES[step.character].description:step.copy.split(/(?<=\.)\s+/).filter(sentence=>!/Press|Select|Click|Scroll|Hold|click|mouse|SPACE|WASD|lower left/.test(sentence)).join(' ')||W.cue({walkthrough,phase},queued,true).after):step?.copy)||'You practiced '+count+' of '+total+' lessons. Pick any lesson above to try it again, or continue in Free Mode.';
         $('walkthrough-next').disabled=!navigable;$('walkthrough-next').textContent=walkthrough.finished?'Free Mode →':walkthrough.ready?walkthrough.index===total-1?'Finish ✓':'Next lesson →':walkthrough.index===total-1?'Other lessons →':'Skip lesson →';
         $('walkthrough-status').textContent=walkthrough.ready?'✓ Practiced — you can repeat or continue.':walkthrough.finished?count+' lessons practiced. Choose any lesson above.':'Jump to any lesson. Skipping does not mark it practiced.';
-        showCue(W.cue({walkthrough,phase},queued));const stamp=String(walkthrough.index);if(stamp!==lessonStamp){setExpanded(true);lessonStamp=stamp;}
+        showCue(W.cue({walkthrough,phase},queued,document.body.classList.contains('mobile-layout')));const stamp=String(walkthrough.index);if(stamp!==lessonStamp){setExpanded(true);lessonStamp=stamp;}
       }else lessonStamp='';
       const expected=step?.actions?.[queued]||step?.action;
       const focus=guided&&!walkthrough.ready?(step.id==='undo'&&queued?'#undo-button':queued&&(step.actions?queued>=step.actions.length:true)?'#lock-button':step.focus||(['skillMove','blink','scan','firebomb','reflect','stasis','mend'].includes(expected)?'#skill-button':'#actions [data-type="'+expected+'"]')):walkthrough?'#walkthrough-next':'';
@@ -70,7 +70,7 @@
       else if(phase!=='planning')copy='Watch both actions resolve. The bot acts at the same time as you.';
       else if(queued===2){cue='commit';copy='Two actions queued. Press SPACE or Confirm plan to play the turn.';}
       else if(queued===1){cue='second';copy='Add your second action. You can move then shoot, heal then guard, or repeat an action.';}
-      else if(!turns){cue='first';copy='Try MOVE: click a nearby tile, or drag from your operator to draw a route. Then choose SHOOT and click toward the bot. Use the mouse wheel to zoom; hold WASD or drag with the right mouse button to pan.';}
+      else if(!turns){cue='first';copy=document.body.classList.contains('mobile-layout')?'Try MOVE: hold a nearby tile to preview, then release to add it. Or hold your operator and drag to draw a route. Choose SHOOT and hold to aim. Tap Pan to drag the camera, or use two fingers to pan and pinch to zoom.':'Try MOVE: click a nearby tile, or drag from your operator to draw a route. Then choose SHOOT and click toward the bot. Use the mouse wheel to zoom; hold WASD or drag with the right mouse button to pan.';}
       else if(!healed){cue='heal';copy='Try HEAL / H. You start each turn at half HP; healing raises it during the turn. Add one more action, then confirm.';}
       else{cue='explore';copy='Try every weapon and operator. Switching is instant during planning. Use Field guide for items. Fate drafts let you choose an upgrade and its cost every four turns.';}
       document.body.dataset.practiceCue=walkthrough?'guided':cue;if($('practice-coach').textContent!==copy)$('practice-coach').textContent=copy;

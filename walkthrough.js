@@ -26,9 +26,17 @@
     {id:'fate',title:'Choose a Fate Card',focus:'#fate-draft',event:'fate',copy:'Choose a card in the interactive draft. Read YOU GAIN and YOU PAY together: both stay for this session. In matches, a draft opens every four turns.'}
   ];
   const keyMap={move:'1',shoot:'2',slash:'3',smoke:'4',guard:'G',reload:'R',heal:'H',grenade:'B',skillMove:'E',blink:'E',scan:'E',firebomb:'E',reflect:'E',stasis:'E',mend:'E'};
-  function cue(s,queued=0){
+  function cue(s,queued=0,touch=false){
     const step=current(s);if(!step||s.walkthrough.ready)return{keys:[],task:'Lesson practiced. Choose another lesson or continue.',after:'You can replay any lesson from the list above.'};
     if(s.phase==='resolution')return{keys:[],task:'Watch your action play out.',after:'The bot takes its actions at the same time.'};
+    if(touch){
+      if(step.id==='undo'&&queued)return{keys:[],task:'Tap Undo to remove your queued MOVE.',after:'Cancel discards an aim; Undo removes an action already in your plan.'};
+      if(!step.event&&queued>=(step.actions?.length||1))return{keys:[],task:'Tap Confirm plan to play your turn.',after:'An empty action slot becomes WAIT.'};
+      const camera={zoom:['Pinch with two fingers to zoom in.','The + / − buttons work too.'],pan:['Tap Pan, then drag the battlefield.','You can also pan with two fingers. Follow returns to your operator.'],weapon:['Open Gear and tap another gun.','Scroll the Gear panel to see all your weapons.'],operator:['Choose a different operator in Guide.','Its skill and movement update immediately.'],fate:['Read YOU GAIN and YOU PAY, then choose a card.','Tap CHOOSE THIS CARD. Take your time.']};
+      if(camera[step.id])return{keys:[],task:camera[step.id][0],after:camera[step.id][1]};
+      const type=step.actions?.[queued]||step.action,name=step.character?G.CLASSES[step.character].skill:type.toUpperCase();
+      return{keys:[],task:step.id==='route'?'Choose MOVE. Hold your operator and drag to draw a route.':['guard','reload','heal','scan','reflect'].includes(type)?'Tap '+name+' to add it to your plan.':'Choose '+name+'. Hold on the battlefield to preview; release to add.',after:step.id==='route'?'Draw at least two steps, then release. Cancel discards the route.':'Add your actions, then tap Confirm plan.'};
+    }
     if(step.id==='undo'&&queued)return{keys:['Q'],task:'Press Q to remove your queued MOVE.',after:'Your plan is editable until you confirm it.'};
     if(!step.event&&queued>=(step.actions?.length||1))return{keys:['SPACE'],task:'Press SPACE to play your plan.',after:'One empty action slot becomes WAIT.'};
     if(step.id==='zoom')return{keys:['Mouse wheel'],task:'Scroll up over the battlefield to zoom in.',after:'Scroll down to zoom out. The + / − buttons work too.'};

@@ -13,6 +13,7 @@ function harness(width=1280,options={}){
     get innerHTML(){return this._html||'';}set innerHTML(v){this._html=v;this.children=[];this._text='';parse(String(v),this);}
     get firstElementChild(){return this.children.find(n=>n.nodeType===1);}get lastElementChild(){return this.children.at(-1);}get childNodes(){return this.children;}get isConnected(){return true;}get options(){return this.children;}
     append(...nodes){for(let n of nodes){if(typeof n!=='object')n=textNode(n);n.remove?.();n.parentElement=this;this.children.push(n);}}
+    insertBefore(node,reference){node.remove?.();const index=this.children.indexOf(reference);node.parentElement=this;if(index<0)this.children.push(node);else this.children.splice(index,0,node);return node;}
     prepend(...nodes){for(const n of nodes.reverse()){n.parentElement=this;this.children.unshift(n);}}
     replaceChildren(...nodes){this.children=[];this._text='';this.append(...nodes);}remove(){if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(n=>n!==this);this.parentElement=null;}
     setAttribute(k,v){this.attributes[k]=String(v);if(k==='class')this.className=v;if(k==='id')this.id=v;if(k==='value')this.value=v;if(k.startsWith('data-'))this.dataset[k.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]=String(v);}
@@ -40,7 +41,7 @@ function harness(width=1280,options={}){
   }
   if(options.preparePractice){const create=sandbox.GridfallPractice.createState;sandbox.GridfallPractice.createState=(...args)=>{const state=create(...args);options.preparePractice(state);return state;};}
   sandbox.GridfallNetwork=options.Network||Network;sandbox.GridfallPresentation={reduced:()=>true,shake:()=>false,accents:Object.fromEntries(Object.entries(sandbox.Gridfall.CLASSES).map(([id,c])=>[id,c.color])),drawOperator(){},drawFieldOperator(){},setLobbyOperator(){},terrainPreview(){},icon:()=>'<svg></svg>',weaponIcon:()=>'<svg></svg>',setOperator(){},reset(){},showPane(){}};
-  for(const f of ['fate-ui.js','practice-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),sandbox,{filename:f});
+  for(const f of ['fate-ui.js','practice-ui.js','touch-controls.js','mobile-ui.js','game.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),sandbox,{filename:f});
   return{window:sandbox,document,$:id=>document.getElementById(id),frames(n=100,ms=45){for(let i=0;i<n;i++){clock+=ms;const frame=nextFrame;nextFrame=null;frame?.(clock);}},point(p){const s=sandbox.GRIDFALL_STATUS(),canvas=document.getElementById('arena');canvas.dispatchEvent({type:'pointerdown',button:0,pointerId:1,clientX:(p.x+.5-s.camera.x)/s.viewport.x*1280,clientY:(p.y+.5-s.camera.y)/s.viewport.y*720});}};
 }
 module.exports={harness};
