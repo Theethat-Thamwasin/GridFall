@@ -4,4 +4,6 @@
 
 .fate-overlay[data-reduced=true] .fate-card,.fate-overlay[data-reduced=true] .fate-card p{animation:none!important;transition:none!important}
 
+.fate-combinations{margin:14px 0 18px}.fate-combinations h3{font-size:12px;letter-spacing:.08em;color:#a5e2d3;margin:0 0 8px}.fate-combo{position:relative;display:grid;gap:6px;margin:10px 0;padding:12px;border:1px solid #4b686a;border-radius:10px;background:#112832;color:#c3d5dd}.fate-combo.active{border-color:#88d8bc80;background:linear-gradient(135deg,#1b3c36,#132836)}.fate-combo>small{font-size:9px;letter-spacing:.09em;color:#a8c3cd}.fate-combo.active>small{color:#99e2bd}.fate-combo>b{font-size:12px;letter-spacing:.025em}.fate-combo>p{margin:0;font-size:11px;line-height:1.5}.fate-combo-parts{display:flex;flex-wrap:wrap;gap:5px}.fate-combo-parts span{padding:4px 6px;border:1px dashed #68808e66;border-radius:5px;font-size:9px;color:#a5b7c6}.fate-combo-parts .owned{border-style:solid;border-color:#81c7ab66;color:#b1e9cc}.fate-hud .fate-combo-count{color:#a3e4c4}.fate-card>.fate-combo{margin:8px 0 14px}
+
 .fate-overlay{align-items:flex-start}.fate-shell{margin:auto 0}.fate-card.special .fate-art,.fate-card.legendary .fate-art{height:56px;margin:7px -8px;font-size:37px}.fate-shell>.fate-input{max-width:460px;margin:8px auto}.fate-reward .fate-muted{margin-top:5px;font-size:9px}.fate-reward p{margin:4px 0}

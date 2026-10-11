@@ -10,12 +10,13 @@
   function project(s, id, plan = []) {
     s={...s,fields:G.observedFields(s,s.units[id])};
     const u = s.units[id], w = G.weaponStats(u);
-    const p = { origin: { x: u.x, y: u.y }, ammo: u.ammo, reserve: u.reserve, medkits: u.medkits, grenades: u.grenades, smoke: u.smoke, moved: false, skillUsed: false };
+    const p = { origin: { x: u.x, y: u.y }, ammo: u.ammo, reserve: u.reserve, medkits: u.medkits, grenades: u.grenades, smoke: u.smoke, moved: false, skillUsed: false, skillUses: 0, scan: u.scan };
     for (const a of plan) {
       if (moves.includes(a.type)) { p.origin = { ...(a.target || a.path?.at(-1) || p.origin) }; p.moved = true; }
-      if (skills.includes(a.type)) p.skillUsed = true;
+      if (skills.includes(a.type)) { p.skillUsed = true; p.skillUses++; }
+      if (a.type==='scan') p.scan=G.SKILLS.scanTurns;
       if (a.type === 'shoot') p.ammo -= w.shots;
-      if (a.type === 'reload') { const amount = Math.min(w.mag - p.ammo, p.reserve); p.ammo += amount; p.reserve -= amount; }
+      if (a.type === 'reload') { const amount = Math.min(w.mag - p.ammo, p.reserve); p.ammo += amount; p.reserve -= amount; p.reserve += Math.min(amount,G.FATE.stats(u).reloadAmmo); }
       if (a.type === 'heal') p.medkits--;
       if (a.type === 'grenade') p.grenades--;
       if (a.type === 'smoke') p.smoke--;
@@ -26,8 +27,8 @@
   function range(s, id, type, plan=[],forecast=null) {
     const movement=(forecast||project(s,id,plan)).movement;
     const normal=G.CLASSES[s.units[id].class].move+Math.round(G.FATE.stats(s.units[id]).move);
-    if(moves.includes(type))return Math.min(movement.remaining,type==='move'?Math.max(1,Math.min(5,normal)):type==='skillMove'?G.SKILLS.dashRange:G.SKILLS.blinkRange);
-    return { move: G.moveRange(s,s.units[id]), skillMove: G.SKILLS.dashRange, blink: G.SKILLS.blinkRange, shoot: G.WEAPONS[s.units[id].weapon].range, slash: 1.5, grenade: 6, smoke: 5, scan: G.SKILLS.scanRange, firebomb: 5, stasis:5, mend:5 }[type] || 0;
+    if(moves.includes(type))return type==='move'?Math.min(movement.remaining,Math.max(1,Math.min(5,normal))):type==='skillMove'?G.SKILLS.dashRange:G.SKILLS.blinkRange;
+    return { move: G.moveRange(s,s.units[id]), skillMove: G.SKILLS.dashRange, blink: G.SKILLS.blinkRange, shoot: G.weaponStats({...s.units[id],scan:(forecast||project(s,id,plan)).scan}).range, slash: 1.5, grenade: 6, smoke: 5, scan: G.SKILLS.scanRange, firebomb: 5, stasis:5, mend:5 }[type] || 0;
   }
   function availability(s, id, type, plan = []) {
     const u = s.units[id], p = project(s, id, plan), w = G.weaponStats(u);
@@ -42,26 +43,26 @@
     if (type === 'heal' && u.hp >= G.FATE.stats(u).maxHp) return no('fullHealth', "HP is full.");
     if (type === 'grenade' && p.grenades <= 0) return no('grenade', "No grenade available. New loot is usable next turn.");
     if (type === 'smoke' && p.smoke <= 0) return no('smoke', "No smoke available. New loot is usable next turn.");
-    if(moves.includes(type)&&range(s,id,type,plan,p)===0)return no('stasis',"Movement limit reached: 1 tile this turn");
+    if(moves.includes(type)&&range(s,id,type,plan,p)===0)return no('stasis',"Rooted by Stasis · Dash and Blink can escape");
     if (skills.includes(type)) {
       if (G.CLASSES[u.class].skillType !== type) return no('class', "This skill belongs to another operator.");
       if (u.skillCooldown > 0) return no('cooldown', "Skill ready in " + u.skillCooldown + " turns");
-      if (p.skillUsed) return no('skillUsed', "Skill already queued · Q to undo");
+      if (p.skillUsed && (type!=='blink'||p.skillUses>=G.SKILLS.blinkUses)) return no('skillUsed', "Skill already queued · Q to undo");
     }
     return { ok: true, kind: 'valid', code: 'ready', reason: "Ready · 1 AP", range: range(s,id,type,plan,p) };
   }
   function moveCost(s, path) { return (path || []).reduce((cost,p)=>cost+(G.tile(s,p.x,p.y)?.type === 'water' ? 2 : 1),0); }
-  function reachable(s, from, budget) {
+  function reachable(s, from, budget, dash=false) {
     const frontier = [{ ...from, cost: 0, path: [] }], found = new Map([[G.key(from.x,from.y),frontier[0]]]);
     while (frontier.length) {
       frontier.sort((a,b)=>a.cost-b.cost); const p = frontier.shift();
       if (p.cost !== found.get(G.key(p.x,p.y)).cost) continue;
-      if(p.path.length&&G.inField(s,p,'stasis'))continue;
+      if(!dash&&G.inField(s,p,'stasis'))continue;
       for (let dx=-1;dx<=1;dx++) for(let dy=-1;dy<=1;dy++) {
         if (Math.abs(dx)+Math.abs(dy)!==1) continue;
         const x=p.x+dx,y=p.y+dy;
         if (!G.passable(s,x,y) || dx && dy && (!G.passable(s,p.x+dx,p.y)||!G.passable(s,p.x,p.y+dy))) continue;
-        const cost=p.cost+(G.tile(s,x,y).type==='water'?2:1), key=G.key(x,y);
+        const cost=p.cost+(!dash&&G.tile(s,x,y).type==='water'?2:1), key=G.key(x,y);
         if (cost>budget || found.has(key)&&found.get(key).cost<=cost) continue;
         const next={x,y,cost,path:[...p.path,{x,y}]};found.set(key,next);frontier.push(next);
       }
@@ -76,7 +77,7 @@
   }
   function context(s,id,type,plan=[],visible=visibility(s,id),continuous=false) {
     const projected=project(s,id,plan),origin=projected.origin,budget=range(s,id,type,plan,projected),precise=continuous||!!s.visibility||arguments.length<5,sight=precise?(s.visibility||G.VISION.field(s,s.units[id],G.sightRange(s.units[id]))):null;
-    return { s,id,type,plan,visible,sight,projected,origin,range:budget,availability:availability(s,id,type,plan),reachable:['move','skillMove'].includes(type)?reachable({...s,fields:projected.movement.fields},origin,budget):null };
+    return { s,id,type,plan,visible,sight,projected,origin,range:budget,availability:availability(s,id,type,plan),reachable:['move','skillMove'].includes(type)?reachable({...s,fields:projected.movement.fields},origin,budget,type==='skillMove'):null };
   }
   function target(c,p) {
     const {s,id,type,origin,range,visible}=c, t=G.tile(s,p.x,p.y);
@@ -92,17 +93,18 @@
         if(s.visibleCells&&!c.projected.moved&&!visible.has(G.key(p.x,p.y)))return no('sight',"Destination is not visible · Cannot teleport.");
         if (!G.visible(s,origin,p,range)) return no('sight',G.visible({...s,smokes:[]},origin,p,range)?"Smoke blocks vision · Cannot teleport.":"Wall blocks vision · Cannot teleport.");
       } else if (!c.reachable.has(G.key(p.x,p.y))) {
-        if (G.cheb(origin,p)>range) return no('range',"Move range exceeded: " + range + " · Water costs 2 per tile");
+        if (G.cheb(origin,p)>range) return no('range',"Move range exceeded: " + range + (type==='skillMove'?" · Dash ignores movement penalties":" · Water costs 2 per tile"));
         const dx=p.x-origin.x,dy=p.y-origin.y;
-        return no('path',Math.abs(dx)===1&&Math.abs(dy)===1&&(!G.passable(s,origin.x+dx,origin.y)||!G.passable(s,origin.x,origin.y+dy))?"Cannot cut wall corners. Go around.":"Path blocked or water exceeds move budget: "+range);
+        return no('path',Math.abs(dx)===1&&Math.abs(dy)===1&&(!G.passable(s,origin.x+dx,origin.y)||!G.passable(s,origin.x,origin.y+dy))?"Cannot cut wall corners. Go around.":"Path blocked or move budget exceeded: "+range);
       }
       const route=c.reachable?.get(G.key(p.x,p.y)), path=route?.path||[p];
-      if (s.units.some(u=>u.alive&&u.id!==id&&!G.VISION.concealed(s,origin,u)&&visible.has(G.key(u.x,u.y))&&path.some(point=>point.x===u.x&&point.y===u.y))) warnings.push("Occupied · Movement may collide.");
+      const occupants=s.units.filter(u=>u.alive&&u.id!==id&&!G.VISION.concealed(s,origin,u)&&visible.has(G.key(u.x,u.y))&&path.some(point=>point.x===u.x&&point.y===u.y));
+      if(occupants.length)warnings.push(type==='skillMove'&&occupants.some(u=>G.opponents(s,s.units[id],u))?"Charge wins collisions · Push forward · 5 HP every hit":"Occupied · Movement may collide.");
       if ((s.fires||[]).some(f=>f.expires>s.turn&&visible.has(G.key(f.x,f.y))&&path.some(p=>p.x===f.x&&p.y===f.y))) warnings.push("Fire hazard · You may take damage.");
       if (t.rank>s.safeLimit) warnings.push("Platform falling · Leave this tile.");
       else if (t.rank>s.nextLimit) warnings.push("Striped tile · Platform falls within 2 turns.");
       const cost=route?.cost, water=path.some(point=>G.tile(s,point.x,point.y)?.type==='water');
-      const detail=type==='blink'?'Blink '+G.distance(origin,p).toFixed(1)+'/'+range: "Move "+cost+'/'+range+(water?" · Water costs 2":'');
+      const detail=type==='blink'?'Blink '+G.distance(origin,p).toFixed(1)+'/'+range: "Move "+cost+'/'+range+(water?" · Water costs "+(type==='skillMove'?1:2):'');
       return {ok:true,kind:warnings.length?'risky':seen?'valid':'unknown',code:warnings.length?'risk':seen?'reachable':'fog',reason:[detail,...warnings,...(!seen?["Not visible · Occupants and loot unknown."]:[])].join(' · '),path:route?.path,cost,warnings,seen};
     }
     if (['grenade','smoke','firebomb','stasis','mend'].includes(type)) {
@@ -110,12 +112,12 @@
       if(['stasis','mend'].includes(type)&&!G.passable(s,p.x,p.y))return no('solid',"Choose a tile with a platform");
       const radius=type==='grenade'?G.FATE.stats(s.units[id]).radius:1,diameter=radius*2+1,selfHit=type==='firebomb'?G.inArea(origin,G.skillArea(type,p)):type==='grenade'&&G.cheb(origin,p)<=radius;
       if(selfHit) warnings.push(type==='firebomb'?"Fire will hit you too.":"Grenade "+diameter+'×'+diameter+" hits you too");
-      const note=type==='stasis'?"4×4 area · Movement: 1 tile per turn · Lasts 3 turns · Affects everyone":type==='mend'?"3×3 area · Restore 16 HP and 12 shield per turn · Heals allies in Team Mode":type==='firebomb'?"Molly 3×4 · Burn: 12 damage twice per turn for 2 turns, even after leaving the area":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
+      const note=type==='stasis'?"4×4 area · Rooted · Cannot walk; Dash and Blink can escape · Lasts 2 turns · Affects everyone":type==='mend'?"3×3 area · Restore 16 HP and 12 shield per turn · Heals allies in Team Mode":type==='firebomb'?"Molly 4×4 · Burn: 12 damage twice per turn for 2 turns, even after leaving the area":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
       return {ok:true,kind:selfHit?'risky':seen?'valid':'unknown',code:selfHit?'selfBlast':'inRange',reason:[note,...warnings,...(!seen?["Not visible · Target unknown."]:[])].join(' · '),seen,warnings};
     }
     if(type==='scan') {
       if(G.distance(origin,p)>range) return no('range',"Scan range: "+G.SKILLS.scanRange);
-      return {ok:true,kind:seen?'valid':'unknown',reason:"Scan reveals operators within 14 tiles through walls, Smoke and roofs for 2 turns.",seen};
+      return {ok:true,kind:seen?'valid':'unknown',reason:"Scan reveals operators within 14 tiles through walls, Smoke and roofs for 2 turns. All weapon ranges +25% while active.",seen};
     }
     return {ok:true,kind:'valid',reason:"Ready · 1 AP",seen};
   }
@@ -128,19 +130,25 @@
     return cells;
   }
   function ray(c,angle,range=c.range) {
-    const {s,origin,visible,id}=c, start={x:origin.x+.5,y:origin.y+.5};let previous=start;
-    for(let traveled=.05;traveled<=range+.00001;traveled+=.05){
-      const d=Math.min(traveled,range),p={x:start.x+Math.cos(angle)*d,y:start.y+Math.sin(angle)*d},cell={x:Math.floor(p.x),y:Math.floor(p.y)};
-      if(!G.tile(s,cell.x,cell.y))return {kind:'boundary',point:p,cell,distance:d,reason:"Bullets stop at the map edge."};
-
-      const wall=G.segmentWall(s,previous.x,previous.y,p.x,p.y);
-      if(wall&&visible.has(G.key(wall.x,wall.y)))return {kind:'wall',point:p,cell:wall,distance:d,reason:G.tile(s,wall.x,wall.y).type==='barricade'?"Barricade blocks bullets · Can be destroyed.":"Wall blocks bullets · Can be destroyed."};
-      if(!visible.has(G.key(cell.x,cell.y))&&!(c.sight&&G.VISION.contains(c.sight,p)))return {kind:'unknown',point:p,cell,distance:d,reason:"Aim enters fog · Obstacles unknown."};
-      const victim=s.units.find(u=>u.alive&&!u.hidden&&!G.VISION.concealed(s,{...s.units[id],...origin},u)&&G.opponents(s,s.units[id],u)&&(visible.has(G.key(u.x,u.y))||G.visible(s,s.units[id],u)||c.sight&&G.VISION.bodyInField(c.sight,u))&&G.segmentHitsCircle(previous.x,previous.y,p.x,p.y,u.x+.5,u.y+.5));
-      if(victim)return {kind:'unit',point:p,cell:{x:victim.x,y:victim.y},distance:d,reason:"Occupied by "+victim.name+" now · Target may move."};
-      previous=p;
-    }
-    return {kind:'clear',point:previous,distance:range,reason:"Free aim · Fixed range "+range+" tiles"};
+    const {s,origin,visible,id}=c,start={x:origin.x+.5,y:origin.y+.5},dx=Math.cos(angle),dy=Math.sin(angle);
+    const hit=G.projectileCollision(s,start.x,start.y,start.x+dx*range,start.y+dy*range,id,u=>!u.hidden&&!G.VISION.concealed(s,{...s.units[id],...origin},u)&&(visible.has(G.key(u.x,u.y))||G.visible(s,s.units[id],u)||c.sight&&G.VISION.bodyInField(c.sight,u)));
+    const unknown=d=>{const distance=Math.round(Math.min(range,Math.ceil((d-1e-9)/.05)*.05)*1e9)/1e9,point={x:Math.round((start.x+dx*distance)*1e9)/1e9,y:Math.round((start.y+dy*distance)*1e9)/1e9};return {kind:'unknown',point,cell:{x:Math.floor(point.x),y:Math.floor(point.y)},distance,reason:"Aim enters fog · Obstacles unknown."};};
+    const known=p=>visible.has(G.key(Math.floor(p.x),Math.floor(p.y)))||c.sight&&G.VISION.contains(c.sight,p);
+    // Visibility limits the information shown, never the physical hit radius.
+    for(let d=.05;d<hit.distance-1e-9;d+=.05){const p={x:start.x+dx*d,y:start.y+dy*d};if(!known(p))return unknown(d);}
+    if(hit.kind==='wall')return visible.has(G.key(hit.cell.x,hit.cell.y))?{...hit,reason:G.tile(s,hit.cell.x,hit.cell.y).type==='barricade'?"Barricade blocks bullets · Can be destroyed.":"Wall blocks bullets · Can be destroyed."}:unknown(hit.distance);
+    if(hit.kind==='unit')return {...hit,reason:"On target: "+s.units[hit.unitId].name+" · Target may move or dodge."};
+    if(hit.kind==='boundary')return {...hit,reason:"Bullets stop at the map edge."};
+    if(!known(hit.point))return unknown(hit.distance);
+    return {...hit,reason:"Free aim · Fixed range "+range+" tiles"};
+  }
+  function aimRay(c,angle,range=c.range) {
+    const hit=ray(c,angle,range);if(hit.kind!=='unit')return hit;
+    const shooter=c.s.units[c.id],spread=G.recoilSpread({...shooter,scan:c.projected.scan},G.WEAPONS[shooter.weapon].shots-1);
+    const victim=c.s.units[hit.unitId],distance=G.distance(c.origin,victim),center=Math.atan2(victim.y-c.origin.y,victim.x-c.origin.x),delta=Math.abs(Math.atan2(Math.sin(angle-center),Math.cos(angle-center)));
+    const inside=delta+spread<=Math.asin(Math.min(1,G.VISION.BODY_RADIUS/distance));
+    const steady=inside&&[-spread,spread].every(offset=>{const edge=ray(c,angle+offset,range);return edge.kind==='unit'&&edge.unitId===hit.unitId;});
+    return {...hit,confidence:steady?'steady':'edge',reason:steady?hit.reason:"Grazing aim · Recoil may miss · Target may move or dodge."};
   }
   function slashCells(c,angle) {
     const {s,origin,visible}=c, result=[];
@@ -153,5 +161,5 @@
     }
     return result;
   }
-  return {project,range,availability,moveCost,reachable,visibility,context,target,area,ray,slashCells};
+  return {project,range,availability,moveCost,reachable,visibility,context,target,area,ray,aimRay,slashCells};
 });

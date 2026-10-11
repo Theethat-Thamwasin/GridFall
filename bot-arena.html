@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GRIDFALL · Bot Arena</title><link rel="stylesheet" href="bot-arena.css"></head>
+<body>
+<main>
+  <header><div><span class="eyebrow">GRIDFALL / SPECTATOR LAB</span><h1>Bot Arena<span>01 vs 02</span></h1></div><p>Pick two operators.<br>Let them settle it.</p></header>
+  <section class="fighters" aria-label="Choose fighters">
+    <article class="fighter blue"><canvas id="portrait-a" width="320" height="200" aria-hidden="true"></canvas><div><label for="bot-a">01 / BOT A</label><select id="bot-a"></select><p id="skill-a"></p></div></article>
+    <article class="fighter coral"><canvas id="portrait-b" width="320" height="200" aria-hidden="true"></canvas><div><label for="bot-b">02 / BOT B</label><select id="bot-b"></select><p id="skill-b"></p></div></article>
+  </section>
+  <form id="arena-form" class="controls">
+    <label>STARTING WEAPON<select id="starting-weapon"></select></label>
+    <label>SEED<input id="arena-seed" type="number" min="0" max="4294967295" step="1" required></label>
+    <button id="new-seed" type="button" class="quiet">New seed</button>
+    <label class="check"><input id="arena-fate" type="checkbox">Auto Fate cards</label>
+    <div class="play-controls"><button id="start-duel" type="submit" class="primary">Start duel</button><button id="pause-duel" type="button" disabled>Pause</button><button id="reset-duel" type="button" class="quiet">Reset</button><label>SPEED<select id="arena-speed"><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label></div>
+  </form>
+  <section class="battle">
+    <div class="board">
+      <div class="board-heading"><span id="arena-status" role="status">Choose your operators</span><span id="arena-turn">TURN 01</span></div>
+      <div class="canvas-wrap"><canvas id="bot-canvas" width="750" height="550" aria-label="Live bot duel battlefield"></canvas><div id="arena-result" hidden><span class="eyebrow">DUEL COMPLETE</span><h2 id="winner-label"></h2><p id="winner-copy"></p><button id="rematch-duel" class="primary" type="button">Rematch · new seed</button></div></div>
+      <p class="legend"><span>+ Medkit</span><span>AM Ammo</span><span>AR / SG Weapon</span><span>◇ Supply Beacon</span><span>Striped tile: cover</span></p>
+    </div>
+    <aside>
+      <div id="bot-stats" aria-label="Fighter health and plans"></div>
+      <section class="feed"><span class="eyebrow">LIVE FEED</span><ol id="arena-log" aria-label="Recent battle events"></ol></section>
+      <p class="note">The original bot AI and combat rules. Both bots start on equal footing. P9 is the default; collect weapons in the arena. Platforms stay up. Draw after 40 turns.</p>
+    </aside>
+  </section>
+</main>
+<script src="fate.js"></script><script src="vision.js"></script><script src="engine.js"></script><script src="motion.js"></script><script src="effects.js"></script><script src="operator-art.js"></script><script src="bot-arena.js"></script><script src="bot-arena-view.js"></script>
+</body></html>

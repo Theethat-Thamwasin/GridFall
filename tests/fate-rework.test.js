@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),G=require('../engine');
-function arena(){const s=G.createState(22,'vanguard','small',{activeIds:[0,1]});for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',hp:0,loot:null,rank:0});Object.assign(s.units[0],{x:6,y:6,hp:100,shield:0});Object.assign(s.units[1],{x:9,y:6,hp:100,shield:0});return s;}
+function arena(){const s=G.createState(22,'vanguard','small',{activeIds:[0,1]});for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',hp:0,loot:null,rank:0});Object.assign(s.units[0],{x:6,y:6,hp:100,shield:0,weapon:'rifle',ammo:15,weapons:['rifle','pistol'],weaponAmmo:{rifle:15,pistol:8}});Object.assign(s.units[1],{x:9,y:6,hp:100,shield:0});return s;}
 function resolve(s,actions){G.beginTurn(s,{0:actions});while(s.phase==='resolution')G.step(s);}
 test('Tactical Reload restores shield on a real reload and reduces maximum HP, with no free full-magazine shield',()=>{
   const s=arena(),u=s.units[0];G.FATE.add(s,0,'quickloader');assert.equal(u.hp,90);u.ammo=0;resolve(s,[{type:'reload'}]);assert.equal(u.ammo,15);assert.equal(u.shield,12);s.phase='planning';resolve(s,[{type:'reload'}]);assert.equal(u.shield,12);

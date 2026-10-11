@@ -3,24 +3,24 @@ const G=require('../engine'),U=require('../tactics'),M=require('../movement'),{R
 function arena(cls='pyro'){const s=G.createState(18,cls,'medium',{activeIds:[0,1,2]});for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',rank:0,hp:0,loot:null,roof:null});for(const u of s.units)if(u.alive)Object.assign(u,{x:u.id===0?5:u.id===1?8:18,y:u.id===2?18:5,shield:0,hp:100});s.safeLimit=s.nextLimit=999;return s;}
 function resolve(s,plans={}){G.beginTurn(s,plans);while(s.phase==='resolution')G.step(s);assert.notEqual(s.phase,'clash');return s.events;}
 function network(s){const hub=new RoomHub(),a=hub.create({name:'A'});hub.start(a.code,a.token);const room=hub.get(a.code,a.token).room;room.state=s;room.baseTerrain=structuredClone(s.tiles);room.knowledge.clear();return{hub,room,member:room.members[0]};}
-test('new Stasis covers exactly 4x4, including the extra east/south edge, and expires after three turns',()=>{
+test('new Stasis covers exactly 4x4, including the extra east/south edge, and expires after two turns',()=>{
  const s=arena('mire');resolve(s,{0:[{type:'stasis',target:{x:8,y:5}}]});const f=s.fields[0];assert.equal(f.width,4);assert.equal(f.height,4);assert.deepEqual(G.areaBounds(f),{left:7,top:4,right:10,bottom:7,width:4,height:4});
  let cells=0;for(let y=0;y<s.height;y++)for(let x=0;x<s.width;x++)if(G.inField(s,{x,y},'stasis'))cells++;assert.equal(cells,16);
  assert.equal(G.inField(s,{x:10,y:7},'stasis'),true);assert.equal(G.inField(s,{x:11,y:7},'stasis'),false);
- resolve(s);assert.equal(s.fields.length,1);resolve(s);assert.equal(s.fields.length,0);
+ assert.equal(f.expires,3);resolve(s);assert.equal(s.fields.length,0);assert.equal(G.inField(s,s.units[1],'stasis'),false);
 });
 test('expanded Stasis agrees in forecasts, drag routes and server validation',()=>{
- const s=arena('mire'),cast={type:'stasis',target:{x:3,y:3}};assert.ok(G.inArea(s.units[0],G.skillArea('stasis',cast.target)));assert.equal(U.range(s,0,'move',[cast]),1);assert.throws(()=>validatePlan(s,0,[cast,{type:'move',target:{x:7,y:5}}]));assert.doesNotThrow(()=>validatePlan(s,0,[cast,{type:'move',target:{x:6,y:5}}]));
+ const s=arena('mire'),cast={type:'stasis',target:{x:3,y:3}};assert.ok(G.inArea(s.units[0],G.skillArea('stasis',cast.target)));assert.equal(U.range(s,0,'move',[cast]),0);assert.throws(()=>validatePlan(s,0,[cast,{type:'move',target:{x:7,y:5}}]));assert.throws(()=>validatePlan(s,0,[cast,{type:'move',target:{x:6,y:5}}]));
  s.fields=[{x:3,y:3,kind:'stasis',width:4,height:4,expires:4}];const route=new M.Route(s,{x:6,y:5},3);assert.equal(route.append({x:5,y:5}),true);assert.equal(route.remaining,0);assert.equal(route.append({x:4,y:5}),false);
  assert.match(U.target(U.context(s,0,'stasis'),{x:6,y:5}).reason,/4×4/);
 });
-test('Molly ignites exactly the 3x4 impact rectangle, including its south edge, with no ground fire',()=>{
- const s=arena();Object.assign(s.units[1],{x:9,y:7});Object.assign(s.units[2],{x:10,y:7});resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}]});assert.equal(s.units[1].hp,76);assert.equal(s.units[2].hp,100);assert.equal(s.fires.length,0);assert.equal(s.events.filter(e=>e.type==='firebomb').length,1);
- const event=s.events.find(e=>e.type==='firebomb');assert.deepEqual([event.width,event.height],[3,4]);assert.match(U.target(U.context(arena(),0,'firebomb'),{x:5,y:3}).reason,/3×4/);
+test('Molly ignites exactly the 4x4 impact rectangle, including its south edge, with no ground fire',()=>{
+ const s=arena();Object.assign(s.units[1],{x:9,y:7});Object.assign(s.units[2],{x:11,y:7});resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}]});assert.equal(s.units[1].hp,76);assert.equal(s.units[2].hp,100);assert.equal(s.fires.length,0);assert.equal(s.events.filter(e=>e.type==='firebomb').length,1);
+ const event=s.events.find(e=>e.type==='firebomb');assert.deepEqual([event.width,event.height],[4,4]);assert.match(U.target(U.context(arena(),0,'firebomb'),{x:5,y:3}).reason,/4×4/);
  assert.equal(U.target(U.context(arena(),0,'firebomb'),{x:5,y:3}).code,'selfBlast');
 });
 test('Molly does not affect a later entrant and cannot refresh or stack a burning target',()=>{
- const s=arena();Object.assign(s.units[2],{x:10,y:5});s.units[1].class='pyro';const events=resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}],1:[{type:'firebomb',target:{x:8,y:5}}]});assert.equal(s.units[1].hp,76);assert.equal(events.filter(e=>e.type==='damage'&&e.unitId===1).length,2);assert.equal(s.units[1].burn.remainingTicks,2);
+ const s=arena();Object.assign(s.units[2],{x:11,y:6});s.units[1].class='pyro';const events=resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}],1:[{type:'firebomb',target:{x:8,y:5}}]});assert.equal(s.units[1].hp,76);assert.equal(events.filter(e=>e.type==='damage'&&e.unitId===1).length,2);assert.equal(s.units[1].burn.remainingTicks,2);
  resolve(s,{2:[{type:'move',target:{x:8,y:6},path:[{x:10,y:6},{x:9,y:6},{x:8,y:6}]}]});assert.equal(s.units[2].hp,100);assert.equal(s.units[2].burn,undefined);assert.equal(s.units[1].hp,52);
  resolve(s);assert.equal(s.units[1].hp,52);
 });

@@ -198,10 +198,20 @@ test('pending items count toward capacity without making them usable', () => {
   resolve(s, { 0: [{ type: 'move', path: [{ x: 2, y: 4 }, { x: 2, y: 5 }] }] });
   assert.equal(u.medkits, 3); assert.equal(s.tiles[4][2].loot.taken, true); assert.equal(s.tiles[5][2].loot.taken, false);
 });
-test('players and bots share starting equipment and preserve each gun magazine', () => {
+test('players and bots start with only P9, then preserve magazines of guns they collect', () => {
   const s = G.createState(77), fields = ['hp', 'shield', 'ammo', 'reserve', 'medkits', 'grenades', 'smoke', 'weapons', 'weaponAmmo'];
   for (const u of s.units) for (const field of fields) assert.deepEqual(u[field], s.units[0][field]);
-  for (const id of [0, 1]) { const u = s.units[id]; u.ammo = 4; assert.equal(G.equipWeapon(s, u, 'pistol'), true); u.ammo = 3; assert.equal(G.equipWeapon(s, u, 'rifle'), true); assert.equal(u.ammo, 4); assert.equal(G.equipWeapon(s, u, 'pistol'), true); assert.equal(u.ammo, 3); assert.equal(G.equipWeapon(s, u, 'sniper'), false); }
+  for(const u of s.units){assert.equal(u.weapon,'pistol');assert.equal(u.ammo,8);assert.deepEqual(u.weapons,['pistol']);assert.deepEqual(u.weaponAmmo,{pistol:8});assert.equal(G.equipWeapon(s,u,'rifle'),false);}
+  for(const id of [0,1]){
+    const u=s.units[id],target={x:u.x+1,y:u.y};s.tiles[target.y][target.x].loot={type:'weapon',weapon:'rifle',taken:false};
+    G.beginTurn(s,{[id]:[{type:'move',target,path:[target]}]});G.step(s);
+    assert.equal(u.weapons.includes('rifle'),false);assert.equal(G.equipWeapon(s,u,'rifle'),false);
+    while(s.phase==='resolution')G.step(s);
+    assert.equal(u.weapons.includes('rifle'),true);u.ammo=3;
+    assert.equal(G.equipWeapon(s,u,'rifle'),true);assert.equal(u.ammo,15);u.ammo=4;
+    assert.equal(G.equipWeapon(s,u,'pistol'),true);assert.equal(u.ammo,3);
+    assert.equal(G.equipWeapon(s,u,'rifle'),true);assert.equal(u.ammo,4);assert.equal(G.equipWeapon(s,u,'sniper'),false);
+  }
 });
 test('bots automatically collect guns and can equip them only next turn', () => {
   const s = arena(), u = s.units[1], x = u.x, y = u.y;

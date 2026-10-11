@@ -31,9 +31,9 @@ test('Molly can burn its caster, leaves no floor hazard, and water prevents igni
 });
 
 test('escaping the planned fire area before its pulse avoids damage',()=>{
-  const s=arena();const target={x:10,y:5};
+  const s=arena();const target={x:11,y:5};
   resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}],1:[{type:'move',path:G.pathfind(s,s.units[1],target,3),target}]});
-  assert.equal(s.units[1].hp,100);assert.equal(s.units[1].x,10);
+  assert.equal(s.units[1].hp,100);assert.equal(s.units[1].x,11);
 });
 
 test('new skill previews and LAN validation agree on class, range, reservation and cooldown',()=>{

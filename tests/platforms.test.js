@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const G=require('../engine.js'),U=require('../tactics.js'),R=require('../replay.js'),{RoomHub,validatePlan}=require('../multiplayer.js');
 function flood(s,limit=s.safeLimit){const root=s.zoneCenter,seen=new Set([G.key(root.x,root.y)]),queue=[root];for(let i=0;i<queue.length;i++){const p=queue[i];for(const[dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){const x=p.x+dx,y=p.y+dy,k=G.key(x,y),t=G.tile(s,x,y);if(!t||t.rank>limit||!G.passable(s,x,y)||seen.has(k))continue;seen.add(k);queue.push({x,y});}}return seen;}
-function open(character='vanguard'){const s=G.createState(99,character);for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',hp:0,loot:null,rank:0});s.units.forEach((u,i)=>Object.assign(u,{x:2+i*3,y:3,shield:20,alive:true}));return s;}
+function open(character='vanguard'){const s=G.createState(99,character);for(const row of s.tiles)for(const t of row)Object.assign(t,{type:'floor',hp:0,loot:null,rank:0});s.units.forEach((u,i)=>Object.assign(u,{x:2+i*3,y:3,shield:20,alive:true,weapon:'rifle',ammo:15,weapons:['rifle','pistol'],weaponAmmo:{rifle:15,pistol:8}}));return s;}
 function resolve(s,plans={}){G.beginTurn(s,plans);while(s.phase==='resolution')G.step(s);return s;}
 test('procedural arenas are sparse connected platforms with loops and varied layouts',()=>{
  for(const map of Object.keys(G.MAPS).filter(id=>id!=='meadow')){const layouts=new Set();for(let seed=0;seed<40;seed++){const s=G.createState(seed,'vanguard',map),connected=flood(s),floors=s.tiles.flat().filter(t=>!['wall','barricade','void'].includes(t.type));

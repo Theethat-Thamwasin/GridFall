@@ -111,7 +111,7 @@ Replay เก็บสถานะจริง กระสุน เสีย�
 
 **AEGIS:** เติม Shield 12 สูงสุด 40 และสะท้อนกระสุน 2 นัดที่ชนตัวกลับตามแนวเดิมด้วยดาเมจ 80% ใช้ได้ถึงจบเทิร์น ไม่ใช้กระสุนของเรา ไม่สะท้อนระเบิด ฟัน หรือไฟ หลังสะท้อนครบสองนัด กระสุนนัดถัดไปทำดาเมจตามปกติ บอตใช้สกิลใหม่ได้เหมือนผู้เล่น และ LAN ตรวจคำสั่งที่เซิร์ฟเวอร์
 
-ช่องลายเหลืองดำจะหล่นภายในสองเทิร์น สีดำคือ Void ที่เดินไม่ได้ คนที่อยู่บนแพลตฟอร์มตอนหล่นจะถูกกำจัดทันที สัญลักษณ์ Supply กลางสนามเป็น Beacon ผู้ที่รอดคนสุดท้ายชนะ ถ้าคนสุดท้ายตายพร้อมกันจะไม่มีผู้รอดชีวิต
+ช่องลายเหลืองดำจะหล่นภายในสองเทิร์น สีดำคือ Void ที่เดินไม่ได้ คนที่อยู่บนแพลตฟอร์มตอนหล่นจะถูกกำจัดทันที สัญลักษณ์ Supply ในสนามเป็น Beacon ที่สุ่มเกิดบนพื้นที่ที่ยังไม่ร่วง ผู้ที่รอดคนสุดท้ายชนะ ถ้าคนสุดท้ายตายพร้อมกันจะไม่มีผู้รอดชีวิต
 
 ## ไฮไลต์คำสั่งและข้อจำกัด
 
@@ -144,7 +144,7 @@ Fog และพื้นสนามสว่างขึ้นเพื่อ�
 | ส้ม ◉ | Grenade | ระเบิด +1 พกสูงสุด 3 |
 | เทา ≋ | Smoke | ควัน +1 พกสูงสุด 3 |
 
-ถ้ากระเป๋าเต็ม ของยังอยู่บนพื้น เดินทับ Beacon กลางสนามเพื่อรับ Supply อัตโนมัติ ใช้ได้เทิร์นถัดไปเช่นกัน บอตกับผู้เล่นเริ่มด้วย HP เกราะ ปืน กระสุน และของเท่ากัน ใช้ระบบเก็บของ กระเป๋า เปลี่ยนปืน Reload Heal Smoke Grenade Guard และ Skill เดียวกัน บอตวางแผนจากสิ่งที่มองเห็น ไม่อ่านแผนที่เราล็อกไว้
+ถ้ากระเป๋าเต็ม ของยังอยู่บนพื้น เดินทับ Beacon ณ จุดสุ่มบนพื้นที่ปลอดภัยเพื่อรับ Supply อัตโนมัติ ใช้ได้เทิร์นถัดไปเช่นกัน บอตกับผู้เล่นเริ่มด้วย HP เกราะ ปืน กระสุน และของเท่ากัน ใช้ระบบเก็บของ กระเป๋า เปลี่ยนปืน Reload Heal Smoke Grenade Guard และ Skill เดียวกัน บอตวางแผนจากสิ่งที่มองเห็น ไม่อ่านแผนที่เราล็อกไว้
 
 ## ปืนในสนามและ Barricade
 
@@ -200,7 +200,7 @@ Multiplayer ใช้ WebSocket ส่งสถานะ realtime และ POST
 
 โครงสร้างอาคารคงที่ แต่จุดเกิด Cover ต้นไม้ Loot และรูปทรง Zone เปลี่ยนตาม seed ตัวละครใช้ค่าพื้นฐานใกล้เคียงกัน ความเสียหายและเวลาของการโจมตีไม่ใช้การสุ่มยิงโดน
 
-ทุกแมตช์สุ่มจุดเกิดใหม่ทั้งสามด่าน กระจาย 8 ตัวละครห่างกันอย่างน้อย 8 ช่องแบบระยะตรง และสุ่มสลับผู้เล่น/บอตกับจุดเหล่านั้น จุดเกิดเว้นขอบด่าน มีช่องรอบตัว 3×3 ที่เดินได้และไม่มีน้ำ เชื่อมถึง Beacon ผ่านเส้นทางเดินจริง และไม่มีใครเริ่มบนรางวัลกลางสนาม ทุกคนมีกระสุนห่าง 1 ก้าวกับปืนห่าง 2 ก้าวเท่ากันโดยไม่เจาะกำแพงเพื่อวางของ
+ทุกแมตช์สุ่มจุดเกิดใหม่ทั้งสามด่าน กระจาย 8 ตัวละครห่างกันอย่างน้อย 8 ช่องแบบระยะตรง และสุ่มสลับผู้เล่น/บอตกับจุดเหล่านั้น จุดเกิดเว้นขอบด่าน มีช่องรอบตัว 3×3 ที่เดินได้และไม่มีน้ำ เชื่อมถึง Beacon ผ่านเส้นทางเดินจริง และไม่มีใครเริ่มทับ Supply Beacon ทุกคนมีกระสุนห่าง 1 ก้าวกับปืนห่าง 2 ก้าวเท่ากันโดยไม่เจาะกำแพงเพื่อวางของ
 
 Solo ใช้ seed ใหม่เมื่อเริ่มแมตช์ ส่วน LAN ให้เซิร์ฟเวอร์สุ่มและส่งจุดเกิดของแต่ละคนผ่าน Fog ตามเดิม การกลับเข้าห้องไม่สุ่มตำแหน่งใหม่ และ Replay เก็บตำแหน่งจริงตั้งแต่เริ่มเกม ใช้ seed เดิมจะได้จุดเกิดเดิมเพื่อจำลองแมตช์ซ้ำได้
 
@@ -285,7 +285,7 @@ Visual QA ครอบคลุม 1920×1080, 1366×768, 1280×720, 390×844, 4
 
 ช่องลายเหลืองดำเตือนก่อนหล่นสองเทิร์น ส่วนสีดำคือ Void ที่เดินไม่ได้ เมื่อพื้นหล่นคนที่ยืนอยู่จะถูกกำจัดทันที ไม่ใช่ damage zone ผ่านโล่ สถานะแมพและ Replay คำนวณจากเซิร์ฟเวอร์ และไม่เผยตำแหน่งผู้เล่นนอก Fog
 
-ตัวละครใช้ ID เดิมเพื่อคงตัวเลือกและห้องเดิม: STRIDER (เดิน 4 ช่อง พุ่ง 5 ช่อง), WRAITH (วาร์ป 5 ช่องและเดินปกติ 3), ORACLE (Vision 12 และ Recoil ×0.35 และนัดแรกแต่ละคำสั่ง +15 damage สองเทิร์น), CINDER (ไฟ 3×3 สองเทิร์น), AEGIS (โล่ +12 และสะท้อน 2 นัดกลับที่ดาเมจ 80%) สกิลใช้หนึ่ง Action คูลดาวน์ STRIDER/WRAITH สองเทิร์น, ORACLE/CINDER สามเทิร์น และ AEGIS สี่เทิร์น ปืนเริ่มต้น HP และจำนวนไอเทมเท่ากัน ไม่มีสกิลป้องกัน Void
+Operator IDs remain compatible with saved selections and rooms. STRIDER walks 4 tiles and dashes 5, ignoring movement debuffs. WRAITH can Blink twice in one turn, then has a two-turn cooldown. ORACLE scans 14 tiles through concealment for two turns, reduces recoil by 65%, adds 15 first-bullet damage and extends all weapon ranges by 25%. CINDER ignites a 4×4 impact area for two 12-damage burn ticks per turn over two turns. AEGIS gains 12 shield and reflects every incoming bullet at full damage, absorbing 80% and taking 20%. MIRE roots walking inside a 4×4 field for two turns. HALO restores 16 HP and 12 shield per turn in a 3×3 field for two turns. Each skill use costs one action; skills do not protect against falling into Void.
 
 ใช้ tools/balance-report.js จำลองแมตช์บอตรวม Fate Draft บนทั้งสามขนาด เก็บผลใน qa/platform-balance.json ผลจำลองไม่แทนการทดสอบกับผู้เล่นจริง
 
@@ -297,17 +297,19 @@ Each player types a personal callsign before creating or joining a room. Names a
 ### Action effects upgrade
 Movement uses short, fading operator-colored light trails sampled from interpolated visual positions. Layered effects cover skills, shooting, slash, healing, reload, equipment changes, guard, smoke, pickups and explosions. Trails are capped at 384 segments, expire after 0.58 seconds, clear on replay seeks and hidden enemies, and disable under Reduced Motion. Action effects are clipped to visible cells; replay pause and speed also control cosmetic animation time. Simulation timing and multiplayer commands are unchanged.
 
+The main battlefield feeds movement animation at every simulation step, including frames that process several ticks. Bullets and thrown objects interpolate between known positions in Solo, Multiplayer and replay; impacts, concealment and turn changes remove their tracks immediately. Public bullet snapshots retain their existing privacy rules. Terrain outside the camera is omitted from drawing, while visible tiles retain full detail. Without Smoke, actor and terrain sight share the same computed field. Combat still uses the original 45 ms simulation ticks.
+
 ### FATE DRAFT — Every Gift Has a Price
 
-The mystery action/effect rules are completely replaced. Before planning T4, T8, T12 and every fourth turn thereafter, living players and bots enter a separate 16-second draft. Choose one of two cards; timed-out or disconnected players receive an automatic choice. Cards last for the match and pair a blessing with a curse. The pool has 20 normal, 8 manipulation, and 5 legendary contracts. Early offers have Mild costs; Moderate/special choices unlock at T8, Severe at T12, and legendary chaos at T20. Curse Transfer is especially rare and starts at T16.
+The mystery action/effect rules are completely replaced. Before planning T4, T8, T12 and every fourth turn thereafter, living players and bots enter a separate 16-second draft. Choose one of two cards; timed-out or disconnected players receive an automatic choice. Cards last for the match and pair a blessing with a curse. The pool has 28 normal, 8 manipulation, and 5 legendary contracts. Early offers have Mild costs; Moderate/special choices unlock at T8, Severe at T12, and legendary chaos at T20. Curse Transfer is especially rare and starts at T16.
 
 Special choices implement reroll, a third offer next draft, gifting paired cards, curse transfer, random paired exchange, shared fate, balanced cleanse and paired theft. Legendary choices include doubled blessing/curse, random mirroring, three-card rebirth, double down and three 75%-strength wild contracts. T12 Double Deal accepts two cards with both costs (a third offer allows choosing the second card); T16 Black Market highlights public build inspection; T20 Sacrifice gives up a blessing for three rerolled offers. Rerolls never extend the timer.
 
 Multiplayer stores offers and pending choices only on the server. Each client receives its own offers and confirmation; builds and summaries change only when the draft seals. All players see the same two-second reveal before planning resumes on the same numbered turn. Skip affects animation only; it cannot bypass the multiplayer reveal barrier. Reconnect restores private offers and locked choice. Public inspection contains names, operators, alive status and cards, never positions, ammo or hidden terrain. Conflicting steals/transfers resolve in stable player-ID order; an already taken card cannot be duplicated.
 
-Shared combat modifiers govern simulation, validation and previews: integer Move 1–5, ranged multiplier 0.7–1.45 including last-bullet bonuses, at most three positive ranged damage tags, maximum shield 10–90, Medkit 10–65 HP, melee at most 70, blast radius 1–2, and bounded recoil/timing bonuses. Action HP taxes stop at 1 HP; enemies and Void can still finish you. Scavenger ammo waits until the next turn. Card power budgets pair +3/−3, +4/−4 or +5/−5 according to severity. This is a starting balance model for playtesting.
+Shared combat modifiers govern simulation, validation and previews: integer Move 1–5, ranged multiplier 0.7–1.45, with a separate final-volley bonus capped at +45%, at most three positive ranged damage tags, maximum shield 10–90, Medkit 10–65 HP, melee at most 70, blast radius 1–2, and bounded recoil/timing bonuses. Action HP taxes stop at 1 HP; enemies and Void can still finish you. Scavenger ammo waits until the next turn. Card power budgets pair +3/−3, +4/−4 or +5/−5 according to severity. This is a starting balance model for playtesting.
 
-Responsive cards show Thai or English green bonuses/red drawbacks, icons, rarity, severity, tags, target selectors, a countdown bar and skippable acceptance. The compact FATE HUD opens every public build, including during replay; snapshots preserve builds and public draft history without private offers. Draft start, arrival, hover, selection, flip, blessing, curse, special and legendary choices have separate quiet procedural audio cues.
+Responsive cards show English green bonuses/red drawbacks, icons, rarity, severity, tags, target selectors, a countdown bar and skippable acceptance. The compact FATE HUD opens every public build, including during replay; snapshots preserve builds and public draft history without private offers. Draft start, arrival, hover, selection, flip, blessing, curse, special and legendary choices have separate quiet procedural audio cues.
 
 Bots use seeded weighted decisions from visible contacts and recent memory. They vary shooting, flanking, retreating, guarding, healing, reloading, smoke, grenades and skills, while prioritizing escape from falling platforms. They never read hidden opponents or locked plans.
 
@@ -315,10 +317,10 @@ The new Field Manual supports hover, keyboard focus and mobile tap on eight acti
 
 QA: npm test; node tools/interface-smoke.js; node tools/fate-smoke.js; node tools/visual-smoke.js; node tools/multiplayer-smoke.js --replay.
 
-### TH/EN interface and operator update
-Choose Thai or English from the main menu, Settings, lobby or match toolbar. The preference is local to each browser and persists after reload; character, skill, gun and card names stay English. Card descriptions use bonus/drawback language. Draft time is 16 seconds in solo and server rooms.
+### Interface and operator update
+The game interface, operator descriptions and card text use English. Card descriptions use bonus/drawback language. Draft time is 16 seconds in solo and server rooms.
 
-Actions form a vertical column on the right. Two stable action slots sit at bottom center and receive a short icon flight when queued, with subtle confirm/new-turn pulses. Inventory and weapon magazines stay visible. The FATE button and public card inspector sit lower left. Live minimap and overview replay controls are removed; full match replay remains available after the winner, with player cameras. Exit asks for confirmation; Cancel preserves the match. Solo pauses during confirmation, while multiplayer time continues. Reduced Motion skips decorative action flights. The manual has all 33 cards with hover, focus and tap details.
+Actions form a vertical column on the right. Two stable action slots sit at bottom center and receive a short icon flight when queued, with subtle confirm/new-turn pulses. Inventory and weapon magazines stay visible. The FATE button and public card inspector sit lower left. Live minimap and overview replay controls are removed; full match replay remains available after the winner, with player cameras. Exit asks for confirmation; Cancel preserves the match. Solo pauses during confirmation, while multiplayer time continues. Reduced Motion skips decorative action flights. The manual has all 41 cards with hover, focus and tap details.
 
 ## Drag Movement / Contact Duel
 
@@ -354,17 +356,27 @@ Main-menu hover uses quiet terminal ticks and a distinct confirmation blip. Hove
 
 ## Arsenal / field update
 
+- Real matches start every player and bot with only P9 / SIDEARM (8 rounds). Other weapons must be collected from the battlefield and become available next turn; practice still provides all guns to try.
+- Every five-turn Supply Drop scatters up to ten items across randomly selected surviving dry tiles, with two Medkits in a full drop. It includes one TRIDENT, three other guns, ammo, armor, a grenade and Smoke. Drops never overwrite uncollected items or spawn on actors, walls, water or fallen platforms; sparse surviving islands receive as many items as fit.
+- Supply Beacon starts at a random safe, empty tile and relocates after its five-turn recharge or if its platform collapses. It grants +30 reserve ammo, +20 armor, +1 grenade and +1 Medkit next turn, respecting inventory caps. Drops leave the Beacon tile clear. If no safe empty site remains, the Beacon stays unavailable until one opens. Practice retains its fixed training Beacon.
 - Resolution: 80 ticks × 45 ms = **3.6 seconds**; Action 2 starts at 1.8 seconds. Planning time stays selectable.
-- BREACHER (Shotgun): five spread paths per shell; strongest at close range. Pellets cannot stack beyond the strongest hit on the same actor.
+- BREACHER (Shotgun): eleven evenly spaced pellets per shell; strongest at close range. Damage on one actor remains capped at the strongest pellet hit (48 / 32 / 16 with range falloff, before bonuses). Floating damage combines the pellets from one shell into one total, while separate shots use spaced text lanes. Reflected pellets retain their shell damage cap.
+- Shooting guides and bullet flight share exact body/terrain intersections. Grazing markers are dashed when recoil can miss; targets can still move or dodge. Pellets stop their guides at the first known hit. Expired bullets are removed with a small floating-point tolerance, and resolution clears remaining flight before planning or match-end snapshots.
 - TRIDENT: three rays per round, range 9, magazine 6. Appears in every five-turn Air Drop and never in starter loot; maximum base damage 28 per target per shot. Auto pickup still becomes usable next turn.
-- MIRE / STASIS FIELD: throw range 5, 4×4 area, lasts three turns. Everyone entering the field can move only one tile that turn across both actions, including Dash and Blink. An entering route stops on its first field tile. Cooldown 4 turns.
+- MIRE / STASIS FIELD: throw range 5, 4×4 area, lasts two turns. Everyone inside is rooted and cannot walk. An entering walking route stops on its first field tile; Dash and Blink can escape. Cooldown 4 turns.
 - HALO / MEND FIELD: throw range 5, 3×3 area, lasts two turns. Restore 16 HP and 12 shield per turn; heals allies only in Team Mode and everyone inside in Free for All. Respects HP / shield caps. Overlapping fields do not stack. Cooldown 4 turns.
 - THERMITE FIELD, STASIS FIELD and MEND FIELD fly as visible canisters with faint trails before landing. Their flight, deployment and fields are recorded in replays. Multiplayer filters them through the observer's sight.
 - VERDANT, BADLANDS and TUNDRA palettes add coherent grass patches to all three procedural sizes. Terrain cost, connectivity, loot, spawn safety and falling platforms use the same rules.
 - Rifle / SMG / LMG recoil grows within each burst, with lower reliability around six tiles. ORACLE focus and recoil cards still apply.
-- Main menu includes all seven operator previews; the Thai / English manual covers all skills and guns via hover, focus or tap.
+- Main menu includes all seven operator previews; the English manual covers all skills and guns via hover, focus or tap.
 
 Validation: `npm test`; `node tools/arsenal-smoke.js` checks the menu, manual, field throws, movement limit, weapon spread and two browser multiplayer clients.
+
+## Standalone Bot Arena
+
+Run `npm run bots` to open the separate spectator page in your browser. Choose any two operators, optionally choose their starting weapon and enable automatic Fate drafts, then click **Start duel**. Pause/resume, 1×/2×/4× speed, Reset and Rematch are available. Both bots use the original AI and combat engine on a symmetric 15×11 arena; there is no immortal player or platform collapse. P9 is the default loadout and other weapons can be collected. A duel ends on elimination or a draw after 40 turns.
+
+The launcher binds to localhost on an available port. `npm run bots -- --no-browser` prints the link without launching a browser. With the normal game server running, visit `/bot-arena.html`. You can also open `bot-arena.html` directly in a browser; all scripts and visuals are local and no multiplayer connection is needed. Arena setup is in `bot-arena.js`; the page and spectator controls are in `bot-arena.html`, `bot-arena.css` and `bot-arena-view.js`.
 
 ตรวจหน้า Lobby ด้วยสองเบราว์เซอร์: `node tools/lobby-visual-smoke.js` ทดสอบคลิกเลือก/ยืนยันตัวละคร ปรับบอท สิทธิ์ Host ภาษา การเชื่อมต่อใหม่ Reduced Motion และจอ Desktop / Laptop / Mobile / Landscape
 
@@ -382,6 +394,27 @@ Room lifecycle: eliminated players can return to the same lobby while the match 
 
 Menu refinement: language uses two buttons instead of the system dropdown. Settings shows one heading and only language, Effect Volume and BG Music Volume. Back controls have explicit borders and 44px targets; Escape returns through menu steps. Removed menu audio-output, test/mute, camera-shake and reduced-motion controls. OS reduced-motion preference is still respected. The main menu uses a decorative platform scene and operator portrait inspired by the hierarchy of VALORANT and Apex Legends menus, without importing their assets. Browser checks: `node tools/settings-refine-smoke.js`.
 
+
+## Operator balance and Fate combinations (2026-10-11)
+
+- STRIDER: Kinetic Dash has a five-tile budget even under Stasis or Fate movement penalties. Each water tile costs one Dash step; normal walking still costs two. Charge collisions automatically win without a rock-paper-scissors pause, pushing enemies forward along the charge route and interrupting their current movement action. Every hit deals 5 HP damage, bypassing shield, including each subsequent push against the same enemy. Walls, Void or allies blocking the forward push stop the charge safely. Enemy chains push together when there is space; two simultaneous opposing Dashes stop each other and both take 5 HP collision damage. Later action slots still execute. Ordinary rock-paper-scissors damage remains 10 HP. Bullet evasion lasts the full Dash action. Cooldown remains two turns.
+- WRAITH: queue up to two Phase Shifts in one turn, each consuming one action. Each destination must be visible and within five tiles of its projected origin. Using even one Blink starts a two-turn cooldown; the second Blink remains available in that same resolution.
+- ORACLE: active Pulse Array extends every equipped weapon's range by 25%, including shotgun pellets and TRIDENT rays. Queuing Scan before Shoot previews the extended range. Scan still lasts two turns, does not make bullets pass walls, and preserves its recoil and first-bullet bonuses.
+- CINDER: Molly ignites the 4×4 impact area. Burning still deals two 12-damage ticks per turn for two turns, follows victims, does not stack and leaves no ground fire.
+- MIRE: the 4×4 Stasis Field roots walking while an operator is inside, including the caster. Shooting, healing and other actions remain available. Dash and Blink can escape. Duration is two turns and cooldown four turns.
+
+Eight new paired cards add recoil, ammo, timing, melee, health, Smoke and Guard choices: Steady Hands, Extended Mag, Ammo Cache, Heavy Edge, Thick Skin, Panic Fire, Smoke Battery and Counterweight. Shoot timing is measured within an action; it never grants an extra action. Ammo Cache refunds up to eight actually loaded rounds to reserve; a full-magazine reload provides no refund. Extended Mag trades its extra Shoot capacity for one less tile of normal movement. Final Volley replaces the last-round bonus with a bonus to every bullet of the magazine's final Shoot. Its magazine penalty removes one complete Shoot action, so automatic guns do not leave unusable partial bursts. Mirror Plate trades its stronger Guard for a lower shield cap. Volatile charges its HP cost only on grenade throws.
+
+Keep both named blessings to activate a combination once. Curses remain in effect. Removing or transferring a required blessing deactivates the combination. Scaled contracts proportionally scale the combination bonus, up to 100%; normal stat caps still apply. Build inspection shows active combinations and progress toward incomplete pairs; an offer that completes a pair shows its combo bonus before selection.
+
+| Combination | Required blessings | Extra bonus |
+| --- | --- | --- |
+| Armored Reload | Fortress + Tactical Reload | Reload restores 4 more shield |
+| Rescue Smoke | Smoke Medic + Field Surgeon | Smoke restores 5 more HP |
+| Finishing Volley | Glass Cannon + Final Volley | Final Shoot bonus +10 percentage points |
+| Breach Charge | Demolitionist + Volatile | Grenade damage +5 |
+| Blood Duel | Berserker + Duelist | Successful Slash restores 5 more shield |
+| Supply Chain | Scavenger + Extended Mag | Pickups grant 3 more reserve rounds next turn |
 
 ## Battlefield controls and practice
 

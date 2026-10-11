@@ -1,5 +1,15 @@
 (function(root,factory){const api=factory();if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.GridfallEffects=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+  function mergeCombatText(effects,next){
+    if(!['damage','heal'].includes(next.type))return false;
+    if(next.type==='damage'&&next.weapon==='shotgun'&&next.shotId!=null){
+      const prior=effects.find(e=>e.type==='damage'&&e.weapon==='shotgun'&&e.shotId===next.shotId&&e.turn===next.turn&&e.owner===next.owner&&e.unitId===next.unitId&&e.life<e.duration);
+      if(prior){prior.amount+=next.amount;prior.duration=Math.max(prior.duration,prior.life+.5);return true;}
+    }
+    const occupied=new Set(effects.filter(e=>['damage','heal'].includes(e.type)&&e.life<e.duration&&Math.abs(e.x-next.x)<1.5&&Math.abs(e.y-next.y)<1.5).map(e=>e.textLane||0));
+    next.textLane=0;while(occupied.has(next.textLane))next.textLane++;
+    return false;
+  }
   class ParticlePool {
     constructor(capacity=240){this.capacity=capacity;this.data=new Float32Array(capacity*8);this.active=new Uint8Array(capacity);this.colors=new Array(capacity);this.cursor=0;}
     clear(){this.active.fill(0);}
@@ -86,6 +96,6 @@
     const x=(p.x+.5)*cell,groundY=(p.y+.5)*cell,y=groundY-(reduced?Math.sin(p.progress*Math.PI)*8:(p.lift||0)*cell);
     ctx.save();ctx.fillStyle='#07121e';ctx.globalAlpha=.22;ctx.beginPath();ctx.ellipse(x,groundY,5,2,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.translate(x,y);ctx.rotate(p.progress*Math.PI*3);ctx.shadowColor=color;ctx.shadowBlur=reduced?0:8;ctx.fillStyle=color;ctx.strokeStyle='#f2fff4';ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(-3.5,-5,7,10,2.5);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#586e65';ctx.fillRect(-3.5,-1,7,3);ctx.fillStyle='#e2e9e2';ctx.fillRect(-2,-7,4,2);ctx.restore();
   }
-  return {drawFlying,ParticlePool,MotionTrails,drawAction,throwPoint,drawThrow};
+  return {mergeCombatText,drawFlying,ParticlePool,MotionTrails,drawAction,throwPoint,drawThrow};
 
 });

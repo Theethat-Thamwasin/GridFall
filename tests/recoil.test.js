@@ -46,6 +46,6 @@ test('VANDAL deals 16 damage per round and 48 for a full three-round burst',()=>
 test('recoil varies by shooter and turn and rotates all shotgun pellets together',()=>{
   assert.notEqual(fire('rifle')[0].event.recoil,fire('rifle',123,1)[0].event.recoil);
   assert.notEqual(fire('rifle')[0].event.recoil,fire('rifle',123,0,2)[0].event.recoil);
-  const shot=fire('shotgun')[0];assert.equal(shot.bullets.length,5);
+  const shot=fire('shotgun')[0];assert.equal(shot.bullets.length,11);
   shot.bullets.forEach((b,i)=>{assert.ok(Math.abs(Math.atan2(b.dy,b.dx)-shot.event.angle-G.WEAPONS.shotgun.spread[i])<1e-12);assert.equal(b.left,G.WEAPONS.shotgun.range);});
 });

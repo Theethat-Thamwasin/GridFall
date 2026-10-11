@@ -8,7 +8,7 @@ test('movement and all thrown action footprints stay above Smoke and roofs witho
     for(const [type,character]of [['move','vanguard'],['smoke','vanguard'],['grenade','vanguard'],['firebomb','pyro'],['stasis','mire'],['mend','halo']]){
       h.$('practice-operators').children.find(b=>b.dataset.character===character).click();(h.$('actions').querySelector('[data-type="'+type+'"]')||h.$('skill-button')).click();
       const status=h.window.GRIDFALL_STATUS();h.$('arena').dispatchEvent({type:'pointermove',buttons:0,pointerId:7,clientX:(10.5-status.camera.x)/status.viewport.x*1280,clientY:(10.5-status.camera.y)/status.viewport.y*720});draws.length=drawn.length=0;h.frames(1);
-      const expected=type==='move'?[322,322,28,28]:type==='stasis'?[290,290,124,124]:type==='firebomb'?[290,290,92,124]:[290,290,92,92];
+      const expected=type==='move'?[322,322,28,28]:['stasis','firebomb'].includes(type)?[290,290,124,124]:[290,290,92,92];
       const outline=draws.findLastIndex(d=>d.kind==='outline'&&['#8de8a9','#e7bd88','#86d2f1'].some(color=>d.color?.startsWith(color))&&JSON.stringify(d.rect)===JSON.stringify(expected));assert.ok(outline>=0,cover+' '+type+' footprint');assert.equal(draws[outline].depth,0,'own outline remains outside the sight clip');
       if(cover!=='smoke'){const roof=draws.findLastIndex(d=>d.kind==='fillRect'&&d.color==='#44545d');assert.ok(roof>=0);assert.ok(outline>roof,cover+' '+type+' above roof');}
       if(cover!=='roof'){const smoke=draws.findLastIndex(d=>d.kind==='fill'&&d.color?.radial);assert.ok(smoke>=0);assert.ok(outline>smoke,cover+' '+type+' above Smoke');}

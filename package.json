@@ -5,6 +5,7 @@
   "description": "Simultaneous-turn tactical battle royale with procedural audio",
   "scripts": {
     "start": "node server.js",
+    "bots": "node tools/bot-arena.js",
     "online": "node tools/online.js",
     "online:ngrok": "node tools/online.js --ngrok",
     "test": "node --test tests/*.test.js",

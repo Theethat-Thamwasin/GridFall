@@ -22,10 +22,11 @@ function validatePlan(s, id, input) {
     if (['move', 'skillMove'].includes(a.type)) {
       if (!validTarget() || (a.type === 'skillMove' && (u.class !== 'vanguard' || skill))) fail("Cannot move.");
       const movement=G.movementForecast(forecastState,u,plan);
-      const budget=Math.min(movement.remaining,a.type==='skillMove'?G.SKILLS.dashRange:G.moveRange(s,u)); const path = a.path!==undefined ? G.validateRoute(s,from,a.path,budget,target)?.path : G.pathfind(s,from,target,budget); if (!path?.length||path.slice(0,-1).some(p=>G.inField({...s,fields:movement.fields},p,'stasis'))) fail("Destination is out of range or blocked.");
+      const dash=a.type==='skillMove',routeState={...s,fields:movement.fields};
+      const budget=dash?G.SKILLS.dashRange:Math.min(movement.remaining,Math.max(1,Math.min(5,G.CLASSES[u.class].move+Math.round(G.FATE.stats(u).move)))); const path = a.path!==undefined ? G.validateRoute(routeState,from,a.path,budget,target,dash)?.path : G.pathfind(routeState,from,target,budget,dash); if (!path?.length) fail("Destination is out of range or blocked.");
       plan.push({ type: a.type, path, target: { x: target.x, y: target.y } }); from = { x: target.x, y: target.y }; moved = true; if (a.type === 'skillMove') skill = true;
     } else if (a.type === 'blink') {
-      if (u.class !== 'volt' || skill || !validTarget() || !G.passable(s, target.x, target.y) || !G.visible(s, from, target, Math.min(G.SKILLS.blinkRange,G.movementForecast(forecastState,u,plan).remaining))) fail("Invalid teleport destination.");
+      if (u.class !== 'volt' || u.skillCooldown>0 || plan.filter(a=>a.type==='blink').length>=G.SKILLS.blinkUses || !validTarget() || !G.passable(s, target.x, target.y) || !G.visible(s, from, target, G.SKILLS.blinkRange)) fail("Invalid teleport destination.");
       plan.push({ type: 'blink', target: { x: target.x, y: target.y } }); from = { x: target.x, y: target.y }; skill = true; moved = true;
     } else if (a.type === 'scan') {
       if (u.class !== 'deadeye' || skill) fail("Skill unavailable."); skill = true; plan.push({ type: 'scan' });
@@ -39,7 +40,7 @@ function validatePlan(s, id, input) {
       if (a.type === 'shoot') { if (ammo < w.shots || (G.WEAPONS[u.weapon].stationary && moved)) fail("Not enough ammo, or Sniper already moved."); ammo -= w.shots; }
       plan.push({ type: a.type, angle: Math.atan2(Math.sin(a.angle), Math.cos(a.angle)) });
     } else if (a.type === 'reload') {
-      const amount = Math.min(w.mag - ammo, reserve); if (amount <= 0) fail("Cannot reload."); ammo += amount; reserve -= amount; plan.push({ type: 'reload' });
+      const amount = Math.min(w.mag - ammo, reserve); if (amount <= 0) fail("Cannot reload."); ammo += amount; reserve -= amount; reserve += Math.min(amount,G.FATE.stats(u).reloadAmmo); plan.push({ type: 'reload' });
     } else if (a.type === 'heal') {
       if (meds-- <= 0 || u.hp >= G.FATE.stats(u).maxHp) fail("Cannot heal."); plan.push({ type: 'heal' });
     } else if (a.type === 'grenade' || a.type === 'smoke') {
@@ -187,10 +188,12 @@ class RoomHub {
     const safeEvents = [];
     for (const e of events) {
       const position = Number.isFinite(e.x) && Number.isFinite(e.y) ? e : e.unitId === member.id ? self : null;
-      if (e.unitId === member.id || ['end', 'zoneWarning', 'supplyDrop', 'platformCollapse','fateAccepted'].includes(e.type) || (position && (seen(position)||G.sameTeam(s,observer,s.units[e.unitId])||G.VISION.scanned(observer,position,G.sightRange(observer)))&&!(G.VISION.concealed(s,observer,position)&&!G.sameTeam(s,observer,s.units[e.unitId])&&['shoot','slash','heal','reload','guard','scan','reflect','equip','damage','eliminated','move','knockback','blink','dodge','fieldPulse','reflectReady','reflected'].includes(e.type)))) { const safe = clone(e); if(safe.unitId!==member.id&&!units[safe.unitId]?.alive)safe.unitId=null; if (safe.from && (!(seen(safe.from)||G.sameTeam(s,observer,s.units[e.unitId])||G.VISION.scanned(observer,safe.from,G.sightRange(observer)))||G.VISION.concealed(s,observer,safe.from)&&!G.sameTeam(s,observer,s.units[e.unitId]))) delete safe.from; if(safe.to&&!seen(safe.to))delete safe.to; if(safe.contact&&!seen(safe.contact))delete safe.contact; if(['clashStart','clashTie','clashResult'].includes(safe.type)&&!s.clash?.ids.includes(member.id)&&![safe.winner,safe.loser].includes(member.id)){if(safe.ids)safe.ids=safe.ids.filter(id=>units[id]?.alive);if(safe.choices)safe.choices=Object.fromEntries(Object.entries(safe.choices).filter(([id])=>units[id]?.alive));for(const field of ['winner','loser'])if(safe[field]!=null&&!units[safe[field]]?.alive)safe[field]=null;} if (safe.owner !== member.id && !units[safe.owner]?.alive) safe.owner = null; safeEvents.push(safe); }
+      if (e.unitId === member.id || ['end', 'zoneWarning', 'supplyDrop', 'beaconMove', 'platformCollapse','fateAccepted'].includes(e.type) || (position && (seen(position)||G.sameTeam(s,observer,s.units[e.unitId])||G.VISION.scanned(observer,position,G.sightRange(observer)))&&!(G.VISION.concealed(s,observer,position)&&!G.sameTeam(s,observer,s.units[e.unitId])&&['shoot','slash','heal','reload','guard','scan','reflect','equip','damage','eliminated','move','knockback','blink','dodge','fieldPulse','reflectReady','reflected'].includes(e.type)))) { const safe = clone(e); if(safe.unitId!==member.id&&!units[safe.unitId]?.alive)safe.unitId=null; if (safe.from && (!(seen(safe.from)||G.sameTeam(s,observer,s.units[e.unitId])||G.VISION.scanned(observer,safe.from,G.sightRange(observer)))||G.VISION.concealed(s,observer,safe.from)&&!G.sameTeam(s,observer,s.units[e.unitId]))) delete safe.from; if(safe.to&&!seen(safe.to))delete safe.to; if(safe.contact&&!seen(safe.contact))delete safe.contact; if(['clashStart','clashTie','clashResult'].includes(safe.type)&&!s.clash?.ids.includes(member.id)&&![safe.winner,safe.loser].includes(member.id)){if(safe.ids)safe.ids=safe.ids.filter(id=>units[id]?.alive);if(safe.choices)safe.choices=Object.fromEntries(Object.entries(safe.choices).filter(([id])=>units[id]?.alive));for(const field of ['winner','loser'])if(safe[field]!=null&&!units[safe[field]]?.alive)safe[field]=null;} if (safe.owner !== member.id && !units[safe.owner]?.alive) safe.owner = null; safeEvents.push(safe); }
       else if (e.owner === member.id && ['damage', 'eliminated'].includes(e.type)) safeEvents.push({ type: 'hitConfirmed', amount: e.amount, eliminated: e.type === 'eliminated' });
       else if (e.type === 'shoot' && e.first && position && G.distance(observer, position) < 16) safeEvents.push({ type: 'distantShot', x: Math.floor(position.x / 5) * 5 + 2, y: Math.floor(position.y / 5) * 5 + 2, weapon: e.weapon, turn: e.turn, tick: e.tick });
     }
+    // Only identified attacks carry volley grouping metadata.
+    for(const e of safeEvents)if(e.shotId!=null&&(e.owner==null||e.unitId==null)){delete e.shotId;delete e.weapon;}
     const stats = self.stats || {};
     const owner = id => id === member.id || units[id]?.alive ? id : null;
     const effectSeen=p=>G.effectVisible(s,observer,p);

@@ -32,7 +32,7 @@
       guide=guide===kind?null:kind;$('practice-info').classList.toggle('hidden',!guide);
       $('practice-field').setAttribute('aria-expanded',String(guide==='field'));
       if(guide==='field'){
-        $('practice-info').innerHTML='<h3>Items on the battlefield</h3><p>Hover a tile to inspect it. Walk over an item to collect it; it becomes available next turn.</p><p id="practice-inspect"></p>'+Object.entries(lootHelp).map(([id,[title,copy]])=>row(id==='weapon'?P.weaponIcon('rifle'):G.LOOT[id].icon,title,copy,G.LOOT[id].color)).join('')+row('◈','Supply beacon','Walk onto the pulsing ring: +30 reserve ammo, +20 shield and +1 grenade, available next turn. It recharges after use.')+row('▱','Roofs','Players under the same roof can see each other. Outside players cannot normally see in. Oracle Scan reveals operators through roofs. Walls still block normal sight.')+row('▰','Cover and obstacles','Cover reduces incoming bullets from its protected side. Walls and barricades block sight and bullets; they can be destroyed.')+row('≈','Water','Costs two movement points per tile.')+row('▧','Collapse warnings','In real matches: yellow = 2 turns left, red = 1 turn left, black = Void. Platforms stay safe in practice.');
+        $('practice-info').innerHTML='<h3>Items on the battlefield</h3><p>Hover a tile to inspect it. Walk over an item to collect it; it becomes available next turn.</p><p id="practice-inspect"></p>'+Object.entries(lootHelp).map(([id,[title,copy]])=>row(id==='weapon'?P.weaponIcon('rifle'):G.LOOT[id].icon,title,copy,G.LOOT[id].color)).join('')+row('◈','Supply beacon','Walk onto the pulsing ring: +30 reserve ammo, +20 shield, +1 grenade and +1 Medkit, available next turn. In real matches it spawns at random safe locations and moves after recharging.')+row('▱','Roofs','Players under the same roof can see each other. Outside players cannot normally see in. Oracle Scan reveals operators through roofs. Walls still block normal sight.')+row('▰','Cover and obstacles','Cover reduces incoming bullets from its protected side. Walls and barricades block sight and bullets; they can be destroyed.')+row('≈','Water','Costs two movement points per tile.')+row('▧','Collapse warnings','In real matches: yellow = 2 turns left, red = 1 turn left, black = Void. Platforms stay safe in practice.');
       }
     }
     $('practice-field').onclick=()=>showGuide('field');
@@ -77,7 +77,7 @@
     }
     function inspect(tile,beacon=false){
       const output=$('practice-inspect');if(guide!=='field'||!output)return;
-      let info=beacon?['Supply beacon','Walk onto the ring for ammo, armor and a grenade.']:tile?.loot&&!tile.loot.taken?lootHelp[tile.loot.type]:tile?.roof?['Roof','Share sight with players under the same roof; hide from outside players.']:terrainHelp[tile?.type];
+      let info=beacon?['Supply beacon','Walk onto the ring for ammo, armor, a grenade and a Medkit.']:tile?.loot&&!tile.loot.taken?lootHelp[tile.loot.type]:tile?.roof?['Roof','Share sight with players under the same roof; hide from outside players.']:terrainHelp[tile?.type];
       output.textContent=info?info[0]+' · '+info[1]:'';
     }
     return {update,inspect,pause:pauseLesson};
