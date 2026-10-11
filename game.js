@@ -18,7 +18,7 @@
   const V=G.VISION,fogSurface=document.createElement('canvas'),fogInk=fogSurface.getContext('2d');let sightCache={};
   const P=window.GridfallPresentation, TUTORIAL=window.GridfallPractice, particles=new window.GridfallEffects.ParticlePool(240);
   let collapseAt=-10,collapseTurn=-1,frameDt=1/60;const unitFacing=new Map();
-  let explored=new Set(),report={dealt:0,received:0,shots:0,items:0},reportTurn=0,lastMatch=null,menuReplay=false,shakeUntil=0,resultTicket=0,actionHover=null;
+  let explored=new Set(),lastMatch=null,menuReplay=false,shakeUntil=0,resultTicket=0,actionHover=null;
   let playerId = 0, netPacket = null, fetchingArchive = false, spectateId = null, lobbyPacket = null, lobbyDirty = false, lobbySaving = false, lobbyStarting = false;
   const network = new window.GridfallNetwork(receivePacket, () => { updateConnection(); if (G.WEAPONS[player()?.weapon]) updateUI(); });
   let selectedMap = 'medium', state = G.createState(Date.now() & 0xffffff, 'vanguard', selectedMap), selectedClass = 'vanguard', plan = [], selected = 'move', hover = null, aimMouse = null, started = false, spectating = false, deathShown = false;
@@ -97,6 +97,13 @@
   function resetMotion() { stopKeyboardPan(); projectileMotion.clear();flightMotion.clear();effectScene='';unitMotion.clear(); trails.clear();unitFacing.clear(); motionTime = 0; cameraFlight = null; }
   function centerCamera(s = state) { resetMotion(); const u = s.units[viewerId()]; applyPose({ cx: u.x + .5-(s.practice?viewSpan().x*.07:0), cy: u.y + .5-(s.practice?viewSpan().y*.15:0), zoom: camera.zoom }); }
   function flyCamera(target, duration = .85, follow = false) { camera.follow = follow; cameraFlight = { from: cameraPose(), target, duration, elapsed: 0 }; }
+  function followPose(s=state) {
+    // Plan from the destination of queued movement; resolving turns follow the
+    // displayed operator. Freeze while drawing so the pointer cannot move its own route.
+    const planning=s.phase==='planning'&&!spectating&&!replay&&s.units[playerId].alive;
+    const p=planning?virtualPosition():unitMotion.sample(viewerId(),motionTime)||s.units[viewerId()];
+    return {cx:p.x+.5-(s.practice?viewSpan().x*.07:0),cy:p.y+.5-(s.practice?viewSpan().y*.15:0),zoom:camera.zoom};
+  }
   function overviewPose(s) { const zoom = Math.min(arenaSize.width / CELL / s.width, (arenaSize.height - replayPadding()) / CELL / s.height); return { cx: s.width / 2, cy: s.height / 2 + replayPadding() / (2 * CELL * zoom), zoom }; }
   function fitCamera(s = state) { cancelFieldInput();flyCamera(overviewPose(s), 1.15); }
   const panKeys = new Set(), PAN_KEYS = {KeyW:[0,-1],KeyA:[-1,0],KeyS:[0,1],KeyD:[1,0],ArrowUp:[0,-1],ArrowLeft:[-1,0],ArrowDown:[0,1],ArrowRight:[1,0]};
@@ -119,7 +126,7 @@
     if (replay) {
       if (replay.view === 'overview') target = overviewPose(s);
       else { const u = s.units[Number(replay.view)]; if (u.hidden || u.x < 0) return; const p = unitMotion.sample(u.id, motionTime) || u; target = { cx: p.x + .5, cy: p.y + .5, zoom: window.innerWidth <= 790 ? 1.05 : 1.45 }; }
-    } else if (camera.follow) { const p = unitMotion.sample(viewerId(), motionTime) || s.units[viewerId()]; target = { cx: p.x + .5-(state.practice?viewSpan().x*.07:0), cy: p.y + .5-(state.practice?viewSpan().y*.15:0), zoom: camera.zoom }; }
+    } else if (camera.follow) target=followPose(s);
     if (target) { const current = cameraPose(), ease = 1 - Math.exp(-dt * (replay ? 3 : 7)); applyPose({ cx: current.cx + (target.cx - current.cx) * ease, cy: current.cy + (target.cy - current.cy) * ease, zoom: Math.exp(Math.log(current.zoom) + Math.log(target.zoom / current.zoom) * ease) }); }
   }
   function allVisible() { return !!replay && replay.kind === 'match' && state.phase === 'ended'; }
@@ -178,6 +185,7 @@
     if (!allowed.ok) return false;
     if (['shoot','slash'].includes(action.type) && !Number.isFinite(action.angle)) return false;
     plan.push(action); sound.play('queue');
+    if(camera.follow&&action.target&&['move','skillMove','blink'].includes(action.type))flyCamera(followPose(),.28,true);
     if (plan.length === 2) $('field-note').textContent = "Plan ready · Press SPACE to confirm.";
     updateUI(); flyAction(action.type,plan.length-1); return true;
   }
@@ -262,7 +270,6 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   }
   function updateMobileHUD(){touchControls?.validate();mobileHUD?.update({started,practice:!!state.practice,walkthrough:state.walkthrough?{...state.walkthrough,step:W.current(state)?.id}:null,replay:!!replay,spectating,canPlan:canPlan(),hp:player().hp,weapon:player().weapon,ammo:player().ammo,queued:plan.length,touch:{aiming:!!touchControls?.aiming}});}
   function turnFeedback() { const stamp='T'+state.turn;if($('turn-transition').dataset.turn===stamp)return;$('turn-transition').dataset.turn=stamp;pulseSlots('#98cadb');$('turn-transition').textContent='TURN '+String(state.turn).padStart(2,'0')+' / PLANNING';$('turn-transition').classList.remove('hidden');setTimeout(()=>$('turn-transition').classList.add('hidden'),650);sound.play('turn'); }
-  function turnReport() { if(!reportTurn)return;const r=$('turn-report');r.replaceChildren();const title=document.createElement('b');title.textContent='TURN '+String(reportTurn).padStart(2,'0')+' / REPORT';r.append(title);for(const [label,value]of[['DAMAGE DEALT',report.dealt],['DAMAGE RECEIVED',report.received],['SHOTS',report.shots],['ITEMS PICKED UP',report.items]]){const row=document.createElement('div');row.textContent=label+'  '+value;r.append(row);}r.classList.remove('hidden');setTimeout(()=>r.classList.add('hidden'),2800); }
   function startPlanning() {
     if(state.walkthrough&&W.current(state)?.id==='fate'&&state.phase==='draft'){for(const u of state.units)if(u.alive&&u.id!==playerId&&!state.fate.draft.picks[u.id])G.FATE.pick(state,u.id,G.FATE.botPick(state,u.id));deadline=performance.now()+G.FATE.DRAFT_MS;updateUI();return;}
     if(!network.active&&!state.walkthrough&&G.FATE.open(state)){
@@ -283,8 +290,8 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     if(state.walkthrough&&!state.walkthrough.finished&&!W.canConfirm(state,plan)){toast('Try the lesson before confirming your plan.');return;}
     while (plan.length < 2) plan.push({ type: 'wait' });
     if (network.active) { if (!canPlan()) return; sound.play('lock'); toast('PLAN COMMITTED'); network.command({action:'lock',turn:state.turn,plan:structuredClone(plan)}).then(()=>{network.locked = state.phase === 'planning';updateUI();}).catch(()=>log("Command failed · Try again.")); return; }
-    reportTurn=state.turn;report={dealt:0,received:0,shots:0,items:0};
     frozenBefore = { turn: state.turn };
+    if(camera.follow)cameraFlight=null;
     state.humanIds=player().alive?[playerId]:[]; G.beginTurn(state, { ...botPlans, 0: structuredClone(plan) }); accumulator = 0; effects = []; sound.play('lock');
     archive.begin(state);
     resolutionBanner(); updateUI();
@@ -304,7 +311,6 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   function makeEffect(type,x,y,extra={}) { if(type==='eliminated'||type==='fall')particles.burst(x+.5,y+.5,P.accents[extra.character]||'#a2c9eb',18,'death',P.reduced());if(type==='thermite')particles.burst(x+.5,y+.5,'#ffb57f',16,'ember',P.reduced());const effect={type,x,y,life:0,duration:type==='explosion'?.8:type==='damage'?.75:type==='eliminated'?1.1:.45,...extra};if(window.GridfallEffects.mergeCombatText(effects,effect))return;if(effects.length>=80)effects.shift(); effects.push(effect);if(['spark','destroy','explosion','shield','reflect','pickup'].includes(type))particles.burst(x+.5,y+.5,type==='shield'||type==='reflect'?'#91cbe5':type==='pickup'?'#a4d875':'#ddb478',type==='explosion'?12:6,type==='destroy'?'debris':type==='shield'?'shield':'spark',P.reduced());if(P.shake()&&['explosion','shieldBreak'].includes(type))shakeUntil=motionTime+.12; }
   function handleEvents(events, replaying = false) {
     for (const e of events) {
-      if(!replaying){if(e.type==='damage'&&e.owner===playerId&&e.unitId!==playerId)report.dealt+=e.amount;if((e.type==='damage'||e.type==='zoneDamage')&&e.unitId===playerId)report.received+=e.amount;if(e.type==='hitConfirmed')report.dealt+=e.amount||0;if(e.type==='shoot'&&e.unitId===playerId)report.shots++;if(e.type==='pickup'&&e.unitId===playerId)report.items++;}
       if(e.type==='fateAccepted'){if(!replaying){for(const p of e.summary||[])log(p.name+' / '+(G.FATE.cards[p.cardId]?.name||p.cardId),'good');}continue;}
       if (e.type === 'hitConfirmed') { sound.play('hit'); if (!replaying) log(e.eliminated ? 'ELIMINATION CONFIRMED' : 'HIT CONFIRMED −' + e.amount, 'good'); continue; }
       if (e.type === 'distantShot') { sound.play('gun', Math.max(-.8,Math.min(.8,(e.x-player().x)/12)),e.weapon); if (!replaying) {signals.push({x:e.x,y:e.y,expires:state.turn+1});log("Gunfire near " + coord(e));} continue; }
@@ -357,7 +363,6 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   function afterResolution() {
     if(state.walkthrough&&!state.walkthrough.finished)W.resolved(state,state.plans[playerId]||[],state.events);
     if(state.practice){practiceTurns++;for(const a of state.plans[playerId]||[])practiceUsed.add(a.type);const reset=TUTORIAL.afterTurn(state);if(reset.before>reset.hp)makeEffect('damage',player().x,player().y,{amount:reset.before-reset.hp,duration:.7});if(reset.respawned){makeEffect('blink',reset.respawned.x,reset.respawned.y,{duration:.8});log('Training bot respawned.','good');}if(archive.turns.length>3)archive.turns.shift();}
-    turnReport();
     replayFrames = archive.finish(); signals = signals.filter(s => s.expires >= state.turn); fogCache.stamp = '';
     if (!player().alive && !deathShown) { deathShown = true; playerDeathTurn = frozenBefore.turn; if(state.phase!=='ended')showResult(false); }
     if (state.phase === 'ended') showResult(state.mode==='team'?state.winnerTeam===player().team:state.winner === playerId);
@@ -881,11 +886,11 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
   window.addEventListener('pointermove',e=>{if(routeDrag&&e.target!==canvas&&e.pointerId===routeDrag.pointerId){if(!canPlan()||!(e.buttons&1)){cancelRoute();return;}traceRoute(readPointer(e));previewCache.stamp='';}});canvas.addEventListener('contextmenu',e=>e.preventDefault());
   canvas.addEventListener('wheel',e=>{e.preventDefault();cancelRoute();if(!replay)zoomCamera(e.deltaY<0?1.15:1/1.15);},{passive:false});
   $('camera-out').onclick = () => zoomCamera(1 / 1.2); $('camera-in').onclick = () => zoomCamera(1.2);
-  $('camera-center').onclick = () => { cancelFieldInput();const p = unitMotion.sample(viewerId(), motionTime) || state.units[viewerId()]; flyCamera({ cx: p.x + .5, cy: p.y + .5, zoom: camera.zoom }, .85, true); hover = aimMouse = null; };
+  $('camera-center').onclick = () => { cancelFieldInput();flyCamera(followPose(),.28,true);hover = aimMouse = null; };
   $('camera-fit').onclick = () => { fitCamera(); hover = aimMouse = null; };
   $('fullscreen-button').onclick = async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { toast("Press F11 for fullscreen."); } };
   $('lock-button').onclick = lock;
-  $('undo-button').onclick = () => { if (!canPlan()) return; if(routeDrag||touchControls?.aiming){cancelFieldInput();return;}cancelFieldInput();const undone=plan.pop();if(undone)walkEvent('undo');clearActionFlights();sound.play('click'); updateUI(); };
+  $('undo-button').onclick = () => { if (!canPlan()) return; if(routeDrag||touchControls?.aiming){cancelFieldInput();return;}cancelFieldInput();const undone=plan.pop();if(undone)walkEvent('undo');if(camera.follow&&undone?.target&&['move','skillMove','blink'].includes(undone.type))flyCamera(followPose(),.28,true);clearActionFlights();sound.play('click'); updateUI(); };
   $('skill-button').onclick = () => selectAction(G.CLASSES[player().class].skillType);
   function soloOptions(){if($('solo-mode').value!=='team')return{};const a=Number($('solo-team-a').value)||4,b=Number($('solo-team-b').value)||4,own=$('solo-team').value,teams={0:own};let id=1;for(const team of ['A','B'])for(let i=team===own?1:0;i<(team==='A'?a:b);i++)teams[id++]=team;return{mode:'team',activeIds:Object.keys(teams).map(Number),teams};}
   $('solo-mode').onchange=()=>{$('solo-team-options').classList.toggle('hidden',$('solo-mode').value!=='team');$('start-button').textContent=$('solo-mode').value==='team'?'DEPLOY TEAM MATCH →':'DEPLOY SOLO →';};
@@ -911,13 +916,13 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     started=false;spectating=false;spectateId=null;deathShown=false;replay=null;netPacket=null;network.fullReady=false;network.locked=false;fetchingArchive=false;
     soloClashOutcome=null;soloClashUntil=0;plan=[];hover=aimMouse=null;particles.clear();unitMotion.clear();trails.clear();unitFacing.clear();effects=[];signals=[];logs=[];archive=new R.MatchArchive();replayFrames=[];frozenBefore=null;playerDeathTurn=null;
     lobbyDirty=false;lobbySaving=false;lobbyStarting=false;document.body.classList.remove('spectating-live','logs-open','has-pending','practice-mode');$('practice-panel').classList.add('hidden');delete document.body.dataset.practiceCue;
-    for(const id of ['result','help','exit-dialog','replay-controls','resolve-banner','action-feedback','camera-mode','turn-report','turn-transition','spectator-bar'])$(id).classList.add('hidden');
+    for(const id of ['result','help','exit-dialog','replay-controls','resolve-banner','action-feedback','camera-mode','turn-transition','spectator-bar'])$(id).classList.add('hidden');
     clashPanel.classList.add('hidden');
   }
   function mainMenu() { clearTimeout(returnTimer); clearActionFlights();closeAudioSettings(false);cancelFieldInput();soloClashOutcome=null;soloClashUntil=0;
     ++resultTicket;fateUI.close();
     if(state.phase==='ended'&&archive.turns.length&&(!network.active||network.fullReady)){lastMatch={state:structuredClone(state),turns:archive.turns,playerId};}
-    particles.clear();explored.clear();actionHover=null;menuReplay=false;P.reset();$('turn-report').classList.add('hidden');$('turn-transition').classList.add('hidden');
+    particles.clear();explored.clear();actionHover=null;menuReplay=false;P.reset();$('turn-transition').classList.add('hidden');
     network.leave(); network.credentials=null; network.fullReady=false; playerId=0; netPacket=null;
     started=false; spectating=false; spectateId=null; deathShown=false; replay=null; fetchingArchive=false; lobbyPacket=null; lobbyDirty=false; lobbySaving=false; lobbyStarting=false;
     plan=[]; hover=aimMouse=null; effects=[]; signals=[]; logs=[]; archive=new R.MatchArchive(); replayFrames=[]; frozenBefore=null; playerDeathTurn=null;
@@ -1066,6 +1071,7 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     }
     if (packet.type !== 'state') return;
     const previous = netPacket; netPacket = packet;
+    if(camera.follow&&previous?.stage==='planning'&&packet.state.phase!=='planning')cameraFlight=null;
     if (replay && (packet.stage === 'resolution' || previous?.state.turn !== packet.state.turn)) endReplay();
     const enteringMatch=!started||previous?.matchId!==packet.matchId,first=enteringMatch||packet.init;
     if (first) {
@@ -1081,10 +1087,10 @@ const detail = a ? (Number.isFinite(a.angle) ? angleLabel(a.angle) + ' · ' + (a
     if (packet.spectating != null && state.phase !== 'ended') setSpectator(packet.spectating);
     if (first) { centerCamera(); log("Joined " + (network.online ? 'ONLINE' : 'LAN') + ' · ROOM ' + network.credentials.code,'good'); }
     if (['resolution','clash'].includes(state.phase)) {
-      if (!archive.current) { reportTurn=state.turn;report={dealt:0,received:0,shots:0,items:0}; frozenBefore = {turn:state.turn}; plan = state.plans[playerId] || []; archive.begin(state); effects = []; resolutionBanner(); }
+      if (!archive.current) { frozenBefore = {turn:state.turn}; plan = state.plans[playerId] || []; archive.begin(state); effects = []; resolutionBanner(); }
       else if (packet.stage === 'resolution' && (!previous || previous.state.tick !== state.tick)) archive.capture(state, state.events);
     } else {
-        if (archive.current) { turnReport();archive.capture(state,state.events); replayFrames = archive.finish(); if (archive.turns.length > 1) archive.turns[archive.turns.length - 2].frames = []; }
+        if (archive.current) { archive.capture(state,state.events); replayFrames = archive.finish(); if (archive.turns.length > 1) archive.turns[archive.turns.length - 2].frames = []; }
       if (first || previous?.state.turn !== state.turn) { turnFeedback();plan=[];selected='move';signals=signals.filter(s=>s.expires>=state.turn); }
       if (state.phase === 'ended' && previous?.stage !== 'ended') showResult(state.mode==='team'?state.winnerTeam===player().team:state.winner === playerId);
       if (state.phase === 'ended' && !fetchingArchive) {
