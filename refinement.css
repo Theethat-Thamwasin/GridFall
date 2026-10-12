@@ -266,6 +266,8 @@ body.practice-mode #action-feedback{top:auto;bottom:112px}
 @media(prefers-reduced-motion:reduce){#practice-collapse svg{transition:none}}
 
 /* Camera controls use the same centered SVG buttons as the top bar. */
+#map-previews .map-choice{height:auto;max-height:none;flex-shrink:0;display:block}
+body[data-menu-pane=maps] #start-button{position:sticky;bottom:0;z-index:5;min-height:48px;flex-shrink:0;box-shadow:0 -10px 18px #0b1521e8}
 #field-tools .camera-controls{grid-column:1 / -1;justify-content:center;align-items:center;gap:8px;width:100%;padding:0;border:0;background:transparent;box-shadow:none}
 #field-tools .camera-controls button{display:grid;place-items:center;min-width:40px;width:40px;min-height:40px;height:40px;margin:0;padding:0;border:1px solid #789cb13b;border-radius:10px;background:#142638b5;color:#bfd3df;box-shadow:inset 0 1px 0 #c2e7f00b;font-size:0;line-height:1;transition:background .15s,border-color .15s,color .15s}
 #field-tools .camera-controls button::before,#field-tools .camera-controls button::after{content:none;display:none}

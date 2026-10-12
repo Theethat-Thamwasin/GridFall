@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-12",
+  "seedRange": [0, 999],
+  "roster": "8 operators, Free for All",
+  "totalLayouts": 5000,
+  "maps": [
+    {"map": "small", "seeds": 1000, "uniqueStructures": 1000, "uniqueItemLayouts": 1000, "regeneratedLayouts": 19, "failures": []},
+    {"map": "medium", "seeds": 1000, "uniqueStructures": 1000, "uniqueItemLayouts": 1000, "regeneratedLayouts": 0, "failures": []},
+    {"map": "meadow", "seeds": 1000, "uniqueStructures": 1000, "uniqueItemLayouts": 1000, "regeneratedLayouts": 0, "failures": []},
+    {"map": "skybridge", "seeds": 1000, "uniqueStructures": 1000, "uniqueItemLayouts": 1000, "regeneratedLayouts": 152, "failures": []},
+    {"map": "large", "seeds": 1000, "uniqueStructures": 1000, "uniqueItemLayouts": 1000, "regeneratedLayouts": 0, "failures": []}
+  ],
+  "additionalChecks": [
+    "Exact fixed-seed reproduction",
+    "Cardinal connectivity to important areas",
+    "Spawn separation, open exits and path-distance balance",
+    "Complete two- and three-tile bridge decks",
+    "Connectivity at every actual SKY BRIDGE collapse stage",
+    "Normal walking escape distance during yellow and red warnings",
+    "Reachable valuable loot before its platform falls",
+    "Bounded idle match completion",
+    "Singleplayer deployment and real movement/pickups",
+    "Multiplayer Team Mode and filtered terrain",
+    "Desktop/mobile map selection and smooth Follow without zoom changes"
+  ]
+}

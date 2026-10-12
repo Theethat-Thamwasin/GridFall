@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..');
 function verify(){
  if(process.platform!=='win32'||process.arch!=='x64')throw Error('ชุดนี้ใช้กับ Windows 64-bit');
  if(Number(process.versions.node.split('.')[0])<22)throw Error('ต้องใช้ Node.js 22 ขึ้นไป หรือ runtime ที่อยู่ใน ZIP');
- const essentials=['index.html','server.js','engine.js','multiplayer.js','wire.js','Circuit Tactics.mp3','tools/online.js'];
+ const essentials=['index.html','server.js','engine.js','skybridge.js','multiplayer.js','wire.js','Circuit Tactics.mp3','tools/online.js'];
  for(const name of essentials)if(!fs.existsSync(path.join(root,name)))throw Error('ไฟล์ไม่ครบ: '+name+' · แตก ZIP ใหม่ให้ครบทั้งโฟลเดอร์');
  const manifestFile=path.join(root,'INSTALL-MANIFEST.json');
  if(fs.existsSync(manifestFile)){

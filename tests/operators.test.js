@@ -17,16 +17,16 @@ test('seven selectable operators have unique skills and bots use the same new cl
 test('Molly burns targets twice per resolution for two turns after leaving the impact area, without consuming grenades',()=>{
   const s=arena(),u=s.units[0],v=s.units[1],inventory=[u.ammo,u.grenades,u.smoke];
   const first=resolve(s,{0:[{type:'firebomb',target:{x:8,y:5}}],1:[{type:'guard'},{type:'guard'}]});
-  assert.equal(v.hp,76);assert.equal(s.fires.length,0);assert.equal(v.burn.remainingTicks,2);assert.equal(u.skillCooldown,3);assert.deepEqual([u.ammo,u.grenades,u.smoke],inventory);
+  assert.equal(v.hp,64);assert.equal(s.fires.length,16);assert.equal(v.burn.remainingTicks,2);assert.equal(u.skillCooldown,3);assert.deepEqual([u.ammo,u.grenades,u.smoke],inventory);
   assert.equal(first.filter(e=>e.type==='damage'&&e.unitId===1).length,2);
-  Object.assign(v,{x:15,y:15});resolve(s,{});assert.equal(v.hp,52);assert.equal(s.fires.length,0);
-  resolve(s,{});assert.equal(v.hp,52,'expired flames cannot damage a third turn');
+  Object.assign(v,{x:15,y:15});resolve(s,{});assert.equal(v.hp,28);assert.equal(s.fires.length,0);
+  resolve(s,{});assert.equal(v.hp,28,'expired flames cannot damage a third turn');
 });
 
-test('Molly can burn its caster, leaves no floor hazard, and water prevents ignition at impact',()=>{
+test('Molly can burn its caster, leaves dry ground fire, and water prevents ignition',()=>{
   const s=arena();s.units[1].x=22;s.units[1].y=22;s.tiles[4][4].type='water';s.tiles[4][5].type='wall';
-  resolve(s,{0:[{type:'firebomb',target:{x:5,y:5}}]});assert.equal(s.units[0].hp,76);
-  assert.equal(s.fires.length,0);resolve(s,{});assert.equal(s.units[0].hp,52);
+  resolve(s,{0:[{type:'firebomb',target:{x:5,y:5}}]});assert.equal(s.units[0].hp,64);
+  assert.equal(s.fires.length,14);resolve(s,{});assert.equal(s.units[0].hp,28);
   const wet=arena();wet.tiles[5][8].type='water';resolve(wet,{0:[{type:'firebomb',target:{x:8,y:5}}]});assert.equal(wet.units[1].hp,100);assert.equal(wet.units[1].burn,undefined);
 });
 
@@ -64,7 +64,7 @@ test('reflectors cannot bounce one bullet indefinitely, and Firebomb bypasses re
   const s=arena('rook');s.units[1].class='rook';resolve(s,{0:[{type:'reflect'},{type:'shoot',angle:0}],1:[{type:'reflect'},{type:'shoot',angle:Math.PI}]});
   assert.equal(s.events.filter(e=>e.type==='reflected').length,4);assert.equal(s.projectiles.length,0);
   const fire=arena('rook');fire.units[1].class='pyro';resolve(fire,{0:[{type:'reflect'}],1:[{type:'firebomb',target:{x:5,y:5}}]});
-  assert.equal(fire.events.some(e=>e.type==='reflected'),false);assert.equal(fire.units[0].hp,88);
+  assert.equal(fire.events.some(e=>e.type==='reflected'),false);assert.equal(fire.units[0].hp,76);
 });
 
 test('Pyro and Rook bots use their new skills through ordinary validated plans',()=>{
@@ -73,12 +73,12 @@ test('Pyro and Rook bots use their new skills through ordinary validated plans',
   }
 });
 
-test('movement warns about existing visible fire, but a planned Molly leaves no persistent hazard',()=>{
+test('movement warns about existing visible fire and a queued Molly',()=>{
   const s=arena(),destination={x:6,y:5};s.fires=[{x:6,y:5,expires:3,owner:1}];
   assert.equal(U.target(U.context(s,0,'move'),destination).kind,'risky');
   const sight=new Set([G.key(5,5)]),hidden=U.target(U.context(s,0,'move',[],sight),destination);s.fires=[];
   assert.deepEqual(U.target(U.context(s,0,'move',[],sight),destination),hidden);
-  assert.equal(U.target(U.context(s,0,'move',[{type:'firebomb',target:{x:7,y:5}}]),destination).kind,'valid');
+  assert.equal(U.target(U.context(s,0,'move',[{type:'firebomb',target:{x:7,y:5}}]),destination).kind,'risky');
 });
 
 test('LAN masks individual fire cells and hidden reflectors without leaking their owner or coordinates',()=>{
@@ -96,7 +96,7 @@ test('replay snapshots preserve attached burns, shield activation and the reflec
   const frame=archive.frames().find(f=>f.events.some(e=>e.type==='reflected'));assert.ok(frame.projectiles.some(b=>b.owner===0));assert.equal(frame.units[0].reflectCharges,1);
   const fire=arena(),history=new R.MatchArchive();G.beginTurn(fire,{0:[{type:'firebomb',target:{x:8,y:5}}]});history.begin(fire);
   while(fire.tick<20){const events=G.step(fire);history.capture(fire,events);}
-  const before=structuredClone(history.current.frames.at(-1).units[1].burn);assert.equal(before.remainingTicks,4);fire.units[1].burn.remainingTicks=1;assert.deepEqual(history.current.frames.at(-1).units[1].burn,before);assert.equal(history.current.frames.at(-1).fires.length,0);
+  const before=structuredClone(history.current.frames.at(-1).units[1].burn);assert.equal(before.remainingTicks,4);fire.units[1].burn.remainingTicks=1;assert.deepEqual(history.current.frames.at(-1).units[1].burn,before);assert.equal(history.current.frames.at(-1).fires.length,16);
 });
 
 test('STRIDER five-tile dash shares preview/server range and restores mobility after two turns',()=>{

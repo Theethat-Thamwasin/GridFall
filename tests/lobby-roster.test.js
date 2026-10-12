@@ -34,7 +34,7 @@ test('solo host needs a rival, including after ownership transfers',()=>{
 test('all roster sizes use actual-count random safe spreads with open exits and equal starter supplies',()=>{
  for(const map of Object.keys(G.MAPS))for(const count of [2,3,5,8])for(let seed=0;seed<30;seed++){
   const ids=Array.from({length:count},(_,i)=>i),s=G.createState(seed,'vanguard',map,{activeIds:ids}),units=s.units.filter(u=>u.alive);
-  assert.equal(units.length,count);assert.equal(s.tiles.flat().filter(t=>t.loot?.type==='weapon').length,count);
+  assert.equal(units.length,count);assert.equal(s.tiles.flat().filter(t=>t.loot?.type==='weapon').length,count+(map==='skybridge'?4:0));
   for(const u of units){assert.ok(G.tile(s,u.x,u.y).rank<=s.safeLimit);for(const v of units)if(v.id!==u.id)assert.ok(G.distance(u,v)>=8);
    for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++)assert.ok(G.passable(s,u.x+dx,u.y+dy));
    assert.equal(G.pathfind(s,u,{x:u.x+2,y:u.y},2).length,2);

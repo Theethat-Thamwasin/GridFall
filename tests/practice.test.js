@@ -30,5 +30,5 @@ test('The training bot wanders and shoots different seeded directions with legal
   const angles=new Set(),moves=new Set();for(let n=0;n<25;n++){const s=P.createState(n),plan=P.botPlan(s);assert.equal(plan[1].type,'shoot');angles.add(plan[1].angle);if(plan[0].type==='move'){assert.equal(U.target(U.context(s,1,'move'),plan[0].target).ok,true);moves.add(JSON.stringify(plan[0].target));}assert.deepEqual(plan,P.botPlan(s));}assert.ok(angles.size>20);assert.ok(moves.size>=3);
 });
 test('Resetting practice HP preserves the real two-turn Molly burn',()=>{
-  const s=P.createState(19,'pyro'),u=s.units[0];resolve(s,[{type:'firebomb',target:{x:u.x,y:u.y}}]);assert.equal(u.hp,26);P.afterTurn(s);assert.equal(u.hp,50);assert.equal(u.burn.remainingTicks,2);resolve(s);assert.equal(s.events.filter(e=>e.type==='damage'&&e.unitId===0&&e.reason==='burn').length,2);assert.equal(u.burn,undefined);P.afterTurn(s);assert.equal(u.hp,50);
+  const s=P.createState(19,'pyro'),u=s.units[0];resolve(s,[{type:'firebomb',target:{x:u.x,y:u.y}}]);assert.equal(u.hp,14);P.afterTurn(s);assert.equal(u.hp,50);assert.equal(u.burn.remainingTicks,2);resolve(s);assert.equal(s.events.filter(e=>e.type==='damage'&&e.unitId===0&&e.reason==='burn').length,2);assert.equal(u.burn,undefined);P.afterTurn(s);assert.equal(u.hp,50);
 });

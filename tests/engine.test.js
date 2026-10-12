@@ -222,7 +222,7 @@ test('bots automatically collect guns and can equip them only next turn', () => 
 test('every map scatters all eight guns and solid barricades', () => {
   for (const mapId of Object.keys(G.MAPS)) for (const seed of [1, 17, 42, 77]) {
     const s = G.createState(seed, 'volt', mapId), found = new Set(s.tiles.flat().filter(t => t.loot?.type === 'weapon').map(t => t.loot.weapon));
-    assert.equal(found.size, 8, mapId + ' / ' + seed); assert.equal(s.tiles.flat().filter(t => t.loot?.type === 'weapon').length, 8); assert.ok(s.tiles.flat().filter(t=>t.loot).length<=24); assert.ok(s.tiles.flat().some(t => t.type === 'barricade'));
+    assert.equal(found.size, mapId==='skybridge'?5:8, mapId + ' / ' + seed); assert.equal(s.tiles.flat().filter(t => t.loot?.type === 'weapon').length, mapId==='skybridge'?12:8); assert.ok(s.tiles.flat().filter(t=>t.loot).length<=(mapId==='skybridge'?28:24)); assert.ok(s.tiles.flat().some(t => t.type === 'barricade'));
   }
 });
 test('barricades block movement, sight and bullets until destroyed', () => {

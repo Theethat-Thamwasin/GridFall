@@ -100,7 +100,7 @@
       const route=c.reachable?.get(G.key(p.x,p.y)), path=route?.path||[p];
       const occupants=s.units.filter(u=>u.alive&&u.id!==id&&!G.VISION.concealed(s,origin,u)&&visible.has(G.key(u.x,u.y))&&path.some(point=>point.x===u.x&&point.y===u.y));
       if(occupants.length)warnings.push(type==='skillMove'&&occupants.some(u=>G.opponents(s,s.units[id],u))?"Charge wins collisions · Push forward · 5 HP every hit":"Occupied · Movement may collide.");
-      if ((s.fires||[]).some(f=>f.expires>s.turn&&visible.has(G.key(f.x,f.y))&&path.some(p=>p.x===f.x&&p.y===f.y))) warnings.push("Fire hazard · You may take damage.");
+      if ((s.fires||[]).some(f=>f.expires>s.turn&&visible.has(G.key(f.x,f.y))&&path.some(p=>p.x===f.x&&p.y===f.y))||c.plan.some(a=>a.type==='firebomb'&&path.some(p=>G.inArea(p,G.skillArea('firebomb',a.target))&&G.tile(s,p.x,p.y)?.type!=='water'))) warnings.push("Fire hazard · You may ignite.");
       if (t.rank>s.safeLimit) warnings.push("Platform falling · Leave this tile.");
       else if (t.rank>s.nextLimit) warnings.push("Striped tile · Platform falls within 2 turns.");
       const cost=route?.cost, water=path.some(point=>G.tile(s,point.x,point.y)?.type==='water');
@@ -112,7 +112,7 @@
       if(['stasis','mend'].includes(type)&&!G.passable(s,p.x,p.y))return no('solid',"Choose a tile with a platform");
       const radius=type==='grenade'?G.FATE.stats(s.units[id]).radius:1,diameter=radius*2+1,selfHit=type==='firebomb'?G.inArea(origin,G.skillArea(type,p)):type==='grenade'&&G.cheb(origin,p)<=radius;
       if(selfHit) warnings.push(type==='firebomb'?"Fire will hit you too.":"Grenade "+diameter+'×'+diameter+" hits you too");
-      const note=type==='stasis'?"4×4 area · Rooted · Cannot walk; Dash and Blink can escape · Lasts 2 turns · Affects everyone":type==='mend'?"3×3 area · Restore 16 HP and 12 shield per turn · Heals allies in Team Mode":type==='firebomb'?"Molly 4×4 · Burn: 12 damage twice per turn for 2 turns, even after leaving the area":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
+      const note=type==='stasis'?"4×4 area · Rooted · Cannot walk; Dash and Blink can escape · Lasts 2 turns · Affects everyone":type==='mend'?"3×3 area · Restore 16 HP and 16 shield per turn · Heals allies in Team Mode":type==='firebomb'?"Molly 4×4 · Ground fire: 2 rounds · Burn: 18 damage twice per turn for 2 turns · Each Molly ignites you once; burns never stack":type==='grenade'?"Grenade "+diameter+'×'+diameter+" · Destroys walls and barricades":"Smoke 3×3 · Blocks vision for 2 turns";
       return {ok:true,kind:selfHit?'risky':seen?'valid':'unknown',code:selfHit?'selfBlast':'inRange',reason:[note,...warnings,...(!seen?["Not visible · Target unknown."]:[])].join(' · '),seen,warnings};
     }
     if(type==='scan') {

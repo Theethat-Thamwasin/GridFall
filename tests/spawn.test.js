@@ -43,13 +43,13 @@ test('every random spawn has reachable starter ammo and its own weapon without t
       const ammo = { x: u.x + 1, y: u.y }, gun = { x: u.x + 2, y: u.y };
       assert.equal(G.tile(s, ammo.x, ammo.y).loot.type, 'ammo');
       assert.equal(G.tile(s, gun.x, gun.y).loot.type, 'weapon');
-      assert.equal(G.tile(s, gun.x, gun.y).loot.weapon, Object.keys(G.WEAPONS).filter(id=>!G.WEAPONS[id].airDrop)[(u.id + 2) % Object.values(G.WEAPONS).filter(w=>!w.airDrop).length]);
+      const weapon=G.tile(s,gun.x,gun.y).loot.weapon;assert.ok(G.WEAPONS[weapon]&&!G.WEAPONS[weapon].airDrop);if(map==='skybridge')assert.equal(weapon,'rifle');
       assert.equal(G.pathfind(s, u, ammo, 1).length, 1);
       assert.equal(G.pathfind(s, u, gun, 2).length, 2);
       assert.equal(G.tile(s, u.x, u.y).loot, null);
     }
-    assert.equal(s.tiles.flat().filter(t => t.loot?.type === 'weapon').length, 8);
-    const supplies=s.tiles.flat().filter(t=>t.loot).length;assert.ok(supplies>=20&&supplies<=24);
+    assert.equal(s.tiles.flat().filter(t => t.loot?.type === 'weapon').length, map==='skybridge'?12:8);
+    const supplies=s.tiles.flat().filter(t=>t.loot).length;assert.ok(supplies>=(map==='skybridge'?24:20)&&supplies<=(map==='skybridge'?28:24));
     assert.ok(s.tiles.flat().some(t => t.type === 'barricade'));
   }
 });

@@ -1,13 +1,14 @@
 (function (root, factory) {
   const F = typeof module !== 'undefined' && module.exports ? require('./fate.js') : root.GridfallFate;
   const V=typeof module!=='undefined'&&module.exports?require('./vision.js'):root.GridfallVision;
-  const api = factory(F,V);
+  const SKY=typeof module!=='undefined'&&module.exports?require('./skybridge.js'):root.GridfallSkyBridge;
+  const api = factory(F,V,SKY);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Gridfall = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (F,V) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (F,V,SKY) {
   'use strict';
   const SIZE = 28;
-  const SKILLS = Object.freeze({ dashRange:5, dashDamage:5, blinkRange:5, blinkUses:2, scanRangeBonus:.25, mobilityCooldown:2, dashDodgeTicks:39, scanRange:14, scanTurns:2, reflectShots:1, reflectDamage:1, reflectAbsorb:.8, mendHp:16, mendShield:12 });
+  const SKILLS = Object.freeze({ dashRange:5, dashDamage:5, blinkRange:5, blinkUses:2, scanRangeBonus:.25, mobilityCooldown:2, dashDodgeTicks:39, scanRange:14, scanTurns:2, reflectShots:1, reflectDamage:1, reflectAbsorb:.8, burnDamage:18, mendHp:16, mendShield:16 });
   const TIMING = Object.freeze({ tickMs: 45 });
   const CLASH=Object.freeze({choiceMs:6000,revealMs:1500,damage:10});
   const THROW=Object.freeze({grenadeTicks:14,smokeTicks:10,skillTicks:10,smokeRadius:1});
@@ -16,6 +17,7 @@
 small:{name:'SMALL / SHATTER',width:32,height:32,min:28,max:36,description:'Compact procedural platforms · random shape / routes'},
 medium:{name:'MEDIUM / FRACTURE',width:40,height:40,min:36,max:44,description:'Balanced procedural platforms · random shape / routes'},
 meadow:{name:'MEADOW / FRONTLINE',width:52,height:52,min:48,max:56,description:'Open grassland battlefield · trenches, ruins, water and concealing roofs'},
+skybridge:{name:'SKY BRIDGE',width:68,height:68,min:64,max:72,description:'Death bridges · 4–7 floating islands · narrow shortcuts and wide detours · seeded collapse with escape routes'},
 large:{name:'LARGE / ABYSS',width:52,height:52,min:44,max:56,description:'Wide procedural platforms · random shape / routes'}
 };
 const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'large'}[id]||(MAPS[id]?id:'medium'));
@@ -78,7 +80,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     "skillType": "firebomb",
     "icon": "♨",
     "role": "DENIAL / PRESSURE",
-    "description": "Throw a Molly within 5 tiles. Ignites targets in a 4×4 area on impact with no lingering ground fire. Burn deals 12 damage twice per turn for 2 turns, even after leaving the area. Does not stack. Can hit you. Cooldown: 3 turns."
+    "description": "Throw a Molly within 5 tiles. Leaves a 4×4 fire area for 2 rounds. Targets caught on impact or entering the fire burn for 18 damage twice per turn for 2 turns, even after leaving. Each Molly ignites a target only once; active burns never stack or refresh. Can hit you. Cooldown: 3 turns."
   },
   "rook": {
     "name": "AEGIS",
@@ -93,7 +95,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
 };
   Object.assign(CLASSES,{
     mire:{name:'MIRE',move:3,color:'#85e2bb',skill:'STASIS FIELD',skillType:'stasis',icon:'⌛',role:'CONTROL / ROOT',description:"Throw a 4×4 field within 5 tiles. Everyone inside is rooted and cannot walk. Dash and Blink can escape. Lasts 2 turns. Affects you too. Cooldown: 4 turns."},
-    halo:{name:'HALO',move:3,color:'#ffd66e',skill:'MEND FIELD',skillType:'mend',icon:'✧',role:'SUPPORT / RECOVERY',description:"Throw a 3×3 field within 5 tiles. Restore 16 HP and 12 shield per turn inside. In Team Mode, heals your team only. Lasts 2 turns. Cooldown: 4 turns."}
+    halo:{name:'HALO',move:3,color:'#ffd66e',skill:'MEND FIELD',skillType:'mend',icon:'✧',role:'SUPPORT / RECOVERY',description:"Throw a 3×3 field within 5 tiles. Restore 16 HP and 16 shield per turn inside. In Team Mode, heals your team only. Lasts 2 turns. Cooldown: 4 turns."}
   });
   const BIOMES={
     verdant:{name:'VERDANT',floor:'#566a61',grass:'#486c51',road:'#657570',forest:'#325444',water:'#4b8192',rubble:'#817c69'},
@@ -204,7 +206,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
   function generatePlatforms(s, rng) {
     const axes = length => { const result=[3]; for(let p=11;p<length-6;p+=8)result.push(p); if(length-4-result.at(-1)>=5)result.push(length-4); return result; };
     const xs=axes(s.width),ys=axes(s.height);let nodes=[];
-    for(let row=0;row<ys.length;row++)for(let col=0;col<xs.length;col++)nodes.push({x:xs[col],y:ys[row],col,row});
+    for(let row=0;row<ys.length;row++)for(let col=0;col<xs.length;col++)nodes.push({x:Math.max(3,Math.min(s.width-4,xs[col]+Math.floor(rng()*5)-2)),y:Math.max(3,Math.min(s.height-4,ys[row]+Math.floor(rng()*5)-2)),col,row});
     {const shape=Math.floor(rng()*4),shaped=nodes.filter(p=>{const dx=Math.abs(p.x-s.width/2)/(s.width*.61),dy=Math.abs(p.y-s.height/2)/(s.height*.61);return shape===0?dx*dx+dy*dy<1:shape===1?dx+dy<1.28:shape===2?dx<.5||dy<.5:dx<.82||dy<.38;});if(shaped.length>=12)nodes=shaped;s.riftShape=['ellipse','diamond','cross','offset'][shape];}
     const lookup=new Map(nodes.map((p,i)=>[key(p.col,p.row),i]));
     for(let y=0;y<s.height;y++) {s.tiles[y]=[];for(let x=0;x<s.width;x++)s.tiles[y][x]={type:'void',hp:0,loot:null,rank:zoneRank(x,y,s.zoneCenter.x,s.zoneCenter.y,s.seed)};}
@@ -254,7 +256,7 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     for(let n=0;n<24;n++){const cx=5+Math.floor(rng()*(s.width-10)),cy=5+Math.floor(rng()*(s.height-10)),radius=1+Math.floor(rng()*3),type=['forest','water','rubble'][n%3];for(let y=cy-radius;y<=cy+radius;y++)for(let x=cx-radius;x<=cx+radius;x++)if(distance({x,y},{x:cx,y:cy})<=radius&&tile(s,x,y)?.type!=='void')tile(s,x,y).type=type;}
     for(let y=1;y<s.height-1;y++)for(let x=1;x<s.width-1;x++)if(Math.abs(x-s.beacon.x)<=1||Math.abs(y-s.beacon.y)<=1)tile(s,x,y).type='road';
     for(let n=0;n<8;n++){const x=5+Math.floor(rng()*(s.width-13)),y=5+Math.floor(rng()*(s.height-12));for(let dx=0;dx<6;dx++){const t=tile(s,x+dx,y);Object.assign(t,{type:dx===2?'road':n%2?'barricade':'wall',hp:45});Object.assign(tile(s,x+dx,y+1),{type:'rubble',elevation:-1});}Object.assign(tile(s,x,y+2),{type:'cover',side:'north',hp:35});}
-    for(const [fx,fy]of [[.2,.22],[.72,.23],[.2,.7],[.7,.7]]){const x=Math.floor(s.width*fx)+Math.floor(rng()*3),y=Math.floor(s.height*fy)+Math.floor(rng()*3),id=s.roofs.length;s.roofs.push({id,x,y,w:5,h:4});for(let dy=0;dy<4;dy++)for(let dx=0;dx<5;dx++)Object.assign(tile(s,x+dx,y+dy),{type:'floor',hp:0,roof:id+1,elevation:0});}
+    for(let tries=0;s.roofs.length<4&&tries<200;tries++){const x=4+Math.floor(rng()*(s.width-11)),y=4+Math.floor(rng()*(s.height-10));if(s.roofs.some(r=>Math.abs(r.x-x)<8&&Math.abs(r.y-y)<7))continue;const id=s.roofs.length;s.roofs.push({id,x,y,w:5,h:4});for(let dy=0;dy<4;dy++)for(let dx=0;dx<5;dx++)Object.assign(tile(s,x+dx,y+dy),{type:'floor',hp:0,roof:id+1,elevation:0});}
     for(const p of [s.beacon,s.zoneCenter])for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)Object.assign(tile(s,p.x+dx,p.y+dy),{type:'road',hp:0});
     // Geodesic collapse preserves a connected battlefield at every safe limit.
     const queue=[s.zoneCenter],seen=new Set([key(s.zoneCenter.x,s.zoneCenter.y)]);
@@ -270,10 +272,16 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
     s.mode=options.mode==='team'?'team':'ffa';s.winnerTeam=null;
     const teamCounts={A:0,B:0};for(const id of activeIds){const team=options.teams?.[id]||(teamCounts.A<=teamCounts.B?'A':'B');if(s.mode==='team'&&(!['A','B'].includes(team)||++teamCounts[team]>4))throw new Error('Teams allow at most 4 operators per side');}
     s.safeLimit = s.nextLimit = s.initialLimit;
-    if(mapId==='meadow')generateMeadow(s,rng);else generatePlatforms(s, rng);
-    s.initialLimit=Math.max(s.initialLimit,Math.max(...s.tiles.flat().filter(t=>t.type!=='void').map(t=>t.rank))+1);s.safeLimit=s.nextLimit=s.initialLimit;
+    let generatedSpawns=null;const initialLimit=s.initialLimit;
+    for(let attempt=0;attempt<64;attempt++){
+      s.tiles=[];s.roofs=[];s.initialLimit=initialLimit;
+      if(mapId==='skybridge')generatedSpawns=SKY.generate(s,rng,activeIds.length);else if(mapId==='meadow')generateMeadow(s,rng);else generatePlatforms(s,rng);
+      s.initialLimit=Math.max(initialLimit,Math.max(...s.tiles.flat().filter(t=>t.type!=='void').map(t=>t.rank))+1);s.safeLimit=s.nextLimit=s.initialLimit;
+      if(generatedSpawns)break;
+      try{generatedSpawns=selectSpawns(s,rng,activeIds.length);s.layout.attempts=attempt+1;break;}catch(e){if(attempt===63||!e.message.startsWith('Map has no safe spread'))throw e;}
+    }
     const names = ['YOU', 'REAPER', 'GHOST', 'KILO', 'SPECTRE', 'CIPHER', 'ECHO', 'RAZOR'];
-    const spawns = selectSpawns(s, rng, activeIds.length), positions = new Map(activeIds.map((id, i) => [id, spawns[i]]));
+    const spawns = generatedSpawns, positions = new Map(activeIds.map((id, i) => [id, spawns[i]]));
     for (let id = 0; id < 8; id++) {
       const {x, y} = positions.get(id) || {x:-100, y:-100};
       const cls = id === 0 && CLASSES[character] ? character : Object.keys(CLASSES)[id % Object.keys(CLASSES).length];
@@ -281,19 +289,21 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
       s.units.push({ id, name: names[id], class: cls, x, y, hp: 100, shield: 20, alive: true, weapon: 'pistol', ammo: WEAPONS.pistol.mag, weapons: ['pistol'], weaponAmmo: { pistol: WEAPONS.pistol.mag }, pendingPickups: [], reserve: 60, medkits: 2, grenades: 2, smoke: 2, skillCooldown: 0, scan: 0, reflectTurn: 0, reflectCharges: 0, guard: false, dodgeUntil: -1, idle: 0, memory: {}, facing:0,fateRevealTurn:0,personality: ['hunter', 'aggressive', 'defensive', 'looter'][id % 4], moved: false });
       if (!positions.has(id)) Object.assign(s.units[id], {alive:false, hp:0, shield:0, removed:true});
     }
-    const weaponTypes = Object.keys(WEAPONS).filter(id=>!WEAPONS[id].airDrop);
+    const weaponTypes = Object.keys(WEAPONS).filter(id=>!WEAPONS[id].airDrop&&id!=='pistol');
+    for(let i=weaponTypes.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[weaponTypes[i],weaponTypes[j]]=[weaponTypes[j],weaponTypes[i]];}
     const starterLoot = [[1, 0, 'ammo'], [2, 0, 'weapon']];
     for (const u of s.units.filter(u => u.alive)) for (const [dx, dy, type] of starterLoot) {
       const x = u.x + dx, y = u.y + dy, t = tile(s, x, y);
-      if (t && !s.units.some(other => other.x === x && other.y === y)) t.loot = { type, ...(type === 'weapon' ? { weapon: weaponTypes[(u.id + 2) % weaponTypes.length] } : {}), taken: false };
+      if (t && !s.units.some(other => other.x === x && other.y === y)) t.loot = { type, ...(type === 'weapon' ? { weapon: mapId==='skybridge'?'rifle':weaponTypes[(u.id + 2) % weaponTypes.length] } : {}), taken: false };
     }
     for (const type of (Array.from({length:4+Math.floor(rng()*5)},()=>['medkit','shield','grenade','smoke','ammo'][Math.floor(rng()*5)]))) for (let tries = 0; tries < 1000; tries++) {
       const x = 1 + Math.floor(rng() * (width - 2)), y = 1 + Math.floor(rng() * (height - 2)), t = tile(s, x, y);
       if (passable(s, x, y) && t.type !== 'water' && !t.loot && !s.units.some(u => u.x === x && u.y === y)) { t.loot = { type, taken: false }; break; }
     }
     s.maxZoneRank = Math.max(...s.tiles.flat().filter(t=>t.type!=='void').map(t => t.rank));
+    if(mapId==='skybridge')SKY.addLoot(s,rng,zoneLimit);
     if(s.mode==='team'){const counts={A:0,B:0};for(const id of activeIds){const u=s.units[id];u.team=options.teams?.[id]||(counts.A<=counts.B?'A':'B');counts[u.team]++;}const points=activeIds.map(id=>({x:s.units[id].x,y:s.units[id].y})).sort((a,b)=>a.x-b.x||a.y-b.y);const ids=[...activeIds.filter(id=>s.units[id].team==='A'),...activeIds.filter(id=>s.units[id].team==='B')];ids.forEach((id,i)=>Object.assign(s.units[id],points[i]));}
-    relocateBeacon(s,false);
+    if(mapId==='skybridge'){const sites=s.skyBridge.islands[0].cells.filter(p=>passable(s,p.x,p.y)&&!tile(s,p.x,p.y).loot&&cheb(p,s.zoneCenter)<=3),p=sites[Math.floor(rng()*sites.length)];Object.assign(s.beacon,p);}else relocateBeacon(s,false);
     F.init(s);
     return s;
   }
@@ -713,18 +723,31 @@ const normalizeMap=id=>({district:'small',cargo:'medium',alley:'medium',rift:'la
 
     }
     for(const c of s.canisters||[])if(c.land===s.tick){
-      if(c.item==='firebomb'){const b=skillArea(c.item,c);for(const u of s.units)if(u.alive&&(u.id===c.owner||!sameTeam(s,s.units[c.owner],u))&&inArea(u,b)&&passable(s,u.x,u.y)&&tile(s,u.x,u.y).type!=='water'&&!(u.burn?.remainingTicks>0))u.burn={owner:c.owner,remainingTicks:4,expires:s.turn+2,appliedTurn:s.turn,appliedTick:s.tick,pulseTurn:s.turn,pulses:0};emit(s,'firebomb',{unitId:c.owner,x:c.x,y:c.y,width:b.width,height:b.height});}
+      if(c.item==='firebomb'){
+        const b=skillArea(c.item,c),ignited=[],castId=s.turn+':'+s.tick+':'+c.owner;
+        // Cells share this cast's hit history. Leaving and re-entering another
+        // cell of the same Molly cannot refresh or repeat its attached burn.
+        for(let y=b.top;y<=b.bottom;y++)for(let x=b.left;x<=b.right;x++)if(passable(s,x,y)&&tile(s,x,y).type!=='water')s.fires.push({x,y,owner:c.owner,expires:s.turn+SKILL_AREAS.firebomb.turns,castId,ignited});
+        emit(s,'firebomb',{unitId:c.owner,x:c.x,y:c.y,width:b.width,height:b.height});
+      }
       else if(c.item==='stasis'||c.item==='mend'){s.fields=s.fields||[];const shape=SKILL_AREAS[c.item];s.fields.push({kind:c.item,x:c.x,y:c.y,width:shape.width,height:shape.height,owner:c.owner,expires:s.turn+shape.turns});emit(s,'fieldDeploy',{unitId:c.owner,kind:c.item,x:c.x,y:c.y,width:shape.width,height:shape.height});}
       else{s.smokes.push({x:c.x,y:c.y,expires:s.turn+2,born:s.tick,bornTurn:s.turn});emit(s,'smoke',{unitId:c.owner,x:c.x,y:c.y});}
     }
     for(const f of s.fields||[])if(f.kind==='mend'&&f.expires>s.turn&&s.tick>=20&&f.pulseTurn!==s.turn){f.pulseTurn=s.turn;for(const u of s.units)if(u.alive&&(s.mode!=='team'||sameTeam(s,s.units[f.owner],u))&&inArea(u,areaBounds(f))&&u.mendPulseTurn!==s.turn){u.mendPulseTurn=s.turn;const hp=u.hp,shield=u.shield;u.hp=Math.min(F.stats(u).maxHp,u.hp+SKILLS.mendHp);u.shield=Math.min(F.stats(u).shield,u.shield+SKILLS.mendShield);emit(s,'fieldPulse',{unitId:u.id,x:u.x,y:u.y,amount:u.hp-hp,shield:u.shield-shield});}}
     s.canisters=(s.canisters||[]).filter(c=>c.land>s.tick);
+    for(const f of s.fires||[])if(f.expires>s.turn&&passable(s,f.x,f.y)&&tile(s,f.x,f.y).type!=='water'){
+      const ignited=f.ignited||(f.ignited=[]);
+      for(const u of s.units)if(u.alive&&u.x===f.x&&u.y===f.y&&(u.id===f.owner||!sameTeam(s,s.units[f.owner],u))&&!ignited.includes(u.id)){
+        ignited.push(u.id);
+        if(!(u.burn?.remainingTicks>0&&u.burn.expires>s.turn))u.burn={owner:f.owner,remainingTicks:4,expires:s.turn+2,appliedTurn:s.turn,appliedTick:s.tick,pulseTurn:s.turn,pulses:0};
+      }
+    }
     for(const u of s.units)if(u.alive&&u.burn){
       const burn=u.burn;if(burn.expires<=s.turn||burn.remainingTicks<=0){delete u.burn;continue;}
       if(burn.pulseTurn!==s.turn){burn.pulseTurn=s.turn;burn.pulses=0;}
       // A late second action still delivers two ticks in its application turn.
       const applied=burn.appliedTurn===s.turn,start=applied?burn.appliedTick:0,pulses=[Math.max(20,start),Math.max(60,Math.min(79,start+1))];
-      while(burn.pulses<2&&burn.remainingTicks>0&&s.tick>=pulses[burn.pulses]){burn.pulses++;burn.remainingTicks--;pending.push({target:u.id,owner:burn.owner,damage:12,burn:true,origin:{x:u.x,y:u.y}});}
+      while(burn.pulses<2&&burn.remainingTicks>0&&s.tick>=pulses[burn.pulses]){burn.pulses++;burn.remainingTicks--;pending.push({target:u.id,owner:burn.owner,damage:SKILLS.burnDamage,burn:true,origin:{x:u.x,y:u.y}});}
     }
     for (const grenade of s.grenades.filter(g => g.explode === s.tick)) {
       emit(s, 'explosion', { x: grenade.x, y: grenade.y, owner: grenade.owner });

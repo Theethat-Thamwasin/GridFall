@@ -19,10 +19,10 @@
     {id:'dash',title:'STRIDER · Kinetic Dash',character:'vanguard',action:'skillMove',target:{x:14,y:10},copy:'Press E and click the highlighted tile beyond the bot. Confirm to charge through it: automatically win the collision and push it ahead. Every hit deals 5 HP damage, including repeated pushes. Its current movement stops. A blocked forward push stops your Dash. Dodge every incoming bullet for the entire Dash action; melee and blasts can still hurt you.'},
     {id:'blink',title:'WRAITH · Phase Shift',character:'volt',action:'blink',target:{x:11,y:11},copy:'Press E and click the highlighted visible tile, then confirm. Blink crosses gaps without walking the route. Your destination must be visible and within range. You can queue two Blinks in one turn, then wait through 2 turns of cooldown.'},
     {id:'scan',title:'ORACLE · Pulse Array',character:'deadeye',action:'scan',copy:'The bot is behind a wall, Smoke and a roof. Press E and confirm. Scan reveals operators within 14 tiles through all three for 2 turns. Your bullets still stop at walls.'},
-    {id:'molly',title:'CINDER · Molly',character:'pyro',action:'firebomb',target:{x:12,y:10},copy:'Press E, aim the 4×4 area at the bot and confirm. Only targets caught on impact ignite. Burning follows them for 2 turns with two damage ticks each turn.'},
+    {id:'molly',title:'CINDER · Molly',character:'pyro',action:'firebomb',target:{x:12,y:10},copy:'Press E, aim the 4×4 area at the bot and confirm. Fire stays on the ground for 2 rounds and ignites targets on impact or entry. Burning follows them for 2 turns: two ticks of 18 damage per turn. Each Molly can ignite you once; burns do not stack or refresh.'},
     {id:'reflect',title:'AEGIS · Prism Bulwark',character:'rook',action:'reflect',copy:'Press E and confirm while the bot fires at you. Every incoming bullet is reflected this turn. The shield absorbs 80% of each bullet; you take the remaining 20%.'},
     {id:'stasis',title:'MIRE · Stasis Field',character:'mire',action:'stasis',target:{x:12,y:10},copy:'Press E, place the 4×4 field on the bot and confirm. Inside it, operators cannot walk. Dash and Blink can escape. The field lasts 2 turns and affects you too.'},
-    {id:'mend',title:'HALO · Mend Field',character:'halo',action:'mend',target:{x:9,y:10},copy:'Press E, place the 3×3 field on yourself and confirm. It restores 16 HP and 12 shield per turn for 2 turns. In Team Mode, it heals your team only.'},
+    {id:'mend',title:'HALO · Mend Field',character:'halo',action:'mend',target:{x:9,y:10},copy:'Press E, place the 3×3 field on yourself and confirm. It restores 16 HP and 16 shield per turn for 2 turns. In Team Mode, it heals your team only.'},
     {id:'fate',title:'Choose a Fate Card',focus:'#fate-draft',event:'fate',copy:'Choose a card in the interactive draft. Read YOU GAIN and YOU PAY together: both stay for this session. In matches, a draft opens every four turns.'}
   ];
   const keyMap={move:'1',shoot:'2',slash:'3',smoke:'4',guard:'G',reload:'R',heal:'H',grenade:'B',skillMove:'E',blink:'E',scan:'E',firebomb:'E',reflect:'E',stasis:'E',mend:'E'};
@@ -51,7 +51,7 @@
   function current(s){return s.walkthrough?steps[s.walkthrough.index]||null:null;}
   function prepare(s){
     const step=current(s);if(!step)return;const u=s.units[0],bot=s.units[1];
-    s.phase='planning';s.tick=0;s.events=[];s.fate.draft=null;delete u.burn;delete bot.burn;s.smokes=[];s.fields=[];s.projectiles=[];s.canisters=[];s.grenades=[];
+    s.phase='planning';s.tick=0;s.events=[];s.fate.draft=null;delete u.burn;delete bot.burn;s.smokes=[];s.fires=[];s.fields=[];s.projectiles=[];s.canisters=[];s.grenades=[];
     Object.assign(u,{x:9,y:10,hp:50,shield:0,scan:0,skillCooldown:0,reflectCharges:0,dodgeUntil:-1,memory:{}});
     Object.assign(bot,{x:step.id==='slash'?10:12,y:10,alive:true,hp:100,shield:0,scan:0,weapon:'rifle',ammo:15,weapons:['rifle'],weaponAmmo:{rifle:15},skillCooldown:0,memory:{}});delete bot.burn;
     for(let y=8;y<=13;y++)for(let x=7;x<=15;x++)Object.assign(s.tiles[y][x],{type:'floor',hp:0,roof:null,loot:null});
